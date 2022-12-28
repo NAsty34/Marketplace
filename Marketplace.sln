@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace", "Marketplace\Marketplace.csproj", "{A6675F12-04B9-485B-A4E8-C1E25F28A894}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logic", "logic\logic.csproj", "{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "data", "data\data.csproj", "{94830CFA-F829-48B8-901B-BE8AEE8710AE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A6675F12-04B9-485B-A4E8-C1E25F28A894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6675F12-04B9-485B-A4E8-C1E25F28A894}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6675F12-04B9-485B-A4E8-C1E25F28A894}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6675F12-04B9-485B-A4E8-C1E25F28A894}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94830CFA-F829-48B8-901B-BE8AEE8710AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94830CFA-F829-48B8-901B-BE8AEE8710AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94830CFA-F829-48B8-901B-BE8AEE8710AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94830CFA-F829-48B8-901B-BE8AEE8710AE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
