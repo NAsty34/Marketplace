@@ -3,7 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using data.model;
 using data.Repository;
+using logic.Exceptions;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 
@@ -12,18 +14,20 @@ namespace logic.Service;
 public class AuthServer:IAuthService
 {
     private readonly IRepositoryUser userRepository;
-
-    public AuthServer(IRepositoryUser irepositoryuser)
+    private readonly IConfiguration appConfig;
+    
+    public AuthServer(IRepositoryUser irepositoryuser, IConfiguration _appConfig)
     {
         this.userRepository = irepositoryuser;
+        this.appConfig = _appConfig;
     }
     
     public void Register(string email, Role role, string name, string surname, string lastname)
     {
         if (!role.Equals(Role.Buyer) && !role.Equals(Role.Seller))
-            throw new ArgumentException("Only Buyer and Seller can be register");
+            throw new RoleException();
         if (userRepository.GetUser(email)!=null)
-            throw new ArgumentException("Email is already in use");
+            throw new EmailException();
         User user = new User();
         user.Password = GeneratePassword();
         user.Email = email;
@@ -31,7 +35,7 @@ public class AuthServer:IAuthService
         user.Surname = surname;
         user.Patronymic = lastname;
         user.Role = role;
-        user.DataRegistration = DateTime.Now;
+        user.CreateDate = DateTime.Now;
         userRepository.Create(user);
         userRepository.Save();
         var emailMessage = new MimeMessage();
@@ -54,7 +58,7 @@ public class AuthServer:IAuthService
     public JwtSecurityToken Login(string email, string password)
     {
         var e = userRepository.GetUser(email);
-        //throw new SystemException("Role is null, fuck u " + nameof(e.Role) + " " + e.Role.ToString());
+        
         if (e == null)
         {
             throw new SystemException("User not found");
@@ -64,16 +68,21 @@ public class AuthServer:IAuthService
         {
             throw new SystemException("Password incorrect");
         }
-        var claims = new List<Claim> {new Claim(ClaimsIdentity.DefaultNameClaimType, email), new Claim(ClaimsIdentity.DefaultRoleClaimType, e.Role.ToString()) };
-        ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "token", ClaimsIdentity.DefaultNameClaimType,
-            ClaimsIdentity.DefaultRoleClaimType);
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Email, email), 
+            new Claim(ClaimTypes.Role, e.Role.ToString()),
+            new Claim(ClaimTypes.Actor, e.Id.ToString())
+        };
+        // ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "token", ClaimsIdentity.DefaultNameClaimType,
+        //     ClaimsIdentity.DefaultRoleClaimType);
         
         var jwt = new JwtSecurityToken(
-            issuer: AuthOptions.ISSUER,
-            audience: AuthOptions.AUDIENCE,
-            claims: claimsIdentity.Claims,
+            issuer: appConfig["ISSUER"],
+            audience: appConfig["AUDIENCE"],
+            claims: claims,
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)), // время действия 2 минуты
-            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),SecurityAlgorithms.HmacSha256));
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["KEY"])),SecurityAlgorithms.HmacSha256));
         
         return jwt;
     }

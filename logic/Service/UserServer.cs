@@ -1,5 +1,6 @@
 using data.model;
 using data.Repository;
+using logic.Exceptions;
 
 namespace logic.Service;
 
@@ -13,22 +14,22 @@ public class UserServer:IUserServer
         this.userrepository = userrepository;
         this._feedbackRepositiry = _feedbackRepositiry;
     }
-    public IEnumerable<User> GetUsers()
+    public Page<User> GetUsers()
     {
-        return userrepository.GetUsers();
+        return userrepository.GetPage(userrepository.DbSet(), 1, 20);
     }
 
-    public IEnumerable<Feedback> GetFeedback(int userId)
+    public Page<Feedback> GetFeedback(int userId)
     {
         return _feedbackRepositiry.GetFeedbackbyUser(userId);
     }
 
     public User? GetUser(int id)
     {
-        var u = userrepository.GetUserId(id);
+        var u = userrepository.GetById(id);
         if (u == null)
         {
-            throw new SystemException("User not found");
+            throw new UserNotFoundException();
         }
 
         return u;

@@ -1,12 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace data.model;
 
-public class Feedback
+[Table("Feedback")]
+public class Feedback:BaseEntity
 {
-    public  int Id  { get; set; }
     public  int Stars { get; set; }
     public string? Content { get; set; }
-    public  DateTime DataOfPublication { get; set; }
-    public User? IDUser { get; set; }
-    
-    public Shop? IDShop { get; set; }
+    public int ShopId { get; set; }
+    public Shop? Shop { get; set; }
+    public User Creator { get; set; }
 }

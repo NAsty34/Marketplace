@@ -18,31 +18,19 @@ public class UserController:Controller
 
     [Route("/api/v1/users")]
 
-    public ResponceDto<IEnumerable<UserDto>> GetUsers()
+    public ResponceDto<Page<UserDto>> GetUsers()
     {
-        var users = _userServer.GetUsers().Select(a => new UserDto()
-        {
-            Name = a.Name,
-            Surname = a.Surname,
-            Patronymic = a.Patronymic,
-            Email = a.Email,
-            role = a.Role
-        }).ToList();
-        return new(users);
+        var users = _userServer.GetUsers();
+        Page<UserDto> Up = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
+        
+        return new(Up);
     }
 
     [Route("/api/v1/users/{id}")]
     public ResponceDto<UserDto> GetUser(int id)
     {
         var user = _userServer.GetUser(id);
-        UserDto userD = new UserDto()
-        {
-            Name = user.Name,
-            Surname = user.Surname,
-            Patronymic = user.Patronymic,
-            Email = user.Email,
-            role = user.Role
-        };
+        UserDto userD = new UserDto(user);
         return new(userD);
     }
 }

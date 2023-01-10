@@ -1,33 +1,44 @@
+using System.Text;
+using data;
 using data.model;
 using data.Repository;
+using data.Repository.Interface;
 using logic;
 using logic.Service;
+using logic.Service.Inreface;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 
+//new(Encoding.UTF8.GetBytes(KEY))
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Services.AddTransient<IRepositoryUser, UserRepository>();
-builder.Services.AddTransient<IFeedbackRepositiry, FeedbackRepositoty>();
-builder.Services.AddTransient<IAuthService, AuthServer>();
-builder.Services.AddTransient<IUserServer, UserServer>();
+builder.Configuration.AddJsonFile("Config.json");
+builder.Services.AddSingleton<DBContext>(new DBContext());
+builder.Services.AddSingleton<IRepositoryUser, UserRepository>();
+builder.Services.AddSingleton<IFeedbackRepositiry, FeedbackRepositoty>();
+builder.Services.AddSingleton<IShopRepository, ShopRepository>();
+builder.Services.AddSingleton<IAuthService, AuthServer>();
+builder.Services.AddSingleton<IUserServer, UserServer>();
+builder.Services.AddSingleton<IShopService, ShopService>();
+builder.Services.AddSingleton<IFeedbackService, FeedbackService>();
 builder.Services.AddAuthorization();
+
+var appConfig = builder.Configuration;
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = AuthOptions.ISSUER,
+            ValidIssuer = appConfig["ISSUER"],
             ValidateAudience = true,
-            ValidAudience = AuthOptions.AUDIENCE,
+            ValidAudience = appConfig["AUDIENCE"],
             ValidateLifetime = true,
-            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["KEY"])),
             ValidateIssuerSigningKey = true,
         };
     });

@@ -1,25 +1,43 @@
+using System.Drawing;
 using data.model;
+using data.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
+
 namespace data.Repository;
 
-public class ShopRepository:IShopRepository
+
+public class ShopRepository:BaseRepository<Shop>, IShopRepository
 {
-    public IEnumerable<Shop> GetShops()
-    {
-        return DBContext.GetContext().Shops.ToList();
+    public Page<Shop> GetPublicShops()
+    { 
+        return GetPage(
+            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.isPublic == true),1,20
+            );
+        
     }
 
-    public void Create(Shop shop)
+    public Page<Shop> GetSellerShops(int id)
     {
-        DBContext.GetContext().Shops.Add(shop);
+        return GetPage(
+            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id),1,20
+            );
+        
     }
 
-    public void Deleted(Shop shop)
+    public Shop? GetByInn(string inn)
     {
-        DBContext.GetContext().Shops.Remove(shop);
+        return _dbSet.Include(a=>a.Creator).FirstOrDefault(a => a.Inn == inn && a.IsActive && !a.IsDeleted);
+        
     }
 
-    public void Save()
+    public Page<Shop> GetPage(int page, int size)
     {
-        DBContext.GetContext().SaveChanges();
+        return GetPage(
+            _dbSet.Include(s=>((Shop)s).Creator),page,size
+        );
+    }
+
+    public ShopRepository(DBContext _dbContext) : base(_dbContext, _dbContext.Shops)
+    {
     }
 }

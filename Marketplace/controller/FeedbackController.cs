@@ -1,3 +1,7 @@
+using System.Security.Claims;
+using data.model;
+using logic.Service;
+using logic.Service.Inreface;
 using Microsoft.AspNetCore.Mvc;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -6,23 +10,72 @@ namespace Marketplace.controller;
 [Authorize]
 public class FeedbackController:Controller
 {
+    private IFeedbackService _feedbackService;
+
+    public FeedbackController(IFeedbackService _feedbackService)
+    {
+        this._feedbackService = _feedbackService;
+    }
     [Route("/api/v1/users/{id}/feedback")]
-    [HttpPost]
-    public ResponceDto<string> UserFeedback() => new("GET /api/v1/users/{id}/feedback");
+    [HttpGet]
+    public ResponceDto<Page<FeedbackDTO>> UserFeedback(int id)
+    {
+        var q = _feedbackService.GetByUser(id);
+        Page<FeedbackDTO> fp = Page<FeedbackDTO>.Create(q, q.Items.Select(a => new FeedbackDTO(a)));
+        return new(fp);
+    }
+
+    [Route("/api/v1/shops/{id}/feedback")]
+    [HttpGet]
+    public ResponceDto<Page<FeedbackDTO>> ShopFeedback(int id)
+    {
+        var q = _feedbackService.GetByShop(id);
+        Page<FeedbackDTO> fp = Page<FeedbackDTO>.Create(q, q.Items.Select(a => new FeedbackDTO(a)));
+        return new(fp);
+    }
 
     [Route("/api/v1/shops/{id}/feedback")]
     [HttpPost]
-    public ResponceDto<string> ShopFeedback() => new("GET /api/v1/shops/{id}/feedback");
-    
-    [Route("/api/v1/shops/{id}/feedback")]
-    [HttpPost]
-    public ResponceDto<string> AddFeedback() => new("POST /api/v1/shops/{id}/feedback");
-    
-    [Route("/api/v1/shops/{shopid}/feedback/{id}")]
-    [HttpPost]
-    public ResponceDto<string> EditFeedback() => new("PUT /api/v1/shops/{id}/feedback/{id}");
+    public ResponceDto<FeedbackDTO> AddFeedback([FromBody]FeedbackDTO feedbackDto, int id)
+    {
+        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        var feed = new Feedback()
+        {
+            Content = feedbackDto.Content,
+            CreateDate = DateTime.Now,
+            Stars = feedbackDto.Stars,
+            ShopId = id,
+            CreatorId = userid
+        };
+        var f = _feedbackService.AddFeedback(feed);
+        return new(new FeedbackDTO(f));
+    }
 
-    [Route("/api/v1/shops/{shopid}/feedback/{id}")]
-    [HttpPost]
-    public ResponceDto<string> DeleteFeedback() => new("DELETE /api/v1/shops/{id}/feedback/{id}");
+    [Route("/api/v1/shops/feedback/{id}")]
+    [HttpPut]
+    public ResponceDto<FeedbackDTO> EditFeedback([FromBody]FeedbackDTO feedbackDto, int id)
+    {
+        string g = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        Enum.TryParse(g, out Role role);
+        var feed = new Feedback()
+        {
+            Content = feedbackDto.Content,
+            Stars = feedbackDto.Stars,
+            Id = id
+        };
+        var f = _feedbackService.EditFeedback(feed, userid, role);
+        return new(new FeedbackDTO(f));
+    }
+
+    [Route("/api/v1/shops/feedback/{id}")]
+    [HttpDelete]
+    public ResponceDto<string> DeleteFeedback(int id)
+    {
+        string g = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        Enum.TryParse(g, out Role role);
+        _feedbackService.DeleteFeedback(id, userid, role);
+        return new("Успешно удалено!");
+    }
 }

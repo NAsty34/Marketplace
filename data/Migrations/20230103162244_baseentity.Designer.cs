@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using data;
@@ -11,9 +12,11 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230103162244_baseentity")]
+    partial class baseentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,9 +70,13 @@ namespace data.Migrations
 
                     b.HasIndex("CreatorId");
 
+                    b.HasIndex("DeletorId");
+
+                    b.HasIndex("EditorId");
+
                     b.HasIndex("ShopId");
 
-                    b.ToTable("Feedback");
+                    b.ToTable("Feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("data.model.Shop", b =>
@@ -123,7 +130,11 @@ namespace data.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Shop");
+                    b.HasIndex("DeletorId");
+
+                    b.HasIndex("EditorId");
+
+                    b.ToTable("Shops", (string)null);
                 });
 
             modelBuilder.Entity("data.model.User", b =>
@@ -138,25 +149,15 @@ namespace data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("EmailCode")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("EmailIsVerified")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Patronymic")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Role")
@@ -164,26 +165,11 @@ namespace data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DataRegistration = new DateTime(2023, 1, 7, 16, 7, 56, 655, DateTimeKind.Local).AddTicks(5892),
-                            Email = "admin@gmail.com",
-                            EmailIsVerified = false,
-                            Name = "Admin",
-                            Password = "0000",
-                            Patronymic = "Admin",
-                            Role = "Admin",
-                            Surname = "Admin"
-                        });
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("data.model.Feedback", b =>
@@ -194,6 +180,14 @@ namespace data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("data.model.User", "Deletor")
+                        .WithMany()
+                        .HasForeignKey("DeletorId");
+
+                    b.HasOne("data.model.User", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
                     b.HasOne("data.model.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
@@ -202,23 +196,34 @@ namespace data.Migrations
 
                     b.Navigation("Creator");
 
+                    b.Navigation("Deletor");
+
+                    b.Navigation("Editor");
+
                     b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("data.model.Shop", b =>
                 {
                     b.HasOne("data.model.User", "Creator")
-                        .WithMany("FavoriteShops")
+                        .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Creator");
-                });
+                    b.HasOne("data.model.User", "Deletor")
+                        .WithMany()
+                        .HasForeignKey("DeletorId");
 
-            modelBuilder.Entity("data.model.User", b =>
-                {
-                    b.Navigation("FavoriteShops");
+                    b.HasOne("data.model.User", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Deletor");
+
+                    b.Navigation("Editor");
                 });
 #pragma warning restore 612, 618
         }

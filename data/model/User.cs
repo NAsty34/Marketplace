@@ -1,16 +1,24 @@
-using System.Data;
-using System.Runtime.InteropServices.JavaScript;
+using System.ComponentModel.DataAnnotations;
 
 namespace data.model;
 
-public class User
+public class User:BaseEntity
 {
-    public  int Id { get; set; }
+    [Required]
     public string? Name { get; set; }
-    public  string? Surname { get; set; }
-    public  string? Patronymic { get; set; }
-    public  string? Email { get; set; }
-    public  Role Role { get; set; }
-    public  string? Password { get; set; }
-    public  DateTime DataRegistration { get; set; }
+    [Required]
+    public string? Surname { get; set; }
+    [Required]
+    public string? Patronymic { get; set; }
+    [Required]
+    public string? Email { get; set; }
+    [Required]
+    public Role Role { get; set; }
+    [Required]
+    public string? Password { get; set; }
+
+    public List<Shop> FavoriteShops { get; set; } = new();
+    public List<Shop> Shops { get; set; } = new();
+    public bool EmailIsVerified { get; set; }
+    public string? EmailCode { get; set; }
 }
