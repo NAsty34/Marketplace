@@ -1,6 +1,6 @@
 namespace logic.Exceptions;
 
-public class InnAlreadyUseException:Exception
+public class InnAlreadyUseException:BaseException
 {
-    public InnAlreadyUseException():base("INN already use"){}
+    public InnAlreadyUseException():base("INN already use", 5, 400){}
 }

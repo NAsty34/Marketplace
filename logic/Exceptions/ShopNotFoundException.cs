@@ -1,6 +1,6 @@
 namespace logic.Exceptions;
 
-public class ShopNotFoundException:Exception
+public class ShopNotFoundException:BaseException
 {
-    public ShopNotFoundException():base("Shop not found"){}
+    public ShopNotFoundException():base("Shop not found", 9, 404){}
 }

@@ -29,11 +29,27 @@ public class AuthController:Controller
 
     [Route("/api/v1/auth/register")]
     [HttpPost]
-    public ResponceDto<string> Register([FromBody]UserDto userDto)
+    public ResponceDto<string> Register([FromBody]RegisterDTO register)
     {
-        //UserDto st = await Request.ReadFromJsonAsync<UserDto>();
-        //return new ResponceDto<UserDto>(userDto);
-        _authService.Register(userDto.Email, userDto.role, userDto.Name, userDto.Surname, userDto.Patronymic);
-        return new("Успешная регистрация, Вам на почту отправлен пароль");
+        
+        User user = new User();
+        user.Password = register.Password;
+        user.Email = register.Email;
+        user.Name = register.Name;
+        user.Surname = register.Surname;
+        user.Patronymic = register.Patronymic;
+        user.Role = register.role;
+        user.CreateDate = DateTime.Now;
+        _authService.Register(user);
+        return new("Вам на почту отправлен код");
     }
+    [Route("/api/v1/auth/verify")]
+    [HttpPost]
+    public ResponceDto<string> Verify([FromBody]LoginDTO loginDto)
+    {
+         _authService.EmailVerify(loginDto.Email, loginDto.Password);
+         return new ResponceDto<string>("Почта подтверждена");
+    }
+
+    
 }

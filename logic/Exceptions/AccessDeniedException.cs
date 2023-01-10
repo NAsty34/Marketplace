@@ -1,6 +1,6 @@
 namespace logic.Exceptions;
 
-public class AccessDeniedException:Exception
+public class AccessDeniedException:BaseException
 {
-    public AccessDeniedException():base("Access denied"){}
+    public AccessDeniedException():base("Access denied", 2, 403){}
 }

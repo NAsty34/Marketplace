@@ -1,6 +1,6 @@
 namespace logic.Exceptions;
 
-public class UserNotFoundException:Exception
+public class UserNotFoundException:BaseException
 {
-    public UserNotFoundException():base("User not found"){}
+    public UserNotFoundException():base("User not found", 10, 404){}
 }

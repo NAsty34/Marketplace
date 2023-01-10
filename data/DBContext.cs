@@ -6,8 +6,6 @@ namespace data;
 
 public class DBContext:DbContext
 {
-    private static DBContext _context;
-    public object FeedBacks;
 
     public DBContext()
     {
@@ -22,9 +20,10 @@ public class DBContext:DbContext
             Name = "Admin",
             Patronymic = "Admin",
             Surname = "Admin",
-            Role = Role.Admin,
+            Role = Role.Admin, EmailIsVerified = true,
             Email = "admin@gmail.com",
             Password = "0000",
+            
             CreateDate = DateTime.Now
         });
         modelBuilder.Entity<User>()
@@ -44,14 +43,7 @@ public class DBContext:DbContext
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=5131");
     }
-    
-    public static DBContext GetContext()
-    {
-        if (_context == null) _context = new DBContext();
-        return _context;
-    }
-    
-    //public DbSet<BaseEntity> BaseEntities { get; set; } = null!;
+
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Shop> Shops { get; set; } = null!;
     public DbSet<Feedback> Feedbacks { get; set; } = null!;

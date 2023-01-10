@@ -22,29 +22,24 @@ public class AuthServer:IAuthService
         this.appConfig = _appConfig;
     }
     
-    public void Register(string email, Role role, string name, string surname, string lastname)
+    public void Register(User user)
     {
-        if (!role.Equals(Role.Buyer) && !role.Equals(Role.Seller))
+        if (!user.Role.Equals(Role.Buyer) && !user.Role.Equals(Role.Seller))
             throw new RoleException();
-        if (userRepository.GetUser(email)!=null)
+        if (userRepository.GetUser(user.Email)!=null)
             throw new EmailException();
-        User user = new User();
-        user.Password = GeneratePassword();
-        user.Email = email;
-        user.Name = name;
-        user.Surname = surname;
-        user.Patronymic = lastname;
-        user.Role = role;
-        user.CreateDate = DateTime.Now;
+        var code = GeneratePassword();
+        user.EmailCode = BCrypt.Net.BCrypt.HashPassword(code);
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         userRepository.Create(user);
         userRepository.Save();
         var emailMessage = new MimeMessage();
         emailMessage.From.Add(new MailboxAddress("Admin sait", "nasty_mihailova16@mail.ru"));
-        emailMessage.To.Add(new MailboxAddress("", email));
-        emailMessage.Subject = "Пароль для входа";
+        emailMessage.To.Add(new MailboxAddress("", user.Email));
+        emailMessage.Subject = "Код для входа";
         emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
-            Text = user.Password
+            Text = code
         };
         using (var client = new SmtpClient())
         {
@@ -61,12 +56,17 @@ public class AuthServer:IAuthService
         
         if (e == null)
         {
-            throw new SystemException("User not found");
+            throw new UserNotFoundException();
         }
 
-        if (!e.Password.Equals(password))
+        if (!e.EmailIsVerified)
         {
-            throw new SystemException("Password incorrect");
+            throw new EmailIsVerifiedException();
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(password, e.Password))
+        {
+            throw new PasswordIncorrectException();
         }
         var claims = new List<Claim>
         {
@@ -98,5 +98,27 @@ public class AuthServer:IAuthService
             sb.Append(chars[index]);
         }
         return sb.ToString();
+    }
+
+    public void EmailVerify(string email, string code)
+    {
+        var user = userRepository.GetUser(email);
+        if (user == null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        if (user.EmailIsVerified)
+        {
+            throw new EmailException();
+        }
+        
+        if (!BCrypt.Net.BCrypt.Verify(code, user.EmailCode))
+        {
+            throw new CodeIncorrectException();
+        }
+
+        user.EmailIsVerified = true;
+        userRepository.Save();
     }
 }

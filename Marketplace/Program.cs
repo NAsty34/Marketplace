@@ -4,6 +4,7 @@ using data.model;
 using data.Repository;
 using data.Repository.Interface;
 using logic;
+using logic.Exceptions;
 using logic.Service;
 using logic.Service.Inreface;
 using Marketplace.DTO;
@@ -46,7 +47,15 @@ var app = builder.Build();
 app.UseExceptionHandler(c => c.Run(async context =>
 {
     var exception = context.Features.Get<IExceptionHandlerPathFeature>().Error;
-    var response = new ResponceDto<string>(exception.Message, false);
+    ResponceDto<string> response;
+    if (exception is BaseException)
+    {
+        response = new ResponceDto<string>(exception.Message, (exception as BaseException).Code);
+    }
+    else
+    {
+        response = new ResponceDto<string>(exception.Message, 1);
+    }
     await context.Response.WriteAsJsonAsync(response);
 }));
 app.UseAuthentication();

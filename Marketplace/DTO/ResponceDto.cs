@@ -2,18 +2,17 @@ namespace Marketplace.DTO;
 
 public class ResponceDto<T>
 {
-    public ResponceDto(T t, bool success)
+    public ResponceDto(T t, int code)
     {
         this.Data = t;
-        this.Success = success;
+        this.Code = code;
     }
     
     public ResponceDto(T t)
     {
         this.Data = t;
-        this.Success = true;
     }
     
-    public bool Success { get; set; }
+    public int Code { get; set; }
     public T Data { get; set; }
 }

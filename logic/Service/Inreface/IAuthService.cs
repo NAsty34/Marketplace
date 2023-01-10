@@ -4,7 +4,8 @@ namespace logic.Service;
 
 public interface IAuthService
 {
-    void Register(string email, Role role, string name, string surname, string lastname);
+    void Register(User user);
     JwtSecurityToken Login(string email, string password);
     string GeneratePassword();
+    void EmailVerify(string email, string code);
 }

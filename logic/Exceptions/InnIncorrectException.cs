@@ -1,6 +1,6 @@
 namespace logic.Exceptions;
 
-public class InnIncorrectException:Exception
+public class InnIncorrectException:BaseException
 {
-    public InnIncorrectException() : base("INN incorrect"){}
+    public InnIncorrectException() : base("INN incorrect", 7, 400){}
 }
