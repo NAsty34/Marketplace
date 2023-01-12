@@ -19,10 +19,7 @@ public class UserServer:IUserServer
         return userrepository.GetPage(userrepository.DbSet(), 1, 20);
     }
 
-    public Page<Feedback> GetFeedback(int userId)
-    {
-        return _feedbackRepositiry.GetFeedbackbyUser(userId);
-    }
+   
 
     public User? GetUser(int id)
     {
@@ -33,5 +30,20 @@ public class UserServer:IUserServer
         }
 
         return u;
+    }
+
+    public User EditUser(User user)
+    {
+        var fromdb = GetUser(user.Id);
+        if (fromdb == null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        fromdb.Name = user.Name;
+        fromdb.Surname = user.Surname;
+        fromdb.Patronymic = user.Patronymic;
+        userrepository.Save();
+        return fromdb;
     }
 }

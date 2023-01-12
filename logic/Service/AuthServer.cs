@@ -1,89 +1,68 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
+using Dadata.Model;
 using data.model;
 using data.Repository;
 using logic.Exceptions;
-using MailKit.Net.Smtp;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using MimeKit;
+using logic.Service.Inreface;
 
 namespace logic.Service;
 
 public class AuthServer:IAuthService
 {
-    private readonly IRepositoryUser userRepository;
-    private readonly IConfiguration appConfig;
-    
-    public AuthServer(IRepositoryUser irepositoryuser, IConfiguration _appConfig)
+    private readonly IRepositoryUser _userRepository;
+    private readonly ISendEmailService _sendEmailService;
+    private readonly IJWTService _jwtService;
+    public AuthServer(IRepositoryUser repositoryUser, IJWTService jwtService, ISendEmailService sendEmailService)
     {
-        this.userRepository = irepositoryuser;
-        this.appConfig = _appConfig;
+        this._userRepository = repositoryUser;
+        this._sendEmailService = sendEmailService;
+        this._jwtService = jwtService;
     }
     
     public void Register(User user)
     {
         if (!user.Role.Equals(Role.Buyer) && !user.Role.Equals(Role.Seller))
             throw new RoleException();
-        if (userRepository.GetUser(user.Email)!=null)
+        if (user.Email == null )
             throw new EmailException();
+        var Emailuser = _userRepository.GetUser(user.Email);
+        if (Emailuser != null)
+        {
+            if (Emailuser.EmailIsVerified) throw new EmailException();
+            Emailuser.Password = user.Password;
+            user = Emailuser;
+        }
+
         var code = GeneratePassword();
         user.EmailCode = BCrypt.Net.BCrypt.HashPassword(code);
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-        userRepository.Create(user);
-        userRepository.Save();
-        var emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress("Admin sait", "nasty_mihailova16@mail.ru"));
-        emailMessage.To.Add(new MailboxAddress("", user.Email));
-        emailMessage.Subject = "Код для входа";
-        emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-        {
-            Text = code
-        };
-        using (var client = new SmtpClient())
-        {
-            client.Connect("smtp.mail.ru", 465, true);
-            client.Authenticate("nasty_mihailova16@mail.ru", "2zxWndJAV2FEsLh9z0ms");
-            client.Send(emailMessage);
-            client.Disconnect(true);
-        }
+        if (user.Id == 0) _userRepository.Create(user);
+        _userRepository.Save();
+        _sendEmailService.Send(user.Email, "Код для подтверждения: "+code, "Admin sait");
+        
     }
 
     public JwtSecurityToken Login(string email, string password)
     {
-        var e = userRepository.GetUser(email);
+        var user = _userRepository.GetUser(email);
         
-        if (e == null)
+        if (user == null)
         {
             throw new UserNotFoundException();
         }
 
-        if (!e.EmailIsVerified)
+        if (!user.EmailIsVerified)
         {
             throw new EmailIsVerifiedException();
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(password, e.Password))
+        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
             throw new PasswordIncorrectException();
         }
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Email, email), 
-            new Claim(ClaimTypes.Role, e.Role.ToString()),
-            new Claim(ClaimTypes.Actor, e.Id.ToString())
-        };
-        // ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "token", ClaimsIdentity.DefaultNameClaimType,
-        //     ClaimsIdentity.DefaultRoleClaimType);
-        
-        var jwt = new JwtSecurityToken(
-            issuer: appConfig["ISSUER"],
-            audience: appConfig["AUDIENCE"],
-            claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)), // время действия 2 минуты
-            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["KEY"])),SecurityAlgorithms.HmacSha256));
-        
+
+        var jwt = _jwtService.GenerateJWT(user.Id, user.Role.ToString());
         return jwt;
     }
 
@@ -102,7 +81,7 @@ public class AuthServer:IAuthService
 
     public void EmailVerify(string email, string code)
     {
-        var user = userRepository.GetUser(email);
+        var user = _userRepository.GetUser(email);
         if (user == null)
         {
             throw new UserNotFoundException();
@@ -119,6 +98,6 @@ public class AuthServer:IAuthService
         }
 
         user.EmailIsVerified = true;
-        userRepository.Save();
+        _userRepository.Save();
     }
 }

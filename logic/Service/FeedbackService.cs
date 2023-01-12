@@ -19,14 +19,14 @@ public class FeedbackService:IFeedbackService
         this._shopRepository = _shopRepository;
         this._repositoryUser = _repositoryUser;
     }
-    public Page<Feedback> GetByUser(int id)
+    public Page<Feedback> GetByUser(int id, bool isAdmin)
     {
-        return _feedbackRepositiry.GetFeedbackbyUser(id);
+        return _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin);
     }
 
-    public Page<Feedback> GetByShop(int id)
+    public Page<Feedback> GetByShop(int id, bool isAdmin)
     {
-        return _feedbackRepositiry.GetFeedbackbyShop(id);
+        return _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
     }
 
     public Feedback AddFeedback(Feedback feedback)

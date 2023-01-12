@@ -1,15 +1,19 @@
+using System.Xml;
 using data.model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Configuration;
 
 namespace data;
 
 public class DBContext:DbContext
 {
-
-    public DBContext()
+    private readonly IConfiguration appConfig;
+    public DBContext(IConfiguration _appConfig)
     {
+        this.appConfig = _appConfig;
         Database.EnsureCreated();
+        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,8 +26,7 @@ public class DBContext:DbContext
             Surname = "Admin",
             Role = Role.Admin, EmailIsVerified = true,
             Email = "admin@gmail.com",
-            Password = "0000",
-            
+            Password = BCrypt.Net.BCrypt.HashPassword(appConfig["AdminPassword"]),
             CreateDate = DateTime.Now
         });
         modelBuilder.Entity<User>()
@@ -41,7 +44,7 @@ public class DBContext:DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=5131");
+        optionsBuilder.UseNpgsql(appConfig["ConnectionString"]);
     }
 
     public DbSet<User> Users { get; set; } = null!;

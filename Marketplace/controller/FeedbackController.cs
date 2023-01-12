@@ -20,7 +20,9 @@ public class FeedbackController:Controller
     [HttpGet]
     public ResponceDto<Page<FeedbackDTO>> UserFeedback(int id)
     {
-        var q = _feedbackService.GetByUser(id);
+        string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(role, out Role qrole);
+        var q = _feedbackService.GetByUser(id, qrole.Equals(Role.Admin));
         Page<FeedbackDTO> fp = Page<FeedbackDTO>.Create(q, q.Items.Select(a => new FeedbackDTO(a)));
         return new(fp);
     }
@@ -29,7 +31,9 @@ public class FeedbackController:Controller
     [HttpGet]
     public ResponceDto<Page<FeedbackDTO>> ShopFeedback(int id)
     {
-        var q = _feedbackService.GetByShop(id);
+        string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(role, out Role qrole);
+        var q = _feedbackService.GetByShop(id, qrole.Equals(Role.Admin));
         Page<FeedbackDTO> fp = Page<FeedbackDTO>.Create(q, q.Items.Select(a => new FeedbackDTO(a)));
         return new(fp);
     }

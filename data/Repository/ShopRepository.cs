@@ -11,7 +11,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
     public Page<Shop> GetPublicShops()
     { 
         return GetPage(
-            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.isPublic == true),1,20
+            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.isPublic && a.IsActive && !a.IsDeleted),1,20
             );
         
     }
@@ -19,7 +19,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
     public Page<Shop> GetSellerShops(int id)
     {
         return GetPage(
-            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id),1,20
+            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id && !a.IsDeleted),1,20
             );
         
     }
@@ -33,7 +33,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
     public Page<Shop> GetPage(int page, int size)
     {
         return GetPage(
-            _dbSet.Include(s=>((Shop)s).Creator),page,size
+            _dbSet.Where(a=>!a.IsDeleted).Include(s=>((Shop)s).Creator),page,size
         );
     }
 

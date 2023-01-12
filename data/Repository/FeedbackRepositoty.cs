@@ -5,17 +5,27 @@ namespace data.Repository;
 
 public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 {
-    public Page<Feedback> GetFeedbackbyUser(int user)
+    public Page<Feedback> GetFeedbackbyUser(int user, bool active)
     {
+        var q = _dbSet.Where(a => a.CreatorId == user && !a.IsDeleted);
+        if (active)
+        {
+            q = q.Where(a => a.IsActive);
+        }
         return GetPage(
-            _dbSet.Where(a => a.CreatorId == user && a.IsDeleted == false).Include(s => s.Creator).Include(s => s.Shop),
+            q.Include(s => s.Creator).Include(s => s.Shop),
             1, 20);
     }
 
-    public Page<Feedback> GetFeedbackbyShop(int shop)
+    public Page<Feedback> GetFeedbackbyShop(int shop, bool active)
     {
+        var q = _dbSet.Where(a => a.ShopId == shop && !a.IsDeleted);
+        if (active)
+        {
+            q = q.Where(a=>a.IsActive);
+        }
         return GetPage(
-            _dbSet.Where(a => a.ShopId == shop && a.IsDeleted == false).Include(s => s.Creator)
+            q.Include(s => s.Creator)
                 .Include(s => s.Shop), 1, 20);
 
     }
