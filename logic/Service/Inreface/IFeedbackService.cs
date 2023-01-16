@@ -10,4 +10,5 @@ public interface IFeedbackService
     
     public Feedback EditFeedback(Feedback feedback, int userid, Role role);
     public void DeleteFeedback(int feedback, int userid, Role role);
+    public Feedback ChangeBlockFeedback(int id, bool value);
 }

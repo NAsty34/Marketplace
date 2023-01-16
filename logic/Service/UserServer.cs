@@ -46,4 +46,17 @@ public class UserServer:IUserServer
         userrepository.Save();
         return fromdb;
     }
+
+    public User ChangeBlockUser(int id, bool value)
+    {
+        var s = userrepository.GetById(id);
+        if (s == null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        s.IsActive = value;
+        userrepository.Save();
+        return s;
+    }
 }

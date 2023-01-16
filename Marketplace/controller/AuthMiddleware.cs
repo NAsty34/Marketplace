@@ -17,13 +17,16 @@ public class AuthMiddleware
 
     public async Task Invoke(HttpContext context, IUserServer userServer)
     {
-        if (!context.User.Identity.IsAuthenticated) return;
-        var id = context.User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        var user = userServer.GetUser(int.Parse(id));
-        if (user == null || !user.IsActive)
+        if (context.User.Identity.IsAuthenticated)
         {
-            throw new AccessDeniedException();
+            var id = context.User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+            var user = userServer.GetUser(int.Parse(id));
+            if (user == null || !user.IsActive)
+            {
+                throw new AccessDeniedException();
+            }
         }
+        await next(context);
     }
 
 }

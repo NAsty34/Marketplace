@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using data.model;
+using logic.Exceptions;
 using logic.Service;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Mvc;
@@ -81,5 +82,32 @@ public class FeedbackController:Controller
         Enum.TryParse(g, out Role role);
         _feedbackService.DeleteFeedback(id, userid, role);
         return new("Успешно удалено!");
+    }
+    [Route("/api/v1/feedback/block/{id}")]
+    [HttpGet]
+    public ResponceDto<FeedbackDTO> BlockFeedback(int id)
+    {
+        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(userrole, out Role role);
+        if (!role.Equals(Role.Admin))
+        {
+            throw new AccessDeniedException();
+        }
+        var f = _feedbackService.ChangeBlockFeedback(id, false);
+        return new(new FeedbackDTO(f));
+    }
+
+    [Route("/api/v1/feedback/unblock/{id}")]
+    [HttpGet]
+    public ResponceDto<FeedbackDTO> UnblockFeedback(int id)
+    {
+        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(userrole, out Role role);
+        if (!role.Equals(Role.Admin))
+        {
+            throw new AccessDeniedException();
+        }
+        var f = _feedbackService.ChangeBlockFeedback(id, true);
+        return new(new FeedbackDTO(f));
     }
 }

@@ -47,10 +47,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 var app = builder.Build();
-app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware(typeof(AuthMiddleware));
+app.UseMiddleware<AuthMiddleware>();
+
 app.MapControllerRoute(name: "default", pattern: "/");
 
 app.Run();

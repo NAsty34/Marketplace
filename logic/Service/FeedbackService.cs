@@ -76,4 +76,17 @@ public class FeedbackService:IFeedbackService
         fromdb.DeletedDate = DateTime.Now;
         _feedbackRepositiry.Save();
     }
+
+    public Feedback ChangeBlockFeedback(int id, bool value)
+    {
+        var s = _feedbackRepositiry.GetById(id);
+        if (s == null)
+        {
+            throw new FeedbackNotFoundException();
+        }
+
+        s.IsActive = value;
+        _feedbackRepositiry.Save();
+        return s;
+    }
 }
