@@ -23,13 +23,13 @@ public class UserServer:IUserServer
 
     public User? GetUser(int id)
     {
-        var u = userrepository.GetById(id);
-        if (u == null)
+        var userid = userrepository.GetById(id);
+        if (userid == null)
         {
             throw new UserNotFoundException();
         }
 
-        return u;
+        return userid;
     }
 
     public User EditUser(User user)
@@ -49,14 +49,14 @@ public class UserServer:IUserServer
 
     public User ChangeBlockUser(int id, bool value)
     {
-        var s = userrepository.GetById(id);
-        if (s == null)
+        var userid = userrepository.GetById(id);
+        if (userid == null)
         {
             throw new UserNotFoundException();
         }
 
-        s.IsActive = value;
+        userid.IsActive = value;
         userrepository.Save();
-        return s;
+        return userid;
     }
 }

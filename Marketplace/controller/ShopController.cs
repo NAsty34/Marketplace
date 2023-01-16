@@ -24,25 +24,25 @@ public class ShopController:Controller
     [HttpGet]
     public ResponceDto<Page<ShopDTO>> Shops()
     {
-        string v = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(v, out Role userRole);
-        Page<Shop> sp;
+        string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(roleuser, out Role userRole);
+        Page<Shop> shop;
         if (userRole.Equals(Role.Admin))
         {
-            sp = _ishopservice.GetShops();
+            shop = _ishopservice.GetShops();
         }
         else if (userRole.Equals(Role.Buyer))
         {
-            sp = _ishopservice.GetPublicShops();
+            shop = _ishopservice.GetPublicShops();
         }
         else
         {
             int usid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-            sp = _ishopservice.GetSellerShops(usid);
+            shop = _ishopservice.GetSellerShops(usid);
         }
 
-        Page<ShopDTO> res = Page<ShopDTO>.Create(sp, sp.Items.Select(a => new ShopDTO(a)));
-        return new(res);
+        Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a)));
+        return new(result);
     }
 
     [Route("/api/v1/shops/{id}")]
@@ -50,8 +50,8 @@ public class ShopController:Controller
     public ResponceDto<ShopDTO> GetShop(int id)
     {
         var selshop = _ishopservice.GetShop(id);
-        string v = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(v, out Role userRole);
+        string userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(userrole, out Role userRole);
         if (userRole.Equals(Role.Buyer) && !selshop.isPublic)
         {
 
@@ -75,9 +75,9 @@ public class ShopController:Controller
         {
             throw new SystemException("Access denied");
         }
-        var v = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+        var iduser = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
         
-        var user = _userServer.GetUser(int.Parse(v));
+        var user = _userServer.GetUser(int.Parse(iduser));
         var shops = new Shop()
         {
             Name = shopDto.Name,
@@ -130,8 +130,8 @@ public class ShopController:Controller
         {
             throw new SystemException("Access denied");
         }
-        var f = _ishopservice.ChangeBlockShop(id, false);
-        return new(new ShopDTO(f));
+        var blockshop = _ishopservice.ChangeBlockShop(id, false);
+        return new(new ShopDTO(blockshop));
     }
 
     [Route("/api/v1/shops/unblock/{id}")]
@@ -144,8 +144,8 @@ public class ShopController:Controller
         {
             throw new SystemException("Access denied");
         }
-        var f = _ishopservice.ChangeBlockShop(id, true);
-        return new(new ShopDTO(f));
+        var unblockshop = _ishopservice.ChangeBlockShop(id, true);
+        return new(new ShopDTO(unblockshop));
     }
 
     [Route("/api/v1/shops/{id}")]

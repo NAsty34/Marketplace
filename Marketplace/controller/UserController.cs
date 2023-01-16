@@ -23,9 +23,9 @@ public class UserController:Controller
     public ResponceDto<Page<UserDto>> GetUsers()
     {
         var users = _userServer.GetUsers();
-        Page<UserDto> Up = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
+        Page<UserDto> user = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
         
-        return new(Up);
+        return new(user);
     }
 
     [Route("/api/v1/users/{id}")]
@@ -45,8 +45,8 @@ public class UserController:Controller
         {
             throw new AccessDeniedException();
         }
-        var f = _userServer.ChangeBlockUser(id, false);
-        return new(new UserDto(f));
+        var blockuser = _userServer.ChangeBlockUser(id, false);
+        return new(new UserDto(blockuser));
     }
 
     [Route("/api/v1/user/unblock/{id}")]
@@ -58,7 +58,7 @@ public class UserController:Controller
         {
             throw new AccessDeniedException();
         }
-        var f = _userServer.ChangeBlockUser(id, true);
-        return new(new UserDto(f));
+        var unblockuser = _userServer.ChangeBlockUser(id, true);
+        return new(new UserDto(unblockuser));
     }
 }

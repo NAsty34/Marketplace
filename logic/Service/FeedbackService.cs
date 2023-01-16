@@ -79,14 +79,14 @@ public class FeedbackService:IFeedbackService
 
     public Feedback ChangeBlockFeedback(int id, bool value)
     {
-        var s = _feedbackRepositiry.GetById(id);
-        if (s == null)
+        var feedid = _feedbackRepositiry.GetById(id);
+        if (feedid== null)
         {
             throw new FeedbackNotFoundException();
         }
 
-        s.IsActive = value;
+        feedid.IsActive = value;
         _feedbackRepositiry.Save();
-        return s;
+        return feedid;
     }
 }

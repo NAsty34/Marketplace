@@ -4,15 +4,15 @@ public class Page<T>
 {
 
 
-    public static Page<T> Create<T, U>(Page<U> q, IEnumerable<T> items)
+    public static Page<T> Create<T, U>(Page<U> page, IEnumerable<T> items)
     {
         return new Page<T>()
         {
-            Count = q.Count,
-            Size = q.Size,
-            Total = q.Total,
-            TotalPages = q.TotalPages,
-            CurrentPage = q.CurrentPage,
+            Count = page.Count,
+            Size = page.Size,
+            Total = page.Total,
+            TotalPages = page.TotalPages,
+            CurrentPage = page.CurrentPage,
             Items = items,
         };
 

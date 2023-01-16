@@ -29,21 +29,21 @@ public class ShopService:IShopService
 
     public Shop GetShop(int id)
     {
-        var s = _shopRepository.GetById(id);
-        if (s == null)
+        var shopid = _shopRepository.GetById(id);
+        if (shopid == null)
         {
             throw new ShopNotFoundException();
         }
 
-        return s;
+        return shopid;
     }
 
     public void DeleteShop(int id)
     {
-        var s = _shopRepository.GetById(id);
-        if (s != null)
+        var shopid = _shopRepository.GetById(id);
+        if (shopid != null)
         {
-            _shopRepository.Delete(s);
+            _shopRepository.Delete(shopid);
             _shopRepository.Save();
         }
         
@@ -98,26 +98,26 @@ public class ShopService:IShopService
     public Page<Shop> GetSellerShops(int id)
     
     {
-        var e = _repositoryUser.GetById(id);
-        if (e == null)
+        var shopid = _repositoryUser.GetById(id);
+        if (shopid == null)
         {
             throw new UserNotFoundException();
         }
         
-        return _shopRepository.GetSellerShops(e.Id);
+        return _shopRepository.GetSellerShops(shopid.Id);
     }
 
     public Shop ChangeBlockShop(int id, bool value)
     {
-        var s = _shopRepository.GetById(id);
-        if (s == null)
+        var shopid = _shopRepository.GetById(id);
+        if (shopid == null)
         {
             throw new ShopNotFoundException();
         }
 
-        s.IsActive = !value;
+        shopid.IsActive = !value;
         _shopRepository.Save();
-        return s;
+        return shopid;
     }
 
     

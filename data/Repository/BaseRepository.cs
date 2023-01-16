@@ -73,8 +73,8 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
     }
     public void Delete(int id)
     {
-        var a = GetById(id);
-        Delete(a);
+        var shopid = GetById(id);
+        Delete(shopid);
     }
     public void Delete(IEnumerable<T> _t)
     {
@@ -82,8 +82,8 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
     }
     public void Delete(IEnumerable<int> id)
     {
-        var a = GetByIds(id);
-        Delete(a);
+        var shopsid = GetByIds(id);
+        Delete(shopsid);
     }
 
     public void SetActivite(T t, bool value)

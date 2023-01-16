@@ -23,9 +23,9 @@ public class FeedbackController:Controller
     {
         string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(role, out Role qrole);
-        var q = _feedbackService.GetByUser(id, qrole.Equals(Role.Admin));
-        Page<FeedbackDTO> fp = Page<FeedbackDTO>.Create(q, q.Items.Select(a => new FeedbackDTO(a)));
-        return new(fp);
+        var idfeedbyuser = _feedbackService.GetByUser(id, qrole.Equals(Role.Admin));
+        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDTO(a)));
+        return new(findfeed);
     }
 
     [Route("/api/v1/shops/{id}/feedback")]
@@ -34,9 +34,9 @@ public class FeedbackController:Controller
     {
         string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(role, out Role qrole);
-        var q = _feedbackService.GetByShop(id, qrole.Equals(Role.Admin));
-        Page<FeedbackDTO> fp = Page<FeedbackDTO>.Create(q, q.Items.Select(a => new FeedbackDTO(a)));
-        return new(fp);
+        var idfeedbyshop = _feedbackService.GetByShop(id, qrole.Equals(Role.Admin));
+        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDTO(a)));
+        return new(findfeed);
     }
 
     [Route("/api/v1/shops/{id}/feedback")]
@@ -52,34 +52,34 @@ public class FeedbackController:Controller
             ShopId = id,
             CreatorId = userid
         };
-        var f = _feedbackService.AddFeedback(feed);
-        return new(new FeedbackDTO(f));
+        var newfeed = _feedbackService.AddFeedback(feed);
+        return new(new FeedbackDTO(newfeed));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
     [HttpPut]
     public ResponceDto<FeedbackDTO> EditFeedback([FromBody]FeedbackDTO feedbackDto, int id)
     {
-        string g = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        Enum.TryParse(g, out Role role);
+        Enum.TryParse(roleuser, out Role role);
         var feed = new Feedback()
         {
             Content = feedbackDto.Content,
             Stars = feedbackDto.Stars,
             Id = id
         };
-        var f = _feedbackService.EditFeedback(feed, userid, role);
-        return new(new FeedbackDTO(f));
+        var upfeed = _feedbackService.EditFeedback(feed, userid, role);
+        return new(new FeedbackDTO(upfeed));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
     [HttpDelete]
     public ResponceDto<string> DeleteFeedback(int id)
     {
-        string g = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        Enum.TryParse(g, out Role role);
+        Enum.TryParse(roleuser, out Role role);
         _feedbackService.DeleteFeedback(id, userid, role);
         return new("Успешно удалено!");
     }
@@ -93,8 +93,8 @@ public class FeedbackController:Controller
         {
             throw new AccessDeniedException();
         }
-        var f = _feedbackService.ChangeBlockFeedback(id, false);
-        return new(new FeedbackDTO(f));
+        var blockfeed = _feedbackService.ChangeBlockFeedback(id, false);
+        return new(new FeedbackDTO(blockfeed));
     }
 
     [Route("/api/v1/feedback/unblock/{id}")]
@@ -107,7 +107,7 @@ public class FeedbackController:Controller
         {
             throw new AccessDeniedException();
         }
-        var f = _feedbackService.ChangeBlockFeedback(id, true);
-        return new(new FeedbackDTO(f));
+        var unblockfeed = _feedbackService.ChangeBlockFeedback(id, true);
+        return new(new FeedbackDTO(unblockfeed));
     }
 }
