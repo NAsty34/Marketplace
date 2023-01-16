@@ -50,7 +50,7 @@ var app = builder.Build();
 app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware(typeof(AuthMiddleware));
 app.MapControllerRoute(name: "default", pattern: "/");
 
 app.Run();
