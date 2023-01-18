@@ -1,18 +1,20 @@
 using data.model;
 using data.Repository;
 using logic.Exceptions;
+using logic.Service.Inreface;
 
 namespace logic.Service;
 
 public class UserServer:IUserServer
 {
     private readonly IRepositoryUser userrepository;
-    private readonly IFeedbackRepositiry _feedbackRepositiry;
+    private readonly IHashService _hashService;
+    
 
-    public UserServer(IRepositoryUser userrepository, IFeedbackRepositiry _feedbackRepositiry)
+    public UserServer(IRepositoryUser userrepository, IHashService hashService)
     {
         this.userrepository = userrepository;
-        this._feedbackRepositiry = _feedbackRepositiry;
+        this._hashService = hashService;
     }
     public Page<User> GetUsers()
     {
@@ -45,6 +47,19 @@ public class UserServer:IUserServer
         fromdb.Patronymic = user.Patronymic;
         userrepository.Save();
         return fromdb;
+    }
+
+    public User CreateAdmin(User user)
+    {
+        if (userrepository.GetUser(user.Email) != null)
+        {
+            throw new EmailException();
+        }
+
+        user.Password = _hashService.Hash(user.Password);
+        userrepository.Create(user);
+        userrepository.Save();
+        return user;
     }
 
     public User ChangeBlockUser(int id, bool value)

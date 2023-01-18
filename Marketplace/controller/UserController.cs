@@ -61,4 +61,32 @@ public class UserController:Controller
         var unblockuser = _userServer.ChangeBlockUser(id, true);
         return new(new UserDto(unblockuser));
     }
+
+    [Route("/api/v1/user/admin")]
+    [HttpPost]
+    public ResponceDto<UserDto> CreateAdmin([FromBody] UserDto userDto)
+    {
+        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
+        Enum.TryParse(userrole, out Role role);
+        if (!role.Equals(Role.Admin))
+        {
+            //throw new AccessDeniedException();
+        }
+        var adminuser = new User()
+        {
+            Name = userDto.Name,
+            Surname = userDto.Surname,
+            Patronymic = userDto.Surname,
+            Email = userDto.Email,
+            Role = userDto.role,
+            EmailIsVerified = true,
+            CreateDate = DateTime.Now,
+            CreatorId = userDto.Id,
+            Password = userDto.Password,
+            IsActive = true,
+            IsDeleted = false
+        };
+        var newAdmin =  _userServer.CreateAdmin(adminuser);
+        return new(new UserDto(newAdmin));
+    }
 }

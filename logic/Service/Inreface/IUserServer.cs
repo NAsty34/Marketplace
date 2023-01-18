@@ -8,5 +8,6 @@ public interface IUserServer
  
     User? GetUser(int id); // получение одного объекта по id
     User EditUser(User user);
+    User? CreateAdmin(User user);
     User ChangeBlockUser(int id, bool value);
 }
