@@ -9,19 +9,18 @@ public class UserServer:IUserServer
 {
     private readonly IRepositoryUser userrepository;
     private readonly IHashService _hashService;
-    
+    private readonly IShopService _shopService;
 
-    public UserServer(IRepositoryUser userrepository, IHashService hashService)
+    public UserServer(IRepositoryUser userrepository, IHashService hashService, IShopService shopService)
     {
         this.userrepository = userrepository;
         this._hashService = hashService;
+        this._shopService = shopService;
     }
     public Page<User> GetUsers()
     {
         return userrepository.GetPage(userrepository.DbSet(), 1, 20);
     }
-
-   
 
     public User? GetUser(int id)
     {
@@ -73,5 +72,28 @@ public class UserServer:IUserServer
         userid.IsActive = value;
         userrepository.Save();
         return userid;
+    }
+
+    public List<Shop> GetFavoriteShops(int userid)
+    {
+        var user = userrepository.GetById(userid);
+        return user.FavoriteShops;
+    }
+
+    public Shop CreateFavShop(int shopid, int userid)
+    {
+        var user = userrepository.GetById(userid);
+        var shop = _shopService.GetShop(shopid);
+        user.FavoriteShops.Add(shop);
+        userrepository.Save();
+        return shop;
+    }
+    public Shop DelFavShop(int shopid, int userid)
+    {
+        var user = userrepository.GetById(userid);
+        var shop = _shopService.GetShop(shopid);
+        user.FavoriteShops.Remove(shop);
+        userrepository.Save();
+        return shop;
     }
 }

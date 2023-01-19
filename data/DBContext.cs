@@ -43,6 +43,7 @@ public class DBContext:DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.UseLazyLoadingProxies();
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         optionsBuilder.UseNpgsql(appConfig["ConnectionString"]);
     }

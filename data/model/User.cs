@@ -17,8 +17,8 @@ public class User:BaseEntity
     [Required]
     public string? Password { get; set; }
 
-    public List<Shop> FavoriteShops { get; set; } = new();
-    public List<Shop> Shops { get; set; } = new();
+    public virtual List<Shop> FavoriteShops { get; set; } = new();
+    public virtual List<Shop> Shops { get; set; } = new();
     public bool EmailIsVerified { get; set; }
     public string? EmailCode { get; set; }
 }

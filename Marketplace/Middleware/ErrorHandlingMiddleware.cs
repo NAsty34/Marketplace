@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using logic.Exceptions;
 using Marketplace.DTO;
 
@@ -27,7 +28,7 @@ public class ErrorHandlingMiddleware
     private static Task HandleException(HttpContext context, Exception ex)
     {
         int code = 500;
-        ResponceDto<string> response = new ResponceDto<string>(ex.Message, 1);
+        ResponceDto<string> response = new ResponceDto<string>(ex.ToString(), 1);
         if (ex is BaseException)
         {
             response.Code = (ex as BaseException).Code;

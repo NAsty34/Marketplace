@@ -11,6 +11,6 @@ public class Shop:BaseEntity
     public  string? Logo { get; set; }
     public  string Inn { get; set; }
     public bool isPublic { get; set; }
-    public User Creator { get; set; }
-    public List<User> Users { get; set; } = new();
+    public virtual User Creator { get; set; }
+    public virtual List<User> Users { get; set; } = new();
 }
