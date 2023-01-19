@@ -33,7 +33,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
     public Page<Shop> GetPage(int page, int size)
     {
         return GetPage(
-            _dbSet.Where(a=>!a.IsDeleted).Include(s=>((Shop)s).Creator),page,size
+            _dbSet.Where(a=>!a.IsDeleted),page,size
         );
     }
 

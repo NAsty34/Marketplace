@@ -12,10 +12,12 @@ namespace Marketplace.controller;
 public class FeedbackController:Controller
 {
     private IFeedbackService _feedbackService;
+    private IConfiguration appConfig;
 
-    public FeedbackController(IFeedbackService _feedbackService)
+    public FeedbackController(IFeedbackService _feedbackService, IConfiguration _appConfig)
     {
         this._feedbackService = _feedbackService;
+        this.appConfig = _appConfig;
     }
     [Route("/api/v1/users/{id}/feedback")]
     [HttpGet]
@@ -24,7 +26,7 @@ public class FeedbackController:Controller
         string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(role, out Role qrole);
         var idfeedbyuser = _feedbackService.GetByUser(id, qrole.Equals(Role.Admin));
-        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDTO(a)));
+        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDTO(a, appConfig)));
         return new(findfeed);
     }
 
@@ -35,7 +37,7 @@ public class FeedbackController:Controller
         string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(role, out Role qrole);
         var idfeedbyshop = _feedbackService.GetByShop(id, qrole.Equals(Role.Admin));
-        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDTO(a)));
+        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDTO(a, appConfig)));
         return new(findfeed);
     }
 
@@ -53,7 +55,7 @@ public class FeedbackController:Controller
             CreatorId = userid
         };
         var newfeed = _feedbackService.AddFeedback(feed);
-        return new(new FeedbackDTO(newfeed));
+        return new(new FeedbackDTO(newfeed, appConfig));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
@@ -70,7 +72,7 @@ public class FeedbackController:Controller
             Id = id
         };
         var upfeed = _feedbackService.EditFeedback(feed, userid, role);
-        return new(new FeedbackDTO(upfeed));
+        return new(new FeedbackDTO(upfeed, appConfig));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
@@ -94,7 +96,7 @@ public class FeedbackController:Controller
             throw new AccessDeniedException();
         }
         var blockfeed = _feedbackService.ChangeBlockFeedback(id, false);
-        return new(new FeedbackDTO(blockfeed));
+        return new(new FeedbackDTO(blockfeed, appConfig));
     }
 
     [Route("/api/v1/feedback/unblock/{id}")]
@@ -108,6 +110,6 @@ public class FeedbackController:Controller
             throw new AccessDeniedException();
         }
         var unblockfeed = _feedbackService.ChangeBlockFeedback(id, true);
-        return new(new FeedbackDTO(unblockfeed));
+        return new(new FeedbackDTO(unblockfeed, appConfig));
     }
 }

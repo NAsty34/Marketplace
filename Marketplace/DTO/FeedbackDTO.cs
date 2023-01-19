@@ -8,13 +8,13 @@ public class FeedbackDTO
     {
     }
 
-    public FeedbackDTO(Feedback _feedback)
+    public FeedbackDTO(Feedback _feedback, IConfiguration appConfig)
     {
         Id = _feedback.Id;
         Stars = _feedback.Stars;
         Content = _feedback.Content;
         Creator = new UserDto(_feedback.Creator);
-        Shop = new ShopDTO(_feedback.Shop);
+        Shop = new ShopDTO(_feedback.Shop, appConfig);
     }
     public int Id { get; set; }
     public  int Stars { get; set; }

@@ -8,7 +8,7 @@ public class Shop:BaseEntity
 {
     public  string? Name { get; set; }
     public  string? Description { get; set; }
-    public  string? Logo { get; set; }
+    public  virtual data.model.FileInfo? Logo { get; set; }
     public  string Inn { get; set; }
     public bool isPublic { get; set; }
     public virtual User Creator { get; set; }

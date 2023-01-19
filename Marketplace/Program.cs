@@ -11,6 +11,7 @@ using Marketplace.controller;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -22,6 +23,7 @@ builder.Services.AddSingleton<DBContext>();
 builder.Services.AddSingleton<IRepositoryUser, UserRepository>();
 builder.Services.AddSingleton<IFeedbackRepositiry, FeedbackRepositoty>();
 builder.Services.AddSingleton<IShopRepository, ShopRepository>();
+builder.Services.AddSingleton<IFileInfoRepository, FileInfoRepository>();
 builder.Services.AddSingleton<IAuthService, AuthServer>();
 builder.Services.AddSingleton<IJWTService, JWTService>();
 builder.Services.AddSingleton<IHashService, HashService>();
@@ -29,6 +31,7 @@ builder.Services.AddSingleton<ISendEmailService, SendEmailService>();
 builder.Services.AddSingleton<IUserServer, UserServer>();
 builder.Services.AddSingleton<IShopService, ShopService>();
 builder.Services.AddSingleton<IFeedbackService, FeedbackService>();
+builder.Services.AddSingleton<IFileInfoService, FileInfoService>();
 builder.Services.AddAuthorization();
 
 
@@ -47,6 +50,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 var app = builder.Build();
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), @"files")),
+    RequestPath = new PathString("/static")
+});
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

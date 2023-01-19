@@ -64,7 +64,7 @@ public class UserController:Controller
 
     [Route("/api/v1/user/admin")]
     [HttpPost]
-    public ResponceDto<UserDto> CreateAdmin([FromBody] UserDto userDto)
+    public ResponceDto<UserDto> CreateAdmin([FromBody] RegisterDTO userDto)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);

@@ -57,12 +57,12 @@ public class ShopService:IShopService
         }
      
         var api = new SuggestClientAsync(appConfig["token"]);
-        var result = await api.FindParty(shop.Inn);
-        
-        if (result.suggestions.Count == 0)
-        {
-            throw new InnIncorrectException();
-        }
+        // var result = await api.FindParty(shop.Inn);
+        //
+        // if (result.suggestions.Count == 0)
+        // {
+        //     throw new InnIncorrectException();
+        // }
         _shopRepository.Create(shop);
         _shopRepository.Save();
         return shop;

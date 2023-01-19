@@ -1,4 +1,3 @@
-using System.Xml;
 using data.model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -9,6 +8,11 @@ namespace data;
 public class DBContext:DbContext
 {
     private readonly IConfiguration appConfig;
+
+    public DBContext()
+    {
+        
+    }
     public DBContext(IConfiguration _appConfig)
     {
         this.appConfig = _appConfig;
@@ -26,7 +30,7 @@ public class DBContext:DbContext
             Surname = "Admin",
             Role = Role.Admin, EmailIsVerified = true,
             Email = "admin@gmail.com",
-            Password = BCrypt.Net.BCrypt.HashPassword(appConfig["AdminPassword"]),
+            Password = BCrypt.Net.BCrypt.HashPassword(appConfig == null ? "0000" : appConfig["AdminPassword"]),
             CreateDate = DateTime.Now
         });
         modelBuilder.Entity<User>()
@@ -45,10 +49,15 @@ public class DBContext:DbContext
     {
         optionsBuilder.UseLazyLoadingProxies();
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        optionsBuilder.UseNpgsql(appConfig["ConnectionString"]);
+        if (appConfig == null)
+        {
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=5131");
+        }
+        else optionsBuilder.UseNpgsql(appConfig["ConnectionString"]);
     }
 
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Shop> Shops { get; set; } = null!;
     public DbSet<Feedback> Feedbacks { get; set; } = null!;
+    public DbSet<data.model.FileInfo> FileInfos { get; set; } = null!;
 }     

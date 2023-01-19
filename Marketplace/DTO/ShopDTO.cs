@@ -10,12 +10,16 @@ public class ShopDTO
     {
     }
 
-    public ShopDTO(Shop _shop)
+    public ShopDTO(Shop _shop, IConfiguration appConfig)
     {
         Id = _shop.Id;
         Name = _shop.Name;
         Description = _shop.Description;
-        Logo = _shop.Logo;
+        if (_shop.Logo != null)
+        {
+            Logo = $"{appConfig["BaseUrl"]}/{appConfig["RequestPath"]}/{_shop.Id}/{_shop.Logo.Id}{_shop.Logo.Extension}";
+        }
+        
         Inn = _shop.Inn;
         isPublic = _shop.isPublic;
         isBlock = _shop.IsActive;

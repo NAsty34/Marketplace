@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using data.model;
+using logic.Exceptions;
 using logic.Service;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Mvc;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
-using Org.BouncyCastle.Tls;
+
+
 
 namespace Marketplace.controller;
 [Authorize]
@@ -13,11 +15,16 @@ public class ShopController:Controller
 {
     private IShopService _ishopservice;
     private IUserServer _userServer;
+    private IFileInfoService _fileInfoService;
+    private IConfiguration _appConfig;
     
-    public ShopController(IShopService ishopservice, IUserServer _userServer)
+    
+    public ShopController(IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig)
     {
         this._ishopservice = ishopservice;
         this._userServer = _userServer;
+        this._fileInfoService = fileInfoService;
+        this._appConfig = appConfig;
     }
 
     [Route("/api/v1/shops")]
@@ -41,7 +48,7 @@ public class ShopController:Controller
             shop = _ishopservice.GetSellerShops(usid);
         }
 
-        Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a)));
+        Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a, _appConfig)));
         return new(result);
     }
 
@@ -62,12 +69,12 @@ public class ShopController:Controller
         {
             throw new SystemException("Access denied");
         }
-        return new(new ShopDTO(selshop));
+        return new(new ShopDTO(selshop, _appConfig));
     }
 
     [Route("/api/v1/shops")]
     [HttpPost]
-    public async Task<ResponceDto<ShopDTO>> CreateShop([FromBody] ShopDTO shopDto)
+    public async Task<ResponceDto<ShopDTO>> CreateShop([FromForm] ShopDTO shopDto, IFormFile file)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);
@@ -76,7 +83,6 @@ public class ShopController:Controller
             throw new SystemException("Access denied");
         }
         var iduser = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        
         var user = _userServer.GetUser(int.Parse(iduser));
         var shops = new Shop()
         {
@@ -84,17 +90,21 @@ public class ShopController:Controller
             Description = shopDto.Description,
             isPublic = shopDto.isPublic,
             Inn = shopDto.Inn,
-            Logo = shopDto.Logo,
             Creator = user
         };
-        
         await _ishopservice.CreateShop(shops);
-        return new(new ShopDTO(shops));
+        if (file != null)
+        {
+            data.model.FileInfo fi = _fileInfoService.Addfile(file, shops.Id);
+            shops.Logo = fi;
+            _ishopservice.EditShop(shops, int.Parse(iduser));
+        }
+        return new(new ShopDTO(shops, _appConfig));
     }
 
-    [Route("/api/v1/shops/{id}")]
+    [Route("/api/v1/shops/{shopid}")]
     [HttpPut]
-    public ResponceDto<ShopDTO> EditGetShops([FromBody] ShopDTO shopDto, int id)
+    public ResponceDto<ShopDTO> EditGetShops([FromForm] ShopDTO shopDto, IFormFile file, int shopid)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);
@@ -105,19 +115,23 @@ public class ShopController:Controller
         }
 
         if (role.Equals(Role.Admin)) userid = -1;
-        
+        data.model.FileInfo fi=null;
+        if (file != null)
+        {
+            fi = _fileInfoService.Addfile(file, shopid);
+        }
         var shops = new Shop()
         {
             Name = shopDto.Name,
             Description = shopDto.Description,
             isPublic = shopDto.isPublic,
             Inn = shopDto.Inn,
-            Logo = shopDto.Logo,
-            Id = id
+            Logo = fi,
+            Id = shopid
         };
         
         var shope = _ishopservice.EditShop(shops, userid);
-        return new(new ShopDTO(shope));
+        return new(new ShopDTO(shope, _appConfig));
     }
 
     [Route("/api/v1/shops/block/{id}")]
@@ -131,7 +145,7 @@ public class ShopController:Controller
             throw new SystemException("Access denied");
         }
         var blockshop = _ishopservice.ChangeBlockShop(id, false);
-        return new(new ShopDTO(blockshop));
+        return new(new ShopDTO(blockshop, _appConfig));
     }
 
     [Route("/api/v1/shops/unblock/{id}")]
@@ -145,7 +159,7 @@ public class ShopController:Controller
             throw new SystemException("Access denied");
         }
         var unblockshop = _ishopservice.ChangeBlockShop(id, true);
-        return new(new ShopDTO(unblockshop));
+        return new(new ShopDTO(unblockshop, _appConfig));
     }
 
     [Route("/api/v1/shops/{id}")]

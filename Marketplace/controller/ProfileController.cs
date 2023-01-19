@@ -14,11 +14,13 @@ public class ProfileController : Controller
 {
     private readonly IUserServer _UserServer;
     private readonly IShopService _shopService;
+    private readonly IConfiguration appConfig;
 
-    public ProfileController(IUserServer userServer, IShopService shopService)
+    public ProfileController(IUserServer userServer, IShopService shopService, IConfiguration _appConfig)
     {
         this._UserServer = userServer;
         this._shopService = shopService;
+        this.appConfig = _appConfig;
     }
 
     [Route("/api/v1/me")]
@@ -51,7 +53,7 @@ public class ProfileController : Controller
     public ResponceDto<IEnumerable<ShopDTO>> FavoriteShops()
     {
         int usid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops(usid).Select(a=>new ShopDTO(a)));
+        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops(usid).Select(a=>new ShopDTO(a, appConfig)));
     }
 
     [Route("/api/v1/me/shops/{shopid}")]
@@ -59,7 +61,8 @@ public class ProfileController : Controller
     public ResponceDto<ShopDTO> CreateFavoriteShops(int shopid)
     {
         int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        return new ResponceDto<ShopDTO>(new ShopDTO(_UserServer.CreateFavShop(shopid, userid)));
+        var shop = _UserServer.CreateFavShop(shopid, userid);
+        return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
     
     [Route("/api/v1/me/shops/{shopid}")]
@@ -67,7 +70,8 @@ public class ProfileController : Controller
     public ResponceDto<ShopDTO> DelFavoriteShops(int shopid)
     {
         int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        return new ResponceDto<ShopDTO>(new ShopDTO(_UserServer.DelFavShop(shopid, userid)));
+        var shop = _UserServer.DelFavShop(shopid, userid);
+        return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
 
 }

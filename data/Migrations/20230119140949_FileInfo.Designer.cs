@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using data;
@@ -11,9 +12,11 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230119140949_FileInfo")]
+    partial class FileInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,8 +180,8 @@ namespace data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("LogoId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Logo")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -189,8 +192,6 @@ namespace data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("LogoId");
 
                     b.ToTable("Shop");
                 });
@@ -260,23 +261,6 @@ namespace data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreateDate = new DateTime(2023, 1, 19, 18, 54, 53, 679, DateTimeKind.Local).AddTicks(5635),
-                            CreatorId = 0,
-                            Email = "admin@gmail.com",
-                            EmailIsVerified = true,
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Admin",
-                            Password = "$2a$11$kFbllcprKo2YT2IjopdnEOttIjbZs3XEFg28xmrtI2gx1i3fl44DC",
-                            Patronymic = "Admin",
-                            Role = "Admin",
-                            Surname = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("ShopUser", b =>
@@ -321,13 +305,7 @@ namespace data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("data.model.FileInfo", "Logo")
-                        .WithMany()
-                        .HasForeignKey("LogoId");
-
                     b.Navigation("Creator");
-
-                    b.Navigation("Logo");
                 });
 
             modelBuilder.Entity("data.model.User", b =>
