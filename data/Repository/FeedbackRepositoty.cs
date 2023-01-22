@@ -5,7 +5,7 @@ namespace data.Repository;
 
 public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 {
-    public Page<Feedback> GetFeedbackbyUser(int user, bool active)
+    public Page<Feedback> GetFeedbackbyUser(Guid user, bool active)
     {
         var findfeed = _dbSet.Where(a => a.CreatorId == user && !a.IsDeleted);
         if (active)
@@ -17,7 +17,7 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
             1, 20);
     }
 
-    public Page<Feedback> GetFeedbackbyShop(int shop, bool active)
+    public Page<Feedback> GetFeedbackbyShop(Guid shop, bool active)
     {
         var findfeed = _dbSet.Where(a => a.ShopId == shop && !a.IsDeleted);
         if (active)

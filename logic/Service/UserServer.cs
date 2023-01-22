@@ -22,7 +22,7 @@ public class UserServer:IUserServer
         return userrepository.GetPage(userrepository.DbSet(), 1, 20);
     }
 
-    public User? GetUser(int id)
+    public User? GetUser(Guid id)
     {
         var userid = userrepository.GetById(id);
         if (userid == null)
@@ -61,7 +61,7 @@ public class UserServer:IUserServer
         return user;
     }
 
-    public User ChangeBlockUser(int id, bool value)
+    public User ChangeBlockUser(Guid id, bool value)
     {
         var userid = userrepository.GetById(id);
         if (userid == null)
@@ -74,13 +74,13 @@ public class UserServer:IUserServer
         return userid;
     }
 
-    public List<Shop> GetFavoriteShops(int userid)
+    public List<Shop> GetFavoriteShops(Guid userid)
     {
         var user = userrepository.GetById(userid);
         return user.FavoriteShops;
     }
 
-    public Shop CreateFavShop(int shopid, int userid)
+    public Shop CreateFavShop(Guid shopid, Guid userid)
     {
         var user = userrepository.GetById(userid);
         var shop = _shopService.GetShop(shopid);
@@ -88,7 +88,7 @@ public class UserServer:IUserServer
         userrepository.Save();
         return shop;
     }
-    public Shop DelFavShop(int shopid, int userid)
+    public Shop DelFavShop(Guid shopid, Guid userid)
     {
         var user = userrepository.GetById(userid);
         var shop = _shopService.GetShop(shopid);

@@ -24,5 +24,5 @@ public class UserDto
     public  string Patronymic { get; set; }
     public  string Email { get; set; }
     public Role role { get; set; }
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 }

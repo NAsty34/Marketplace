@@ -29,7 +29,7 @@ public class UserController:Controller
     }
 
     [Route("/api/v1/users/{id}")]
-    public ResponceDto<UserDto> GetUser(int id)
+    public ResponceDto<UserDto> GetUser(Guid id)
     {
         var user = _userServer.GetUser(id);
         UserDto userD = new UserDto(user);
@@ -37,7 +37,7 @@ public class UserController:Controller
     }
     
     [Route("/api/v1/user/block/{id}")]
-    public ResponceDto<UserDto> BlockUser(int id)
+    public ResponceDto<UserDto> BlockUser(Guid id)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);
@@ -50,7 +50,7 @@ public class UserController:Controller
     }
 
     [Route("/api/v1/user/unblock/{id}")]
-    public ResponceDto<UserDto> UnblockUser(int id)
+    public ResponceDto<UserDto> UnblockUser(Guid id)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);

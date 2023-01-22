@@ -27,8 +27,8 @@ public class ProfileController : Controller
     [HttpGet]
     public ResponceDto<UserDto> GetProfile()
     {
-        int usid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        var user = _UserServer.GetUser(usid);
+        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+        var user = _UserServer.GetUser(Guid.Parse(usid));
         return new (new UserDto(user));
     }
     
@@ -36,13 +36,13 @@ public class ProfileController : Controller
     [HttpPut]
     public ResponceDto<UserDto> EditProfile([FromBody]UserDto userDto)
     {
-        int usid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
         User user = new User()
         {
             Name = userDto.Name,
             Surname = userDto.Surname,
             Patronymic = userDto.Patronymic,
-            Id = usid
+            Id = Guid.Parse(usid)
         };
         user = _UserServer.EditUser(user);
         return new(new UserDto(user));
@@ -52,25 +52,29 @@ public class ProfileController : Controller
     [HttpGet]
     public ResponceDto<IEnumerable<ShopDTO>> FavoriteShops()
     {
-        int usid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops(usid).Select(a=>new ShopDTO(a, appConfig)));
+        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+       
+        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops(Guid.Parse(usid)).Select(a=>new ShopDTO(a, appConfig)));
     }
 
     [Route("/api/v1/me/shops/{shopid}")]
     [HttpGet]
-    public ResponceDto<ShopDTO> CreateFavoriteShops(int shopid)
+    public ResponceDto<ShopDTO> CreateFavoriteShops(Guid shopid)
     {
-        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        var shop = _UserServer.CreateFavShop(shopid, userid);
+        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+       
+        
+        var shop = _UserServer.CreateFavShop(shopid, Guid.Parse(userid));
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
     
     [Route("/api/v1/me/shops/{shopid}")]
     [HttpDelete]
-    public ResponceDto<ShopDTO> DelFavoriteShops(int shopid)
+    public ResponceDto<ShopDTO> DelFavoriteShops(Guid shopid)
     {
-        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-        var shop = _UserServer.DelFavShop(shopid, userid);
+        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+       
+        var shop = _UserServer.DelFavShop(shopid, Guid.Parse(userid));
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
 

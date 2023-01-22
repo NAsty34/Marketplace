@@ -19,26 +19,26 @@ public class FeedbackService:IFeedbackService
         this._shopRepository = _shopRepository;
         this._repositoryUser = _repositoryUser;
     }
-    public Page<Feedback> GetByUser(int id, bool isAdmin)
+    public Page<Feedback> GetByUser(Guid id, bool isAdmin)
     {
         return _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin);
     }
 
-    public Page<Feedback> GetByShop(int id, bool isAdmin)
+    public Page<Feedback> GetByShop(Guid id, bool isAdmin)
     {
         return _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
     }
 
     public Feedback AddFeedback(Feedback feedback)
     {
-        feedback.Creator = _repositoryUser.GetById(feedback.CreatorId);
+        feedback.Creator = _repositoryUser.GetById((Guid)feedback.CreatorId);
         feedback.Shop = _shopRepository.GetById(feedback.ShopId);
         _feedbackRepositiry.Create(feedback);
         _feedbackRepositiry.Save();
         return feedback;
     }
 
-    public Feedback EditFeedback(Feedback feedback, int userid, Role role)
+    public Feedback EditFeedback(Feedback feedback, Guid userid, Role role)
     {
         var fromdb = _feedbackRepositiry.GetById(feedback.Id);
         if (fromdb == null)
@@ -59,7 +59,7 @@ public class FeedbackService:IFeedbackService
         return fromdb;
     }
 
-    public void DeleteFeedback(int feedback, int userid, Role role)
+    public void DeleteFeedback(Guid feedback, Guid userid, Role role)
     {
         var fromdb = _feedbackRepositiry.GetById(feedback);
         if (fromdb == null)
@@ -77,7 +77,7 @@ public class FeedbackService:IFeedbackService
         _feedbackRepositiry.Save();
     }
 
-    public Feedback ChangeBlockFeedback(int id, bool value)
+    public Feedback ChangeBlockFeedback(Guid id, bool value)
     {
         var feedid = _feedbackRepositiry.GetById(id);
         if (feedid== null)

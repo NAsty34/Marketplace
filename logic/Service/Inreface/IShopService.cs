@@ -5,11 +5,11 @@ namespace logic.Service.Inreface;
 public interface IShopService
 {
     public Page<Shop> GetShops();
-    public Shop? GetShop(int id);
-    public void DeleteShop(int id);
+    public Shop? GetShop(Guid id);
+    public void DeleteShop(Guid id);
     public Task<Shop> CreateShop(Shop shop);
-    public Shop EditShop(Shop shop, int userid);
+    public Shop EditShop(Shop shop, Guid userid, Role role);
     public Page<Shop> GetPublicShops();
-    public Page<Shop> GetSellerShops(int id);
-    public Shop ChangeBlockShop(int id, bool value);
+    public Page<Shop> GetSellerShops(Guid id);
+    public Shop ChangeBlockShop(Guid id, bool value);
 }

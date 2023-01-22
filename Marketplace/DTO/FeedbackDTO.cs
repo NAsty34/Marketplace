@@ -16,7 +16,7 @@ public class FeedbackDTO
         Creator = new UserDto(_feedback.Creator);
         Shop = new ShopDTO(_feedback.Shop, appConfig);
     }
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public  int Stars { get; set; }
     public string? Content { get; set; }
     public UserDto Creator { get; set; }

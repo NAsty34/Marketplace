@@ -15,7 +15,7 @@ public class JWTService:IJWTService
     {
         this.appConfig = _appConfig;
     }
-    public JwtSecurityToken GenerateJWT(int id, string role)
+    public JwtSecurityToken GenerateJWT(Guid id, string role)
     {
         var claims = new List<Claim>
         {

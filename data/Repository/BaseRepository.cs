@@ -16,12 +16,12 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
         this._dbSet = _dbSet;
     }
 
-    public T? GetById(int id)
+    public T? GetById(Guid id)
     {
         return _dbSet.Find(id);
     }
 
-    public IEnumerable<T> GetByIds(IEnumerable<int> ids)
+    public IEnumerable<T> GetByIds(IEnumerable<Guid> ids)
     {
         return _dbSet.Where(a => ids.Contains(a.Id));
     }
@@ -71,7 +71,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
     {
         _dbSet.Remove(t);
     }
-    public void Delete(int id)
+    public void Delete(Guid id)
     {
         var shopid = GetById(id);
         Delete(shopid);
@@ -80,7 +80,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
     {
         _dbSet.RemoveRange(_t);
     }
-    public void Delete(IEnumerable<int> id)
+    public void Delete(IEnumerable<Guid> id)
     {
         var shopsid = GetByIds(id);
         Delete(shopsid);

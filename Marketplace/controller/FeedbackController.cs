@@ -21,7 +21,7 @@ public class FeedbackController:Controller
     }
     [Route("/api/v1/users/{id}/feedback")]
     [HttpGet]
-    public ResponceDto<Page<FeedbackDTO>> UserFeedback(int id)
+    public ResponceDto<Page<FeedbackDTO>> UserFeedback(Guid id)
     {
         string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(role, out Role qrole);
@@ -32,7 +32,7 @@ public class FeedbackController:Controller
 
     [Route("/api/v1/shops/{id}/feedback")]
     [HttpGet]
-    public ResponceDto<Page<FeedbackDTO>> ShopFeedback(int id)
+    public ResponceDto<Page<FeedbackDTO>> ShopFeedback(Guid id)
     {
         string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(role, out Role qrole);
@@ -43,16 +43,17 @@ public class FeedbackController:Controller
 
     [Route("/api/v1/shops/{id}/feedback")]
     [HttpPost]
-    public ResponceDto<FeedbackDTO> AddFeedback([FromBody]FeedbackDTO feedbackDto, int id)
+    public ResponceDto<FeedbackDTO> AddFeedback([FromBody]FeedbackDTO feedbackDto, Guid id)
     {
-        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
+        
         var feed = new Feedback()
         {
             Content = feedbackDto.Content,
             CreateDate = DateTime.Now,
             Stars = feedbackDto.Stars,
             ShopId = id,
-            CreatorId = userid
+            CreatorId = Guid.Parse(userid)
         };
         var newfeed = _feedbackService.AddFeedback(feed);
         return new(new FeedbackDTO(newfeed, appConfig));
@@ -60,10 +61,10 @@ public class FeedbackController:Controller
 
     [Route("/api/v1/shops/feedback/{id}")]
     [HttpPut]
-    public ResponceDto<FeedbackDTO> EditFeedback([FromBody]FeedbackDTO feedbackDto, int id)
+    public ResponceDto<FeedbackDTO> EditFeedback([FromBody]FeedbackDTO feedbackDto, Guid id)
     {
         string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
         Enum.TryParse(roleuser, out Role role);
         var feed = new Feedback()
         {
@@ -71,23 +72,23 @@ public class FeedbackController:Controller
             Stars = feedbackDto.Stars,
             Id = id
         };
-        var upfeed = _feedbackService.EditFeedback(feed, userid, role);
+        var upfeed = _feedbackService.EditFeedback(feed, Guid.Parse(userid), role);
         return new(new FeedbackDTO(upfeed, appConfig));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
     [HttpDelete]
-    public ResponceDto<string> DeleteFeedback(int id)
+    public ResponceDto<string> DeleteFeedback(Guid id)
     {
         string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        int userid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
+        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
         Enum.TryParse(roleuser, out Role role);
-        _feedbackService.DeleteFeedback(id, userid, role);
+        _feedbackService.DeleteFeedback(id, Guid.Parse(userid), role);
         return new("Успешно удалено!");
     }
     [Route("/api/v1/feedback/block/{id}")]
     [HttpGet]
-    public ResponceDto<FeedbackDTO> BlockFeedback(int id)
+    public ResponceDto<FeedbackDTO> BlockFeedback(Guid id)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);
@@ -101,7 +102,7 @@ public class FeedbackController:Controller
 
     [Route("/api/v1/feedback/unblock/{id}")]
     [HttpGet]
-    public ResponceDto<FeedbackDTO> UnblockFeedback(int id)
+    public ResponceDto<FeedbackDTO> UnblockFeedback(Guid id)
     {
         var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
         Enum.TryParse(userrole, out Role role);

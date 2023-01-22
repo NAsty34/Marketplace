@@ -20,7 +20,9 @@ public class AuthMiddleware
         if (context.User.Identity.IsAuthenticated)
         {
             var id = context.User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-            var user = userServer.GetUser(int.Parse(id));
+            
+            
+            var user = userServer.GetUser(Guid.Parse(id));
             if (user == null || !user.IsActive)
             {
                 throw new AccessDeniedException();

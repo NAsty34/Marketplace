@@ -4,5 +4,5 @@ namespace logic.Service.Inreface;
 
 public interface IJWTService
 {
-    JwtSecurityToken GenerateJWT(int id, string role);
+    JwtSecurityToken GenerateJWT(Guid id, string role);
 }

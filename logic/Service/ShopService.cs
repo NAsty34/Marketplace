@@ -27,7 +27,7 @@ public class ShopService:IShopService
         return _shopRepository.GetPage(1, 20);
     }
 
-    public Shop GetShop(int id)
+    public Shop GetShop(Guid id)
     {
         var shopid = _shopRepository.GetById(id);
         if (shopid == null)
@@ -38,7 +38,7 @@ public class ShopService:IShopService
         return shopid;
     }
 
-    public void DeleteShop(int id)
+    public void DeleteShop(Guid id)
     {
         var shopid = _shopRepository.GetById(id);
         if (shopid != null)
@@ -68,7 +68,7 @@ public class ShopService:IShopService
         return shop;
     }
 
-    public Shop EditShop(Shop shop, int userid)
+    public Shop EditShop(Shop shop, Guid userid, Role role)
     {
         var FromDB = _shopRepository.GetById(shop.Id);
         if (FromDB == null)
@@ -76,7 +76,7 @@ public class ShopService:IShopService
             throw new ShopNotFoundException();
         }
 
-        if (userid>0 && FromDB.CreatorId != userid)
+        if (role != Role.Admin && FromDB.CreatorId != userid)
         {
             throw new AccessDeniedException();
         }
@@ -95,7 +95,7 @@ public class ShopService:IShopService
         return _shopRepository.GetPublicShops();
     }
 
-    public Page<Shop> GetSellerShops(int id)
+    public Page<Shop> GetSellerShops(Guid id)
     
     {
         var shopid = _repositoryUser.GetById(id);
@@ -107,7 +107,7 @@ public class ShopService:IShopService
         return _shopRepository.GetSellerShops(shopid.Id);
     }
 
-    public Shop ChangeBlockShop(int id, bool value)
+    public Shop ChangeBlockShop(Guid id, bool value)
     {
         var shopid = _shopRepository.GetById(id);
         if (shopid == null)

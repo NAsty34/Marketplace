@@ -27,11 +27,11 @@ namespace data.Migrations
 
             modelBuilder.Entity("ShopUser", b =>
                 {
-                    b.Property<int>("FavoriteShopsId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("FavoriteShopsId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("UsersId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("FavoriteShopsId", "UsersId");
 
@@ -42,11 +42,9 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.Feedback", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .HasColumnType("text");
@@ -54,20 +52,20 @@ namespace data.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("DeletorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("DeletorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("EditorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -75,8 +73,8 @@ namespace data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Stars")
                         .HasColumnType("integer");
@@ -92,32 +90,30 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.FileInfo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("DeletorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("DeletorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("EditorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("EntityId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Extension")
                         .IsRequired()
@@ -140,23 +136,22 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.Shop", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("DeletorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("DeletorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -164,8 +159,8 @@ namespace data.Migrations
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("EditorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Inn")
                         .IsRequired()
@@ -177,8 +172,8 @@ namespace data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("LogoId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("LogoId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -197,29 +192,27 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("DeletorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("DeletorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("EditorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -264,15 +257,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CreateDate = new DateTime(2023, 1, 19, 18, 54, 53, 679, DateTimeKind.Local).AddTicks(5635),
-                            CreatorId = 0,
+                            Id = new Guid("4521e6f3-0fd9-4ef1-97c8-4f746b3f81f5"),
+                            CreateDate = new DateTime(2023, 1, 22, 15, 17, 19, 753, DateTimeKind.Local).AddTicks(5217),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$kFbllcprKo2YT2IjopdnEOttIjbZs3XEFg28xmrtI2gx1i3fl44DC",
+                            Password = "$2a$11$.shJufRdomfs1p0O9pOh2ebHGUW/CSqMDwRs9N2KKR9FqFSJxJcWG",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"
@@ -298,9 +290,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatorId");
 
                     b.HasOne("data.model.Shop", "Shop")
                         .WithMany()

@@ -37,7 +37,11 @@ public class AuthServer:IAuthService
         var code = GeneratePassword();
         user.EmailCode = BCrypt.Net.BCrypt.HashPassword(code);
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-        if (user.Id == 0) _userRepository.Create(user);
+        if (user.Id.Equals(Guid.Empty))
+        {
+            user.Id = new Guid();
+            _userRepository.Create(user);
+        }
         _userRepository.Save();
         _sendEmailService.Send(user.Email, "Код для подтверждения: "+code, "Admin sait");
         
@@ -61,7 +65,6 @@ public class AuthServer:IAuthService
         {
             throw new PasswordIncorrectException();
         }
-
         var jwt = _jwtService.GenerateJWT(user.Id, user.Role.ToString());
         return jwt;
     }

@@ -4,11 +4,11 @@ namespace logic.Service.Inreface;
 
 public interface IFeedbackService
 {
-    public Page<Feedback> GetByUser(int id, bool isAdmin);
-    public Page<Feedback> GetByShop(int id, bool isAdmin);
+    public Page<Feedback> GetByUser(Guid id, bool isAdmin);
+    public Page<Feedback> GetByShop(Guid id, bool isAdmin);
     public Feedback AddFeedback(Feedback feedback);
     
-    public Feedback EditFeedback(Feedback feedback, int userid, Role role);
-    public void DeleteFeedback(int feedback, int userid, Role role);
-    public Feedback ChangeBlockFeedback(int id, bool value);
+    public Feedback EditFeedback(Feedback feedback, Guid userid, Role role);
+    public void DeleteFeedback(Guid feedback, Guid userid, Role role);
+    public Feedback ChangeBlockFeedback(Guid id, bool value);
 }

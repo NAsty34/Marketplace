@@ -24,7 +24,7 @@ public class DBContext:DbContext
     {
         modelBuilder.Entity<User>().HasData(new User
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             Name = "Admin",
             Patronymic = "Admin",
             Surname = "Admin",

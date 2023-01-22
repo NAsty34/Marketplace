@@ -25,7 +25,7 @@ public class ShopDTO
         isBlock = _shop.IsActive;
         Owner = new UserDto(_shop.Creator);
     }
-    public  int Id { get; set; }
+    public  Guid Id { get; set; }
     public  string? Name { get; set; }
     public  string? Description { get; set; }
     public  string? Logo { get; set; }

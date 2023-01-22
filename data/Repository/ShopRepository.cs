@@ -16,7 +16,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
         
     }
 
-    public Page<Shop> GetSellerShops(int id)
+    public Page<Shop> GetSellerShops(Guid id)
     {
         return GetPage(
             _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id && !a.IsDeleted),1,20
