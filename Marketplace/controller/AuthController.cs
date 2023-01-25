@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Marketplace.controller;
 
-public class AuthController:Controller
+public class AuthController: Controller
 {
     private readonly IAuthService _authService;
 

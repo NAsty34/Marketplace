@@ -45,19 +45,14 @@ public class DBContext:DbContext
         base.OnModelCreating(modelBuilder);
     }
     
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseLazyLoadingProxies();
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        if (appConfig == null)
-        {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=5131");
-        }
-        else optionsBuilder.UseNpgsql(appConfig["ConnectionString"]);
-    }
+    
 
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Shop> Shops { get; set; } = null!;
     public DbSet<Feedback> Feedbacks { get; set; } = null!;
     public DbSet<data.model.FileInfo> FileInfos { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<DeliveryType> DeliveryTypes { get; set; } = null!;
+    public DbSet<data.model.Type> Types { get; set; } = null!;
+    public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
 }     

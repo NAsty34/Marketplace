@@ -26,6 +26,11 @@ public class ShopDTO
         Owner = new UserDto(_shop.Creator);
     }
     public  Guid Id { get; set; }
+    
+    public  List<Guid> Categories { get; set; }
+    public  List<Guid> Deliveris { get; set; }
+    public  List<Guid> Types { get; set; }
+    public  List<Guid> Payments { get; set; }
     public  string? Name { get; set; }
     public  string? Description { get; set; }
     public  string? Logo { get; set; }

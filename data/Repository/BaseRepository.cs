@@ -28,7 +28,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
 
     public Page<T> GetPage(IQueryable<T> _queryable, int page, int size)
     {
-        IEnumerable<T> items = _queryable.Skip((page-1) * size).Take(size).ToList();
+        IEnumerable<T> items = _queryable.Skip((page-1) * size).Take(size).Where(a=>a.IsDeleted == false).ToList();
         Page<T> p = new Page<T>();
         p.Count = items.Count();
         p.CurrentPage = page;
@@ -69,22 +69,15 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
 
     public void Delete(T t)
     {
-        _dbSet.Remove(t);
+        t.IsDeleted = true;
     }
     public void Delete(Guid id)
     {
         var shopid = GetById(id);
-        Delete(shopid);
+        shopid.IsDeleted = true;
+        
     }
-    public void Delete(IEnumerable<T> _t)
-    {
-        _dbSet.RemoveRange(_t);
-    }
-    public void Delete(IEnumerable<Guid> id)
-    {
-        var shopsid = GetByIds(id);
-        Delete(shopsid);
-    }
+   
 
     public void SetActivite(T t, bool value)
     {

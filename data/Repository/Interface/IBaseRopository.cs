@@ -15,8 +15,6 @@ public interface IBaseRopository<T> where T : class
     public void Edit(IEnumerable<T> _t);
     public void Delete(T t);
     public void Delete(Guid id);
-    public void Delete(IEnumerable<T> _t);
-    public void Delete(IEnumerable<Guid> id);
     public void SetActivite(T t, bool value);
     public  DBContext DbContext();
     public DbSet<T> DbSet();

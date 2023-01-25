@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Marketplace.controller;
 [Authorize]
-public class FeedbackController:Controller
+public class FeedbackController:UserBaseController
 {
     private IFeedbackService _feedbackService;
     private IConfiguration appConfig;
@@ -23,9 +23,7 @@ public class FeedbackController:Controller
     [HttpGet]
     public ResponceDto<Page<FeedbackDTO>> UserFeedback(Guid id)
     {
-        string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(role, out Role qrole);
-        var idfeedbyuser = _feedbackService.GetByUser(id, qrole.Equals(Role.Admin));
+        var idfeedbyuser = _feedbackService.GetByUser(id, userrole.Equals(Role.Admin));
         Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDTO(a, appConfig)));
         return new(findfeed);
     }
@@ -34,9 +32,7 @@ public class FeedbackController:Controller
     [HttpGet]
     public ResponceDto<Page<FeedbackDTO>> ShopFeedback(Guid id)
     {
-        string role = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(role, out Role qrole);
-        var idfeedbyshop = _feedbackService.GetByShop(id, qrole.Equals(Role.Admin));
+        var idfeedbyshop = _feedbackService.GetByShop(id, userrole.Equals(Role.Admin));
         Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDTO(a, appConfig)));
         return new(findfeed);
     }
@@ -45,15 +41,14 @@ public class FeedbackController:Controller
     [HttpPost]
     public ResponceDto<FeedbackDTO> AddFeedback([FromBody]FeedbackDTO feedbackDto, Guid id)
     {
-        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        
         var feed = new Feedback()
         {
             Content = feedbackDto.Content,
             CreateDate = DateTime.Now,
             Stars = feedbackDto.Stars,
             ShopId = id,
-            CreatorId = Guid.Parse(userid)
+            CreatorId = userid
+
         };
         var newfeed = _feedbackService.AddFeedback(feed);
         return new(new FeedbackDTO(newfeed, appConfig));
@@ -63,16 +58,13 @@ public class FeedbackController:Controller
     [HttpPut]
     public ResponceDto<FeedbackDTO> EditFeedback([FromBody]FeedbackDTO feedbackDto, Guid id)
     {
-        string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        Enum.TryParse(roleuser, out Role role);
         var feed = new Feedback()
         {
             Content = feedbackDto.Content,
             Stars = feedbackDto.Stars,
             Id = id
         };
-        var upfeed = _feedbackService.EditFeedback(feed, Guid.Parse(userid), role);
+        var upfeed = _feedbackService.EditFeedback(feed, userid, userrole);
         return new(new FeedbackDTO(upfeed, appConfig));
     }
 
@@ -80,19 +72,14 @@ public class FeedbackController:Controller
     [HttpDelete]
     public ResponceDto<string> DeleteFeedback(Guid id)
     {
-        string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        Enum.TryParse(roleuser, out Role role);
-        _feedbackService.DeleteFeedback(id, Guid.Parse(userid), role);
+        _feedbackService.DeleteFeedback(id, userid, userrole);
         return new("Успешно удалено!");
     }
     [Route("/api/v1/feedback/block/{id}")]
     [HttpGet]
     public ResponceDto<FeedbackDTO> BlockFeedback(Guid id)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -104,9 +91,7 @@ public class FeedbackController:Controller
     [HttpGet]
     public ResponceDto<FeedbackDTO> UnblockFeedback(Guid id)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }

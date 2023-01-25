@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Marketplace.controller;
 [Authorize]
-public class ShopController:Controller
+public class ShopController:UserBaseController
 {
     private IShopService _ishopservice;
     private IUserServer _userServer;
@@ -31,23 +31,19 @@ public class ShopController:Controller
     [HttpGet]
     public ResponceDto<Page<ShopDTO>> Shops()
     {
-        string roleuser = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(roleuser, out Role userRole);
+        
         Page<Shop> shop;
-        if (userRole.Equals(Role.Admin))
+        if (userrole.Equals(Role.Admin))
         {
             shop = _ishopservice.GetShops();
         }
-        else if (userRole.Equals(Role.Buyer))
+        else if (userrole.Equals(Role.Buyer))
         {
             shop = _ishopservice.GetPublicShops();
         }
         else
         {
-            int usid = int.Parse(User.Claims.First(a => a.Type == ClaimTypes.Actor).Value);
-            byte[] bytes = new byte[16];
-            BitConverter.GetBytes(usid).CopyTo(bytes, 0);
-            shop = _ishopservice.GetSellerShops(new Guid(bytes));
+            shop = _ishopservice.GetSellerShops(userid);
         }
 
         Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a, _appConfig)));
@@ -58,17 +54,14 @@ public class ShopController:Controller
     [HttpGet]
     public ResponceDto<ShopDTO> GetShop(Guid id)
     {
-       var selshop = _ishopservice.GetShop(id);
-        string userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role userRole);
-        if (userRole.Equals(Role.Buyer) && !selshop.isPublic)
+        var selshop = _ishopservice.GetShop(id);
+        if (userrole.Equals(Role.Buyer) && !selshop.isPublic)
         {
 
             throw new SystemException("Access denied");
         }
-        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-       
-        if (selshop.CreatorId != Guid.Parse(usid) && userRole.Equals(Role.Seller))
+        
+        if (selshop.CreatorId != userid && userrole.Equals(Role.Seller))
         {
             throw new SystemException("Access denied");
         }
@@ -79,14 +72,13 @@ public class ShopController:Controller
     [HttpPost]
     public async Task<ResponceDto<ShopDTO>> CreateShop([FromForm] ShopDTO shopDto, IFormFile file)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
+        
+        if (!userrole.Equals(Role.Seller) && !userrole.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }
-        var iduser = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        var user = _userServer.GetUser(Guid.Parse(iduser));
+        
+        var user = _userServer.GetUser(userid);
         var shops = new Shop()
         {
             Name = shopDto.Name,
@@ -101,7 +93,7 @@ public class ShopController:Controller
         {
             data.model.FileInfo fileIn = _fileInfoService.Addfile(file, shops.Id);
             shops.Logo = fileIn;
-            _ishopservice.EditShop(shops, Guid.Parse(iduser), role);
+            _ishopservice.EditShop(shops, userid, userrole);
         }
         return new(new ShopDTO(shops, _appConfig));
     }
@@ -110,15 +102,14 @@ public class ShopController:Controller
     [HttpPut]
     public ResponceDto<ShopDTO> EditGetShops([FromForm] ShopDTO shopDto, IFormFile file, Guid shopid)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
+        
+        
+        if (!userrole.Equals(Role.Seller) && !userrole.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
         
-        if (role.Equals(Role.Admin)) userid = Guid.Empty.ToString();
+        if (userrole.Equals(Role.Admin)) userid = userid;
         data.model.FileInfo fi=null;
         if (file != null)
         {
@@ -133,7 +124,7 @@ public class ShopController:Controller
             Logo = fi,
             Id = shopid
         };
-        var shope = _ishopservice.EditShop(shops, Guid.Parse(userid), role);
+        var shope = _ishopservice.EditShop(shops, userid, userrole);
         return new(new ShopDTO(shope, _appConfig));
     }
 
@@ -141,9 +132,7 @@ public class ShopController:Controller
     [HttpGet]
     public ResponceDto<ShopDTO> BlockShop(Guid id)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }
@@ -155,9 +144,7 @@ public class ShopController:Controller
     [HttpGet]
     public ResponceDto<ShopDTO> UnblockGetShops(Guid id)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }

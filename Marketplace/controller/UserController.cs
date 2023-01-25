@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Marketplace.controller;
 [Authorize(Roles = nameof(Role.Admin))]
-public class UserController:Controller
+public class UserController:UserBaseController
 {
     private readonly IUserServer _userServer;
 
@@ -23,9 +23,9 @@ public class UserController:Controller
     public ResponceDto<Page<UserDto>> GetUsers()
     {
         var users = _userServer.GetUsers();
-        Page<UserDto> user = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
+        Page<UserDto> pageuser = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
         
-        return new(user);
+        return new(pageuser);
     }
 
     [Route("/api/v1/users/{id}")]
@@ -39,9 +39,7 @@ public class UserController:Controller
     [Route("/api/v1/user/block/{id}")]
     public ResponceDto<UserDto> BlockUser(Guid id)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -52,9 +50,7 @@ public class UserController:Controller
     [Route("/api/v1/user/unblock/{id}")]
     public ResponceDto<UserDto> UnblockUser(Guid id)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -66,9 +62,7 @@ public class UserController:Controller
     [HttpPost]
     public ResponceDto<UserDto> CreateAdmin([FromBody] RegisterDTO userDto)
     {
-        var userrole = User.Claims.First(a => a.Type == ClaimTypes.Role).Value;
-        Enum.TryParse(userrole, out Role role);
-        if (!role.Equals(Role.Admin))
+        if (!userrole.Equals(Role.Admin))
         {
             //throw new AccessDeniedException();
         }

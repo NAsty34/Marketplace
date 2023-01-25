@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Marketplace.controller;
 
 [Authorize]
-public class ProfileController : Controller
+public class ProfileController : UserBaseController
 {
     private readonly IUserServer _UserServer;
     private readonly IShopService _shopService;
@@ -27,8 +27,7 @@ public class ProfileController : Controller
     [HttpGet]
     public ResponceDto<UserDto> GetProfile()
     {
-        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-        var user = _UserServer.GetUser(Guid.Parse(usid));
+        var user = _UserServer.GetUser(userid);
         return new (new UserDto(user));
     }
     
@@ -36,13 +35,12 @@ public class ProfileController : Controller
     [HttpPut]
     public ResponceDto<UserDto> EditProfile([FromBody]UserDto userDto)
     {
-        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
         User user = new User()
         {
             Name = userDto.Name,
             Surname = userDto.Surname,
             Patronymic = userDto.Patronymic,
-            Id = Guid.Parse(usid)
+            Id = userid
         };
         user = _UserServer.EditUser(user);
         return new(new UserDto(user));
@@ -52,19 +50,14 @@ public class ProfileController : Controller
     [HttpGet]
     public ResponceDto<IEnumerable<ShopDTO>> FavoriteShops()
     {
-        var usid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-       
-        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops(Guid.Parse(usid)).Select(a=>new ShopDTO(a, appConfig)));
+        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops(userid).Select(a=>new ShopDTO(a, appConfig)));
     }
 
     [Route("/api/v1/me/shops/{shopid}")]
     [HttpGet]
     public ResponceDto<ShopDTO> CreateFavoriteShops(Guid shopid)
     {
-        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-       
-        
-        var shop = _UserServer.CreateFavShop(shopid, Guid.Parse(userid));
+        var shop = _UserServer.CreateFavShop(shopid, userid);
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
     
@@ -72,9 +65,7 @@ public class ProfileController : Controller
     [HttpDelete]
     public ResponceDto<ShopDTO> DelFavoriteShops(Guid shopid)
     {
-        var userid = User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
-       
-        var shop = _UserServer.DelFavShop(shopid, Guid.Parse(userid));
+        var shop = _UserServer.DelFavShop(shopid, userid);
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
 
