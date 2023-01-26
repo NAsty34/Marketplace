@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,34 +18,68 @@ builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
-builder.Configuration.AddJsonFile("Config.json");
+builder.Configuration.AddJsonFile("appsettings.Production.json");
 var appConfig = builder.Configuration;
-builder.Services.AddSingleton<DBContext>();
+
 
 builder.Services.AddDbContext<DBContext>(option =>
-    option.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionString")));
+{
+    option.UseLazyLoadingProxies();
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    option.UseNpgsql(appConfig["ConnectionString"]);
+});
 
-builder.Services.AddSingleton<IRepositoryUser, UserRepository>();
-builder.Services.AddSingleton<IFeedbackRepositiry, FeedbackRepositoty>();
-builder.Services.AddSingleton<IShopRepository, ShopRepository>();
-builder.Services.AddSingleton<IFileInfoRepository, FileInfoRepository>();
-builder.Services.AddSingleton<ICategoryRepository, CategoryRepository>();
-builder.Services.AddSingleton<ITypeRepository, TypeRepository>();
-builder.Services.AddSingleton<IDeliveryTypeRepository, DeliveryTypeRepository>();
-builder.Services.AddSingleton<IPaymentMethodRepository, PaymentMethodRepository>();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Description = "Aaaaa",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
 
-builder.Services.AddSingleton<IAuthService, AuthServer>();
-builder.Services.AddSingleton<IJWTService, JWTService>();
-builder.Services.AddSingleton<IHashService, HashService>();
-builder.Services.AddSingleton<ISendEmailService, SendEmailService>();
-builder.Services.AddSingleton<IUserServer, UserServer>();
-builder.Services.AddSingleton<IShopService, ShopService>();
-builder.Services.AddSingleton<IFeedbackService, FeedbackService>();
-builder.Services.AddSingleton<IFileInfoService, FileInfoService>();
-builder.Services.AddSingleton<ICategoryService, CategoryService>();
-builder.Services.AddSingleton<IDeliveryTypeService, DeliveryTypeService>();
-builder.Services.AddSingleton<IPaymentMethodService, PaymentMethodService>();
-builder.Services.AddSingleton<ITypeService, TypeService>();
+            },
+            new List<string>()
+        }
+    });
+});
+
+builder.Services.AddTransient <IRepositoryUser, UserRepository>();
+builder.Services.AddTransient <IFeedbackRepositiry, FeedbackRepositoty>();
+builder.Services.AddTransient <IShopRepository, ShopRepository>();
+builder.Services.AddTransient <IFileInfoRepository, FileInfoRepository>();
+builder.Services.AddTransient <ICategoryRepository, CategoryRepository>();
+builder.Services.AddTransient <ITypeRepository, TypeRepository>();
+builder.Services.AddTransient <IDeliveryTypeRepository, DeliveryTypeRepository>();
+builder.Services.AddTransient <IPaymentMethodRepository, PaymentMethodRepository>();
+
+builder.Services.AddTransient <IAuthService, AuthServer>();
+builder.Services.AddTransient <IJWTService, JWTService>();
+builder.Services.AddTransient <IHashService, HashService>();
+builder.Services.AddTransient <ISendEmailService, SendEmailService>();
+builder.Services.AddTransient <IUserServer, UserServer>();
+builder.Services.AddTransient <IShopService, ShopService>();
+builder.Services.AddTransient <IFeedbackService, FeedbackService>();
+builder.Services.AddTransient <IFileInfoService, FileInfoService>();
+builder.Services.AddTransient <ICategoryService, CategoryService>();
+builder.Services.AddTransient <IDeliveryTypeService, DeliveryTypeService>();
+builder.Services.AddTransient <IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddTransient <ITypeService, TypeService>();
 
 builder.Services.AddAuthorization();
 
@@ -64,22 +99,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 var app = builder.Build();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<AuthMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.RoutePrefix = string.Empty;
+});
+
+
+/*using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DBContext>();
+    db.Database.Migrate();
+}*/
+
 app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(Directory.GetCurrentDirectory(), @"files")),
     RequestPath = new PathString("/static")
 });
-app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseMiddleware<AuthMiddleware>();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<DBContext>();
-    db.Database.Migrate();
-}
 
 app.MapControllerRoute(name: "default", pattern: "/");
 

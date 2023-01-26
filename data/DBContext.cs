@@ -8,16 +8,10 @@ namespace data;
 public class DBContext:DbContext
 {
     private readonly IConfiguration appConfig;
-
-    public DBContext()
+    
+    public DBContext(DbContextOptions options, IConfiguration appConfig) : base(options)
     {
-        
-    }
-    public DBContext(IConfiguration _appConfig)
-    {
-        this.appConfig = _appConfig;
-        Database.EnsureCreated();
-        
+        //Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

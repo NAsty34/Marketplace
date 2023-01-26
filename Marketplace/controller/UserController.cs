@@ -13,13 +13,13 @@ public class UserController:UserBaseController
 {
     private readonly IUserServer _userServer;
 
-    public UserController(IUserServer userServer)
+    public UserController(ILogger<UserBaseController> logger, IUserServer userServer) : base(logger)
     {
         this._userServer = userServer;
     }
 
     [Route("/api/v1/users")]
-
+    [HttpGet]
     public ResponceDto<Page<UserDto>> GetUsers()
     {
         var users = _userServer.GetUsers();
@@ -29,6 +29,7 @@ public class UserController:UserBaseController
     }
 
     [Route("/api/v1/users/{id}")]
+    [HttpGet]
     public ResponceDto<UserDto> GetUser(Guid id)
     {
         var user = _userServer.GetUser(id);
@@ -37,6 +38,7 @@ public class UserController:UserBaseController
     }
     
     [Route("/api/v1/user/block/{id}")]
+    [HttpGet]
     public ResponceDto<UserDto> BlockUser(Guid id)
     {
         if (!userrole.Equals(Role.Admin))
@@ -48,6 +50,7 @@ public class UserController:UserBaseController
     }
 
     [Route("/api/v1/user/unblock/{id}")]
+    [HttpGet]
     public ResponceDto<UserDto> UnblockUser(Guid id)
     {
         if (!userrole.Equals(Role.Admin))

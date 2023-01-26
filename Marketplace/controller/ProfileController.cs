@@ -16,7 +16,7 @@ public class ProfileController : UserBaseController
     private readonly IShopService _shopService;
     private readonly IConfiguration appConfig;
 
-    public ProfileController(IUserServer userServer, IShopService shopService, IConfiguration _appConfig)
+    public ProfileController(ILogger<UserBaseController> logger, IUserServer userServer, IShopService shopService, IConfiguration _appConfig) : base(logger)
     {
         this._UserServer = userServer;
         this._shopService = shopService;

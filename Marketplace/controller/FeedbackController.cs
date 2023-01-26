@@ -14,7 +14,7 @@ public class FeedbackController:UserBaseController
     private IFeedbackService _feedbackService;
     private IConfiguration appConfig;
 
-    public FeedbackController(IFeedbackService _feedbackService, IConfiguration _appConfig)
+    public FeedbackController(ILogger<UserBaseController> logger, IFeedbackService _feedbackService, IConfiguration _appConfig) : base(logger)
     {
         this._feedbackService = _feedbackService;
         this.appConfig = _appConfig;

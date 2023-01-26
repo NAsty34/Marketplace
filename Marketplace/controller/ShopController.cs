@@ -19,8 +19,10 @@ public class ShopController:UserBaseController
     private IConfiguration _appConfig;
     
     
-    public ShopController(IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig)
+    public ShopController(ILogger<UserBaseController> logger, IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig) : base(logger)
     {
+        logger.Log(LogLevel.Information, "USER " + User);
+        logger.Log(LogLevel.Information, "USER ID " + userid);
         this._ishopservice = ishopservice;
         this._userServer = _userServer;
         this._fileInfoService = fileInfoService;
