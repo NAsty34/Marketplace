@@ -117,11 +117,11 @@ app.UseSwaggerUI(options =>
 });
 
 
-/*using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DBContext>();
     db.Database.Migrate();
-}*/
+}
 
 app.UseStaticFiles(new StaticFileOptions()
 {
