@@ -13,4 +13,9 @@ public class Shop:BaseEntity
     public bool isPublic { get; set; }
     public virtual User Creator { get; set; }
     public virtual List<User> Users { get; set; } = new();
+    
+    public virtual IEnumerable<ShopCategory> ShopCategory { get; set; }
+    public virtual IEnumerable<ShopDelivery> ShopDeliveries { get; set; }
+    public virtual IEnumerable<ShopPayment> ShopPayment { get; set; }
+    public virtual IEnumerable<ShopTypes> ShopTypes { get; set; }
 }

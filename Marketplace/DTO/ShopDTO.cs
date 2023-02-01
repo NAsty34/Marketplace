@@ -24,13 +24,17 @@ public class ShopDTO
         isPublic = _shop.isPublic;
         isBlock = _shop.IsActive;
         Owner = new UserDto(_shop.Creator);
+        Categories = _shop.ShopCategory.Select(a => a.CategoryId);
+        Deliveris = _shop.ShopDeliveries.Select(a => a.DeliveryId);
+        Types = _shop.ShopTypes.Select(a => a.TypeId);
+        Payments = _shop.ShopPayment.Select(a => a.Paymentid);
     }
     public  Guid Id { get; set; }
     
-    public  List<Guid> Categories { get; set; }
-    public  List<Guid> Deliveris { get; set; }
-    public  List<Guid> Types { get; set; }
-    public  List<Guid> Payments { get; set; }
+    public  IEnumerable<Guid> Categories { get; set; }
+    public  IEnumerable<Guid> Deliveris { get; set; }
+    public  IEnumerable<Guid> Types { get; set; }
+    public  IEnumerable<Guid> Payments { get; set; }
     public  string? Name { get; set; }
     public  string? Description { get; set; }
     public  string? Logo { get; set; }

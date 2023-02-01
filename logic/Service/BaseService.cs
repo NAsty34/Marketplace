@@ -2,9 +2,10 @@ using data.model;
 using data.Repository.Interface;
 using logic.Service.Inreface;
 
+
 namespace logic.Service;
 
-public abstract class BaseService<T> : IBaseService<T> where T : DictionaryBase
+public class BaseService<T> : IBaseService<T> where T : DictionaryBase
 {
     private IBaseRopository<T> _baseRopository;
 
@@ -14,19 +15,24 @@ public abstract class BaseService<T> : IBaseService<T> where T : DictionaryBase
     }
     public Page<T> Page(int page, int size)
     {
-        return _baseRopository.GetPage(_baseRopository.DbSet(), page, size);
+        return _baseRopository.GetPage(page, size);
     }
 
    
 
-    public T Create(T t)
+    public void Create(T t)
     {
         _baseRopository.Create(t);
         _baseRopository.Save();
-        return t;
     }
 
-    public abstract T Edit(T t);
+    public T Edit(T t)
+    {
+        var FromDB = _baseRopository.GetById(t.Id);
+        FromDB.Name = t.Name;
+        _baseRopository.Save();
+        return FromDB;
+    }
 
     public void Delete(Guid id)
     {

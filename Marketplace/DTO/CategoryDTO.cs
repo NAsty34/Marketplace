@@ -12,5 +12,7 @@ public class CategoryDto:DictionaryDTO<Category>
     {
         Id = t.Id;
         Name = t.Name;
+        //if (t.parent != null) ParentCategories = new CategoryDto(t.parent);
     }
+    public CategoryDto parent { get; set; }
 }

@@ -8,7 +8,7 @@ namespace Marketplace.Mappings;
 public class AppMappingProfile : Profile
 {
     public AppMappingProfile()
-    {			
+    {
         CreateMap<Category, CategoryDto>();
         CreateMap<Category, CategoryDto>().ReverseMap();
         CreateMap<Page<Category>, Page<CategoryDto>>();

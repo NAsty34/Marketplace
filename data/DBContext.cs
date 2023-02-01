@@ -13,7 +13,7 @@ public class DBContext:DbContext
     {
         
     }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasData(new User
@@ -27,14 +27,22 @@ public class DBContext:DbContext
             Password = BCrypt.Net.BCrypt.HashPassword(appConfig == null ? "0000" : appConfig["AdminPassword"]),
             CreateDate = DateTime.Now
         });
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.FavoriteShops)
-            .WithMany(s => s.Users)
-            .UsingEntity(f => f.ToTable(("FavoriteShops")));
-        modelBuilder.Entity<Shop>()
-            .HasOne(e => e.Creator)
-            .WithMany(e => e.Shops)
-            .HasForeignKey(k => k.CreatorId);
+        modelBuilder.Entity<User>(a =>
+        {
+            a.HasMany(u => u.FavoriteShops)
+                .WithMany(s => s.Users)
+                .UsingEntity(f => f.ToTable(("FavoriteShops")));
+            a.HasQueryFilter(p => !p.IsDeleted);
+        });
+
+        modelBuilder.Entity<Shop>(a =>
+        {
+            a.HasOne(e => e.Creator)
+                .WithMany(e => e.Shops)
+                .HasForeignKey(k => k.CreatorId);
+            a.HasQueryFilter(p => !p.IsDeleted);
+        });
+            
         modelBuilder.Entity<User>().Property(d => d.Role).HasConversion(new EnumToStringConverter<Role>());
         base.OnModelCreating(modelBuilder);
     }
@@ -49,4 +57,8 @@ public class DBContext:DbContext
     public DbSet<DeliveryType> DeliveryTypes { get; set; } = null!;
     public DbSet<data.model.Type> Types { get; set; } = null!;
     public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
+    public DbSet<ShopCategory> ShopCategories { get; set; } = null!;
+    public DbSet<ShopDelivery> ShopDeliveries { get; set; } = null!;
+    public DbSet<ShopPayment> ShopPayments { get; set; } = null!;
+    public DbSet<ShopTypes> ShopTypes { get; set; } = null!;
 }     

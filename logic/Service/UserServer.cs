@@ -19,7 +19,7 @@ public class UserServer:IUserServer
     }
     public Page<User> GetUsers()
     {
-        return userrepository.GetPage(userrepository.DbSet(), 1, 20);
+        return userrepository.GetPage(1, 20);
     }
 
     public User? GetUser(Guid id)
@@ -48,7 +48,7 @@ public class UserServer:IUserServer
         return fromdb;
     }
 
-    public User CreateAdmin(User user)
+    public void CreateAdmin(User user)
     {
         if (userrepository.GetUser(user.Email) != null)
         {
@@ -58,7 +58,6 @@ public class UserServer:IUserServer
         user.Password = _hashService.Hash(user.Password);
         userrepository.Create(user);
         userrepository.Save();
-        return user;
     }
 
     public User ChangeBlockUser(Guid id, bool value)

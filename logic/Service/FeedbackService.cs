@@ -29,13 +29,12 @@ public class FeedbackService:IFeedbackService
         return _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
     }
 
-    public Feedback AddFeedback(Feedback feedback)
+    public void AddFeedback(Feedback feedback)
     {
         feedback.Creator = _repositoryUser.GetById((Guid)feedback.CreatorId);
         feedback.Shop = _shopRepository.GetById(feedback.ShopId);
         _feedbackRepositiry.Create(feedback);
         _feedbackRepositiry.Save();
-        return feedback;
     }
 
     public Feedback EditFeedback(Feedback feedback, Guid userid, Role role)

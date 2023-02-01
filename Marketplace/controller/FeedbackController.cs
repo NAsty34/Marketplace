@@ -14,7 +14,7 @@ public class FeedbackController:UserBaseController
     private IFeedbackService _feedbackService;
     private IConfiguration appConfig;
 
-    public FeedbackController(ILogger<UserBaseController> logger, IFeedbackService _feedbackService, IConfiguration _appConfig) : base(logger)
+    public FeedbackController(ILogger<UserBaseController> logger, IFeedbackService _feedbackService, IConfiguration _appConfig)
     {
         this._feedbackService = _feedbackService;
         this.appConfig = _appConfig;
@@ -23,7 +23,7 @@ public class FeedbackController:UserBaseController
     [HttpGet]
     public ResponceDto<Page<FeedbackDTO>> UserFeedback(Guid id)
     {
-        var idfeedbyuser = _feedbackService.GetByUser(id, userrole.Equals(Role.Admin));
+        var idfeedbyuser = _feedbackService.GetByUser(id, role.Equals(Role.Admin));
         Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDTO(a, appConfig)));
         return new(findfeed);
     }
@@ -32,7 +32,7 @@ public class FeedbackController:UserBaseController
     [HttpGet]
     public ResponceDto<Page<FeedbackDTO>> ShopFeedback(Guid id)
     {
-        var idfeedbyshop = _feedbackService.GetByShop(id, userrole.Equals(Role.Admin));
+        var idfeedbyshop = _feedbackService.GetByShop(id, role.Equals(Role.Admin));
         Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDTO(a, appConfig)));
         return new(findfeed);
     }
@@ -47,11 +47,11 @@ public class FeedbackController:UserBaseController
             CreateDate = DateTime.Now,
             Stars = feedbackDto.Stars,
             ShopId = id,
-            CreatorId = userid
+            CreatorId = Userid
 
         };
-        var newfeed = _feedbackService.AddFeedback(feed);
-        return new(new FeedbackDTO(newfeed, appConfig));
+        _feedbackService.AddFeedback(feed);
+        return new(new FeedbackDTO(feed, appConfig));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
@@ -64,7 +64,7 @@ public class FeedbackController:UserBaseController
             Stars = feedbackDto.Stars,
             Id = id
         };
-        var upfeed = _feedbackService.EditFeedback(feed, userid, userrole);
+        var upfeed = _feedbackService.EditFeedback(feed, (Guid)Userid, (Role)role);
         return new(new FeedbackDTO(upfeed, appConfig));
     }
 
@@ -72,14 +72,14 @@ public class FeedbackController:UserBaseController
     [HttpDelete]
     public ResponceDto<string> DeleteFeedback(Guid id)
     {
-        _feedbackService.DeleteFeedback(id, userid, userrole);
+        _feedbackService.DeleteFeedback(id, (Guid)Userid, (Role)role);
         return new("Успешно удалено!");
     }
     [Route("/api/v1/feedback/block/{id}")]
     [HttpGet]
     public ResponceDto<FeedbackDTO> BlockFeedback(Guid id)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -91,7 +91,7 @@ public class FeedbackController:UserBaseController
     [HttpGet]
     public ResponceDto<FeedbackDTO> UnblockFeedback(Guid id)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }

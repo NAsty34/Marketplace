@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace data.model;
 
 public class Category:DictionaryBase
 {
-    public Guid parentid { get; set; }
+    public virtual Category? parent { get; set; }
+    
 }

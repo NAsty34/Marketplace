@@ -1,5 +1,6 @@
 using System.Text;
 using data;
+using data.model;
 using data.Repository;
 using data.Repository.Interface;
 using logic.Service;
@@ -18,7 +19,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
-builder.Configuration.AddJsonFile("appsettings.Production.json");
 var appConfig = builder.Configuration;
 
 
@@ -63,10 +63,10 @@ builder.Services.AddTransient <IRepositoryUser, UserRepository>();
 builder.Services.AddTransient <IFeedbackRepositiry, FeedbackRepositoty>();
 builder.Services.AddTransient <IShopRepository, ShopRepository>();
 builder.Services.AddTransient <IFileInfoRepository, FileInfoRepository>();
-builder.Services.AddTransient <ICategoryRepository, CategoryRepository>();
-builder.Services.AddTransient <ITypeRepository, TypeRepository>();
-builder.Services.AddTransient <IDeliveryTypeRepository, DeliveryTypeRepository>();
-builder.Services.AddTransient <IPaymentMethodRepository, PaymentMethodRepository>();
+builder.Services.AddScoped(typeof(IShopDictionaryRepository<>), typeof(ShopDictionaryRepository<>));
+builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+builder.Services.AddScoped(typeof(IBaseRopository<>), typeof(BaseRepository<>));
+
 
 builder.Services.AddTransient <IAuthService, AuthServer>();
 builder.Services.AddTransient <IJWTService, JWTService>();
@@ -76,10 +76,6 @@ builder.Services.AddTransient <IUserServer, UserServer>();
 builder.Services.AddTransient <IShopService, ShopService>();
 builder.Services.AddTransient <IFeedbackService, FeedbackService>();
 builder.Services.AddTransient <IFileInfoService, FileInfoService>();
-builder.Services.AddTransient <ICategoryService, CategoryService>();
-builder.Services.AddTransient <IDeliveryTypeService, DeliveryTypeService>();
-builder.Services.AddTransient <IPaymentMethodService, PaymentMethodService>();
-builder.Services.AddTransient <ITypeService, TypeService>();
 
 builder.Services.AddAuthorization();
 

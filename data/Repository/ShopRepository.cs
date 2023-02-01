@@ -11,7 +11,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
     public Page<Shop> GetPublicShops()
     { 
         return GetPage(
-            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.isPublic && a.IsActive && !a.IsDeleted),1,20
+            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.isPublic && a.IsActive),1,20
             );
         
     }
@@ -19,14 +19,14 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
     public Page<Shop> GetSellerShops(Guid id)
     {
         return GetPage(
-            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id && !a.IsDeleted),1,20
+            _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id),1,20
             );
         
     }
 
     public Shop? GetByInn(string inn)
     {
-        return _dbSet.Include(a=>a.Creator).FirstOrDefault(a => a.Inn == inn && a.IsActive && !a.IsDeleted);
+        return _dbSet.Include(a=>a.Creator).FirstOrDefault(a => a.Inn == inn && a.IsActive);
         
     }
 
@@ -37,7 +37,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
         );
     }
 
-    public ShopRepository(DBContext _dbContext) : base(_dbContext, _dbContext.Shops)
+    public ShopRepository(DBContext _dbContext) : base(_dbContext)
     {
     }
 }

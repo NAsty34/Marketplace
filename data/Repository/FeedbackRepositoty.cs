@@ -30,7 +30,7 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 
     }
 
-    public FeedbackRepositoty(DBContext _dbContext) : base(_dbContext, _dbContext.Feedbacks)
+    public FeedbackRepositoty(DBContext _dbContext) : base(_dbContext)
     {
         
     }

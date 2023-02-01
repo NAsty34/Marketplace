@@ -13,7 +13,7 @@ public class UserController:UserBaseController
 {
     private readonly IUserServer _userServer;
 
-    public UserController(ILogger<UserBaseController> logger, IUserServer userServer) : base(logger)
+    public UserController(ILogger<UserBaseController> logger, IUserServer userServer)
     {
         this._userServer = userServer;
     }
@@ -41,7 +41,7 @@ public class UserController:UserBaseController
     [HttpGet]
     public ResponceDto<UserDto> BlockUser(Guid id)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -53,7 +53,7 @@ public class UserController:UserBaseController
     [HttpGet]
     public ResponceDto<UserDto> UnblockUser(Guid id)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -65,7 +65,7 @@ public class UserController:UserBaseController
     [HttpPost]
     public ResponceDto<UserDto> CreateAdmin([FromBody] RegisterDTO userDto)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             //throw new AccessDeniedException();
         }
@@ -83,7 +83,7 @@ public class UserController:UserBaseController
             IsActive = true,
             IsDeleted = false
         };
-        var newAdmin =  _userServer.CreateAdmin(adminuser);
-        return new(new UserDto(newAdmin));
+        _userServer.CreateAdmin(adminuser);
+        return new(new UserDto(adminuser));
     }
 }

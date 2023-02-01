@@ -1,6 +1,6 @@
 namespace data.model;
 
-public class ShopDictionaryBase:BaseEntity
+public class ShopDictionaryBase
 {
     public ShopDictionaryBase()
     {
@@ -10,5 +10,6 @@ public class ShopDictionaryBase:BaseEntity
     {
         this.shopid = shopid;
     }
+    public Guid Id { get; set; }
     public Guid shopid { get; set; }
 }

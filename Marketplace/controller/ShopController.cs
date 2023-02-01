@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using data.model;
+using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service;
 using logic.Service.Inreface;
@@ -18,34 +19,36 @@ public class ShopController:UserBaseController
     private IFileInfoService _fileInfoService;
     private IConfiguration _appConfig;
     
-    
-    public ShopController(ILogger<UserBaseController> logger, IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig) : base(logger)
+
+    public ShopController(HttpContext context, ILogger<UserBaseController> logger, IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig) 
     {
-        logger.Log(LogLevel.Information, "USER " + User);
-        logger.Log(LogLevel.Information, "USER ID " + userid);
+        logger.Log(LogLevel.Information, "=============== USER " + User);
+        logger.Log(LogLevel.Information, "=============== context " + context);
+        logger.Log(LogLevel.Information, "=============== USER ID " + Userid);
         this._ishopservice = ishopservice;
         this._userServer = _userServer;
         this._fileInfoService = fileInfoService;
         this._appConfig = appConfig;
+        
     }
 
     [Route("/api/v1/shops")]
     [HttpGet]
-    public ResponceDto<Page<ShopDTO>> Shops()
+    public ResponceDto<Page<ShopDTO>> Shops(ILogger<ShopController> logger)
     {
-        
+     logger.Log(LogLevel.Information, "============" + Userid);   
         Page<Shop> shop;
-        if (userrole.Equals(Role.Admin))
+        if (role.Equals(Role.Admin))
         {
             shop = _ishopservice.GetShops();
         }
-        else if (userrole.Equals(Role.Buyer))
+        else if (role.Equals(Role.Buyer))
         {
             shop = _ishopservice.GetPublicShops();
         }
         else
         {
-            shop = _ishopservice.GetSellerShops(userid);
+            shop = _ishopservice.GetSellerShops((Guid)Userid);
         }
 
         Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a, _appConfig)));
@@ -57,13 +60,13 @@ public class ShopController:UserBaseController
     public ResponceDto<ShopDTO> GetShop(Guid id)
     {
         var selshop = _ishopservice.GetShop(id);
-        if (userrole.Equals(Role.Buyer) && !selshop.isPublic)
+        if (role.Equals(Role.Buyer) && !selshop.isPublic)
         {
 
             throw new SystemException("Access denied");
         }
         
-        if (selshop.CreatorId != userid && userrole.Equals(Role.Seller))
+        if (selshop.CreatorId != Userid && role.Equals(Role.Seller))
         {
             throw new SystemException("Access denied");
         }
@@ -75,12 +78,13 @@ public class ShopController:UserBaseController
     public async Task<ResponceDto<ShopDTO>> CreateShop([FromForm] ShopDTO shopDto, IFormFile file)
     {
         
-        if (!userrole.Equals(Role.Seller) && !userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }
         
-        var user = _userServer.GetUser(userid);
+        var user = _userServer.GetUser((Guid)Userid);
+        Guid Id = new Guid();
         var shops = new Shop()
         {
             Name = shopDto.Name,
@@ -88,35 +92,40 @@ public class ShopController:UserBaseController
             isPublic = shopDto.isPublic,
             Inn = shopDto.Inn,
             Creator = user,
-            Id = new Guid(),
+            Id = Id,
+            ShopCategory = shopDto.Categories.Select(a=>new ShopCategory(Id, a)).ToList(),
+            ShopDeliveries = shopDto.Deliveris.Select(a=>new ShopDelivery(Id, a)).ToList(),
+            ShopPayment = shopDto.Payments.Select(a=>new ShopPayment(Id, a)).ToList(),
+            ShopTypes = shopDto.Types.Select(a=>new ShopTypes(Id, a)).ToList()
         };
-        await _ishopservice.CreateShop(shops);
+        
         if (file != null)
         {
             data.model.FileInfo fileIn = _fileInfoService.Addfile(file, shops.Id);
             shops.Logo = fileIn;
-            _ishopservice.EditShop(shops, userid, userrole);
         }
+        _ishopservice.CreateShop(shops);
         return new(new ShopDTO(shops, _appConfig));
     }
 
     [Route("/api/v1/shops/{shopid}")]
     [HttpPut]
-    public ResponceDto<ShopDTO> EditGetShops([FromForm] ShopDTO shopDto, IFormFile file, Guid shopid)
+    public ResponceDto<ShopDTO> EditShops([FromForm] ShopDTO shopDto, IFormFile file, Guid shopid)
     {
         
         
-        if (!userrole.Equals(Role.Seller) && !userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
         
-        if (userrole.Equals(Role.Admin)) userid = userid;
+        //if (role.Equals(Role.Admin)) Userid = Userid;
         data.model.FileInfo fi=null;
         if (file != null)
         {
             fi = _fileInfoService.Addfile(file, shopid);
         }
+        Guid Id = shopid;
         var shops = new Shop()
         {
             Name = shopDto.Name,
@@ -124,9 +133,13 @@ public class ShopController:UserBaseController
             isPublic = shopDto.isPublic,
             Inn = shopDto.Inn,
             Logo = fi,
-            Id = shopid
+            Id = Id,
+            ShopCategory = shopDto.Categories.Select(a=>new ShopCategory(Id, a)).ToList(),
+            ShopDeliveries = shopDto.Deliveris.Select(a=>new ShopDelivery(Id, a)).ToList(),
+            ShopPayment = shopDto.Payments.Select(a=>new ShopPayment(Id, a)).ToList(),
+            ShopTypes = shopDto.Types.Select(a=>new ShopTypes(Id, a)).ToList()
         };
-        var shope = _ishopservice.EditShop(shops, userid, userrole);
+        var shope = _ishopservice.EditShop(shops, (Guid)Userid, (Role)role);
         return new(new ShopDTO(shope, _appConfig));
     }
 
@@ -134,7 +147,7 @@ public class ShopController:UserBaseController
     [HttpGet]
     public ResponceDto<ShopDTO> BlockShop(Guid id)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }
@@ -146,7 +159,7 @@ public class ShopController:UserBaseController
     [HttpGet]
     public ResponceDto<ShopDTO> UnblockGetShops(Guid id)
     {
-        if (!userrole.Equals(Role.Admin))
+        if (!role.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }

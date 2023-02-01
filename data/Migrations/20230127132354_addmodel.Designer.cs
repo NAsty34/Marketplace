@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using data;
@@ -11,9 +12,11 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230127132354_addmodel")]
+    partial class addmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,12 +77,10 @@ namespace data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("parentId")
+                    b.Property<Guid>("parentid")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("parentId");
 
                     b.ToTable("Categories");
                 });
@@ -332,8 +333,6 @@ namespace data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("shopid");
-
                     b.ToTable("ShopCategories");
                 });
 
@@ -350,8 +349,6 @@ namespace data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("shopid");
 
                     b.ToTable("ShopDeliveries");
                 });
@@ -370,8 +367,6 @@ namespace data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("shopid");
-
                     b.ToTable("ShopPayments");
                 });
 
@@ -388,8 +383,6 @@ namespace data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("shopid");
 
                     b.ToTable("ShopTypes");
                 });
@@ -505,14 +498,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8320cb9e-0139-43cf-bae0-373dda4ddfce"),
-                            CreateDate = new DateTime(2023, 2, 1, 14, 19, 56, 82, DateTimeKind.Local).AddTicks(7665),
+                            Id = new Guid("9e28bb71-4ae8-4107-aab9-854fb6b08684"),
+                            CreateDate = new DateTime(2023, 1, 27, 16, 23, 53, 584, DateTimeKind.Local).AddTicks(5713),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$rBFRPBhwVU1ovzewlDLns.9jPc4mmnNs5g3NHD/NlGYZUbsEaq0Zy",
+                            Password = "$2a$11$OSJ3CaxKaHwrq1XXbi4O4.91K/cWMK0J45VpaCQ.bB1QsuXvaMhdW",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"
@@ -532,15 +525,6 @@ namespace data.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.Category", b =>
-                {
-                    b.HasOne("data.model.Category", "parent")
-                        .WithMany()
-                        .HasForeignKey("parentId");
-
-                    b.Navigation("parent");
                 });
 
             modelBuilder.Entity("data.model.Feedback", b =>
@@ -575,53 +559,6 @@ namespace data.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Logo");
-                });
-
-            modelBuilder.Entity("data.model.ShopCategory", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopCategory")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.ShopDelivery", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopDeliveries")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.ShopPayment", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopPayment")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.ShopTypes", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopTypes")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.Shop", b =>
-                {
-                    b.Navigation("ShopCategory");
-
-                    b.Navigation("ShopDeliveries");
-
-                    b.Navigation("ShopPayment");
-
-                    b.Navigation("ShopTypes");
                 });
 
             modelBuilder.Entity("data.model.User", b =>

@@ -24,7 +24,7 @@ public class AuthServer:IAuthService
     {
         if (!user.Role.Equals(Role.Buyer) && !user.Role.Equals(Role.Seller))
             throw new RoleException();
-        if (user.Email == null )
+        if (string.IsNullOrEmpty(user.Email) )
             throw new EmailException();
         var Emailuser = _userRepository.GetUser(user.Email);
         if (Emailuser != null)

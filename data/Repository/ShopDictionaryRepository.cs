@@ -4,22 +4,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace data.Repository;
 
-public class ShopDictionaryRepository<T>:BaseRepository<T>,IShopDictionaryRepository<T> where T : ShopDictionaryBase
+public class ShopDictionaryRepository<T> : IShopDictionaryRepository<T> where T : ShopDictionaryBase
 {
+    protected DBContext _dbContext;
+    protected DbSet<T> _dbSet;
+
+    public ShopDictionaryRepository(DBContext _dbContext)
+    {
+        this._dbContext = _dbContext;
+        this._dbSet = _dbContext.Set<T>();
+    }
+
     public void DeleteAllByShop(Guid shopid)
     {
-         _dbSet.RemoveRange(_dbSet.Where(a=>a.shopid == shopid));
-         Save();
+        _dbSet.RemoveRange(_dbSet.Where(a => a.shopid == shopid));
+        _dbContext.SaveChanges();
     }
 
-    public List<T> CreateRange(List<T> ids)
+    public void CreateRange(IEnumerable<T> ids)
     {
         _dbSet.AddRange(ids);
-        Save();
-        return ids;
+        _dbContext.SaveChanges();
     }
 
-    public ShopDictionaryRepository(DBContext _dbContext, DbSet<T> _dbSet) : base(_dbContext, _dbSet)
-    {
-    }
 }

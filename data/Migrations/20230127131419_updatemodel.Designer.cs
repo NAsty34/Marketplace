@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using data;
@@ -11,9 +12,11 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230127131419_updatemodel")]
+    partial class updatemodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,12 +77,10 @@ namespace data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("parentId")
+                    b.Property<Guid>("parentid")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("parentId");
 
                     b.ToTable("Categories");
                 });
@@ -318,82 +319,6 @@ namespace data.Migrations
                     b.ToTable("Shop");
                 });
 
-            modelBuilder.Entity("data.model.ShopCategory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
-
-                    b.ToTable("ShopCategories");
-                });
-
-            modelBuilder.Entity("data.model.ShopDelivery", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DeliveryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
-
-                    b.ToTable("ShopDeliveries");
-                });
-
-            modelBuilder.Entity("data.model.ShopPayment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Paymentid")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
-
-                    b.ToTable("ShopPayments");
-                });
-
-            modelBuilder.Entity("data.model.ShopTypes", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TypeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
-
-                    b.ToTable("ShopTypes");
-                });
-
             modelBuilder.Entity("data.model.Type", b =>
                 {
                     b.Property<Guid>("Id")
@@ -505,14 +430,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8320cb9e-0139-43cf-bae0-373dda4ddfce"),
-                            CreateDate = new DateTime(2023, 2, 1, 14, 19, 56, 82, DateTimeKind.Local).AddTicks(7665),
+                            Id = new Guid("778f1388-6c6c-4158-8c6f-d15b0a7f498c"),
+                            CreateDate = new DateTime(2023, 1, 27, 16, 14, 18, 746, DateTimeKind.Local).AddTicks(3095),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$rBFRPBhwVU1ovzewlDLns.9jPc4mmnNs5g3NHD/NlGYZUbsEaq0Zy",
+                            Password = "$2a$11$DbxjhplnOYRz93cQdQ1kNe/6PdrHyxc3C2nqrIiaK6fL9YBHGTBE6",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"
@@ -532,15 +457,6 @@ namespace data.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.Category", b =>
-                {
-                    b.HasOne("data.model.Category", "parent")
-                        .WithMany()
-                        .HasForeignKey("parentId");
-
-                    b.Navigation("parent");
                 });
 
             modelBuilder.Entity("data.model.Feedback", b =>
@@ -575,53 +491,6 @@ namespace data.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Logo");
-                });
-
-            modelBuilder.Entity("data.model.ShopCategory", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopCategory")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.ShopDelivery", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopDeliveries")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.ShopPayment", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopPayment")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.ShopTypes", b =>
-                {
-                    b.HasOne("data.model.Shop", null)
-                        .WithMany("ShopTypes")
-                        .HasForeignKey("shopid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("data.model.Shop", b =>
-                {
-                    b.Navigation("ShopCategory");
-
-                    b.Navigation("ShopDeliveries");
-
-                    b.Navigation("ShopPayment");
-
-                    b.Navigation("ShopTypes");
                 });
 
             modelBuilder.Entity("data.model.User", b =>

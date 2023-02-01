@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace data.Repository;
 
-public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
+public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 {
 
     protected DBContext _dbContext;
     protected DbSet<T> _dbSet;
 
-    public BaseRepository(DBContext _dbContext, DbSet<T> _dbSet)
+    public BaseRepository(DBContext _dbContext)
     {
         this._dbContext = _dbContext;
-        this._dbSet = _dbSet;
+        this._dbSet = this._dbContext.Set<T>();
     }
 
     public T? GetById(Guid id)
@@ -28,7 +28,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
 
     public Page<T> GetPage(IQueryable<T> _queryable, int page, int size)
     {
-        IEnumerable<T> items = _queryable.Skip((page-1) * size).Take(size).Where(a=>a.IsDeleted == false).ToList();
+        IEnumerable<T> items = _queryable.Skip((page-1) * size).Take(size).ToList();
         Page<T> p = new Page<T>();
         p.Count = items.Count();
         p.CurrentPage = page;
@@ -37,6 +37,11 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
         p.Total = _queryable.Count();
         p.TotalPages = (int)Math.Ceiling(p.Total / (double)size);
         return p;
+    }
+    
+    public Page<T> GetPage(int page, int size)
+    {
+        return GetPage(_dbSet, page, size);
     }
 
     public void Create(T t)
@@ -75,7 +80,6 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
     {
         var shopid = GetById(id);
         shopid.IsDeleted = true;
-        
     }
    
 
@@ -84,13 +88,5 @@ public class BaseRepository<T> : IBaseRopository<T> where T : BaseEntity
         t.IsActive = value;
     }
 
-    public DBContext DbContext()
-    {
-        return _dbContext;
-    }
-
-    public DbSet<T> DbSet()
-    {
-        return _dbSet;
-    }
+ 
 }
