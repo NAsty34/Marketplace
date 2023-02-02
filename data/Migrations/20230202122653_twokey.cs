@@ -6,11 +6,58 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace data.Migrations
 {
     /// <inheritdoc />
-    public partial class guid : Migration
+    public partial class twokey : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    parentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_parentId",
+                        column: x => x.parentId,
+                        principalTable: "Categories",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DeliveryTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Free = table.Column<bool>(type: "boolean", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "FileInfos",
                 columns: table => new
@@ -31,6 +78,48 @@ namespace data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FileInfos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentMethods",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Commission = table.Column<bool>(type: "boolean", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentMethods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Types",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Types", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,10 +241,87 @@ namespace data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ShopCategories",
+                columns: table => new
+                {
+                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopCategories", x => new { x.shopid, x.CategoryId });
+                    table.ForeignKey(
+                        name: "FK_ShopCategories_Shop_shopid",
+                        column: x => x.shopid,
+                        principalTable: "Shop",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopDeliveries",
+                columns: table => new
+                {
+                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
+                    DeliveryId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopDeliveries", x => new { x.shopid, x.DeliveryId });
+                    table.ForeignKey(
+                        name: "FK_ShopDeliveries_Shop_shopid",
+                        column: x => x.shopid,
+                        principalTable: "Shop",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopPayments",
+                columns: table => new
+                {
+                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Paymentid = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopPayments", x => new { x.shopid, x.Paymentid });
+                    table.ForeignKey(
+                        name: "FK_ShopPayments_Shop_shopid",
+                        column: x => x.shopid,
+                        principalTable: "Shop",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopTypes",
+                columns: table => new
+                {
+                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
+                    TypeId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopTypes", x => new { x.shopid, x.TypeId });
+                    table.ForeignKey(
+                        name: "FK_ShopTypes_Shop_shopid",
+                        column: x => x.shopid,
+                        principalTable: "Shop",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreateDate", "CreatorId", "DeletedDate", "DeletorId", "EditDate", "EditorId", "Email", "EmailCode", "EmailIsVerified", "IsActive", "IsDeleted", "Name", "Password", "Patronymic", "Role", "Surname" },
-                values: new object[] { new Guid("4521e6f3-0fd9-4ef1-97c8-4f746b3f81f5"), new DateTime(2023, 1, 22, 15, 17, 19, 753, DateTimeKind.Local).AddTicks(5217), null, null, null, null, null, "admin@gmail.com", null, true, true, false, "Admin", "$2a$11$.shJufRdomfs1p0O9pOh2ebHGUW/CSqMDwRs9N2KKR9FqFSJxJcWG", "Admin", "Admin", "Admin" });
+                values: new object[] { new Guid("6c27ad12-5b8e-44b6-b3dc-175dadbaec44"), new DateTime(2023, 2, 2, 15, 26, 53, 268, DateTimeKind.Local).AddTicks(7061), null, null, null, null, null, "admin@gmail.com", null, true, true, false, "Admin", "$2a$11$DeJMEufeuS8e8aGGQB6KcOwrldKZN6yaxKC.MvS8Vykqa5Xc.UlC.", "Admin", "Admin", "Admin" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_parentId",
+                table: "Categories",
+                column: "parentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteShops_UsersId",
@@ -187,10 +353,34 @@ namespace data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "DeliveryTypes");
+
+            migrationBuilder.DropTable(
                 name: "FavoriteShops");
 
             migrationBuilder.DropTable(
                 name: "Feedback");
+
+            migrationBuilder.DropTable(
+                name: "PaymentMethods");
+
+            migrationBuilder.DropTable(
+                name: "ShopCategories");
+
+            migrationBuilder.DropTable(
+                name: "ShopDeliveries");
+
+            migrationBuilder.DropTable(
+                name: "ShopPayments");
+
+            migrationBuilder.DropTable(
+                name: "ShopTypes");
+
+            migrationBuilder.DropTable(
+                name: "Types");
 
             migrationBuilder.DropTable(
                 name: "Shop");

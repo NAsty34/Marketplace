@@ -18,13 +18,12 @@ public class ShopController:UserBaseController
     private IUserServer _userServer;
     private IFileInfoService _fileInfoService;
     private IConfiguration _appConfig;
+    private ILogger<UserBaseController> logger;
     
 
-    public ShopController(HttpContext context, ILogger<UserBaseController> logger, IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig) 
+    public ShopController(ILogger<UserBaseController> logger, IShopService ishopservice, IUserServer _userServer, IFileInfoService fileInfoService, IConfiguration appConfig)
     {
-        logger.Log(LogLevel.Information, "=============== USER " + User);
-        logger.Log(LogLevel.Information, "=============== context " + context);
-        logger.Log(LogLevel.Information, "=============== USER ID " + Userid);
+        this.logger = logger;
         this._ishopservice = ishopservice;
         this._userServer = _userServer;
         this._fileInfoService = fileInfoService;
@@ -34,7 +33,7 @@ public class ShopController:UserBaseController
 
     [Route("/api/v1/shops")]
     [HttpGet]
-    public ResponceDto<Page<ShopDTO>> Shops(ILogger<ShopController> logger)
+    public ResponceDto<Page<ShopDTO>> Shops()
     {
      logger.Log(LogLevel.Information, "============" + Userid);   
         Page<Shop> shop;

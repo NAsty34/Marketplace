@@ -42,7 +42,27 @@ public class DBContext:DbContext
                 .HasForeignKey(k => k.CreatorId);
             a.HasQueryFilter(p => !p.IsDeleted);
         });
+
+        modelBuilder.Entity<ShopCategory>(a =>
+        {
+            a.HasKey(u => new{u.shopid, u.CategoryId});
+        });
             
+        modelBuilder.Entity<ShopTypes>(a =>
+        {
+            a.HasKey(u => new{u.shopid, u.TypeId});
+        });
+        
+        modelBuilder.Entity<ShopDelivery>(a =>
+        {
+            a.HasKey(u => new{u.shopid, u.DeliveryId});
+        });
+        
+        modelBuilder.Entity<ShopPayment>(a =>
+        {
+            a.HasKey(u => new{u.shopid, u.Paymentid});
+        });
+        
         modelBuilder.Entity<User>().Property(d => d.Role).HasConversion(new EnumToStringConverter<Role>());
         base.OnModelCreating(modelBuilder);
     }

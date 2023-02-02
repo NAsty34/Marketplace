@@ -1,16 +1,13 @@
 using System.Security.Claims;
 using data.model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Marketplace.controller;
 
 
 public class UserBaseController:Controller
 {
-    public UserBaseController()
-    {
-    }
-
     protected Role? role =>
         Role.TryParse(HttpContext.User.Claims.First(a => a.Type == ClaimTypes.Role).Value, out Role role) ? role : null;
     protected Guid? Userid => 

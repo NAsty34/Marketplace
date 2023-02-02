@@ -320,76 +320,52 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.ShopCategory", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("shopid")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
+                    b.HasKey("shopid", "CategoryId");
 
                     b.ToTable("ShopCategories");
                 });
 
             modelBuilder.Entity("data.model.ShopDelivery", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("shopid")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("DeliveryId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
+                    b.HasKey("shopid", "DeliveryId");
 
                     b.ToTable("ShopDeliveries");
                 });
 
             modelBuilder.Entity("data.model.ShopPayment", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("shopid")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("Paymentid")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
+                    b.HasKey("shopid", "Paymentid");
 
                     b.ToTable("ShopPayments");
                 });
 
             modelBuilder.Entity("data.model.ShopTypes", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("shopid")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("shopid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("shopid");
+                    b.HasKey("shopid", "TypeId");
 
                     b.ToTable("ShopTypes");
                 });
@@ -505,14 +481,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8320cb9e-0139-43cf-bae0-373dda4ddfce"),
-                            CreateDate = new DateTime(2023, 2, 1, 14, 19, 56, 82, DateTimeKind.Local).AddTicks(7665),
+                            Id = new Guid("6c27ad12-5b8e-44b6-b3dc-175dadbaec44"),
+                            CreateDate = new DateTime(2023, 2, 2, 15, 26, 53, 268, DateTimeKind.Local).AddTicks(7061),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$rBFRPBhwVU1ovzewlDLns.9jPc4mmnNs5g3NHD/NlGYZUbsEaq0Zy",
+                            Password = "$2a$11$DeJMEufeuS8e8aGGQB6KcOwrldKZN6yaxKC.MvS8Vykqa5Xc.UlC.",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"

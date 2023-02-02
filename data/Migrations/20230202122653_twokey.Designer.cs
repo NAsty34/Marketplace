@@ -12,8 +12,8 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20230127124842_flex")]
-    partial class flex
+    [Migration("20230202122653_twokey")]
+    partial class twokey
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,10 +77,12 @@ namespace data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("parentid")
+                    b.Property<Guid?>("parentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("parentId");
 
                     b.ToTable("Categories");
                 });
@@ -319,6 +321,58 @@ namespace data.Migrations
                     b.ToTable("Shop");
                 });
 
+            modelBuilder.Entity("data.model.ShopCategory", b =>
+                {
+                    b.Property<Guid>("shopid")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("shopid", "CategoryId");
+
+                    b.ToTable("ShopCategories");
+                });
+
+            modelBuilder.Entity("data.model.ShopDelivery", b =>
+                {
+                    b.Property<Guid>("shopid")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DeliveryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("shopid", "DeliveryId");
+
+                    b.ToTable("ShopDeliveries");
+                });
+
+            modelBuilder.Entity("data.model.ShopPayment", b =>
+                {
+                    b.Property<Guid>("shopid")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Paymentid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("shopid", "Paymentid");
+
+                    b.ToTable("ShopPayments");
+                });
+
+            modelBuilder.Entity("data.model.ShopTypes", b =>
+                {
+                    b.Property<Guid>("shopid")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TypeId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("shopid", "TypeId");
+
+                    b.ToTable("ShopTypes");
+                });
+
             modelBuilder.Entity("data.model.Type", b =>
                 {
                     b.Property<Guid>("Id")
@@ -430,14 +484,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5c17e05a-94ef-43c6-891b-31cd1f5086c4"),
-                            CreateDate = new DateTime(2023, 1, 27, 15, 48, 41, 943, DateTimeKind.Local).AddTicks(9209),
+                            Id = new Guid("6c27ad12-5b8e-44b6-b3dc-175dadbaec44"),
+                            CreateDate = new DateTime(2023, 2, 2, 15, 26, 53, 268, DateTimeKind.Local).AddTicks(7061),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$wJFVENTEVEVofqSO1bizEukciKUjSC6jAwsHI0rkXNOKT47Y/bgxa",
+                            Password = "$2a$11$DeJMEufeuS8e8aGGQB6KcOwrldKZN6yaxKC.MvS8Vykqa5Xc.UlC.",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"
@@ -457,6 +511,15 @@ namespace data.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.Category", b =>
+                {
+                    b.HasOne("data.model.Category", "parent")
+                        .WithMany()
+                        .HasForeignKey("parentId");
+
+                    b.Navigation("parent");
                 });
 
             modelBuilder.Entity("data.model.Feedback", b =>
@@ -491,6 +554,53 @@ namespace data.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Logo");
+                });
+
+            modelBuilder.Entity("data.model.ShopCategory", b =>
+                {
+                    b.HasOne("data.model.Shop", null)
+                        .WithMany("ShopCategory")
+                        .HasForeignKey("shopid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.ShopDelivery", b =>
+                {
+                    b.HasOne("data.model.Shop", null)
+                        .WithMany("ShopDeliveries")
+                        .HasForeignKey("shopid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.ShopPayment", b =>
+                {
+                    b.HasOne("data.model.Shop", null)
+                        .WithMany("ShopPayment")
+                        .HasForeignKey("shopid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.ShopTypes", b =>
+                {
+                    b.HasOne("data.model.Shop", null)
+                        .WithMany("ShopTypes")
+                        .HasForeignKey("shopid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.Shop", b =>
+                {
+                    b.Navigation("ShopCategory");
+
+                    b.Navigation("ShopDeliveries");
+
+                    b.Navigation("ShopPayment");
+
+                    b.Navigation("ShopTypes");
                 });
 
             modelBuilder.Entity("data.model.User", b =>
