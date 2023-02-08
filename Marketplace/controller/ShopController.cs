@@ -84,6 +84,9 @@ public class ShopController:UserBaseController
         
         var user = _userServer.GetUser((Guid)Userid);
         Guid Id = new Guid();
+        /*logger.Log(LogLevel.Information, "==========="+shopDto.Payment.First());
+        logger.Log(LogLevel.Information, "==========="+shopDto.Com.First());
+        logger.Log(LogLevel.Information, "==========="+shopDto.Payment.Zip(shopDto.Com, (guid, d) => new {k=guid, v=d}).First().k);*/
         var shops = new Shop()
         {
             Name = shopDto.Name,
@@ -93,9 +96,11 @@ public class ShopController:UserBaseController
             Creator = user,
             Id = Id,
             ShopCategory = shopDto.Categories.Select(a=>new ShopCategory(Id, a)).ToList(),
-            ShopDeliveries = shopDto.Deliveris.Select(a=>new ShopDelivery(Id, a)).ToList(),
-            ShopPayment = shopDto.Payments.Select(a=>new ShopPayment(Id, a)).ToList(),
-            ShopTypes = shopDto.Types.Select(a=>new ShopTypes(Id, a)).ToList()
+            ShopTypes = shopDto.Types.Select(a=>new ShopTypes(Id, a)).ToList(),
+            ShopDeliveries = shopDto.Deliveri.Zip(shopDto.MinPrice, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopDelivery(Id, a.k, a.v)).ToList(),
+            ShopPayment = shopDto.Payment.Zip(shopDto.Com, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopPayment(Id, a.k, a.v)).ToList(),
+            
+            
         };
         
         if (file != null)
@@ -134,9 +139,10 @@ public class ShopController:UserBaseController
             Logo = fi,
             Id = Id,
             ShopCategory = shopDto.Categories.Select(a=>new ShopCategory(Id, a)).ToList(),
-            ShopDeliveries = shopDto.Deliveris.Select(a=>new ShopDelivery(Id, a)).ToList(),
-            ShopPayment = shopDto.Payments.Select(a=>new ShopPayment(Id, a)).ToList(),
-            ShopTypes = shopDto.Types.Select(a=>new ShopTypes(Id, a)).ToList()
+            ShopDeliveries = shopDto.Deliveri.Zip(shopDto.MinPrice, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopDelivery(Id, a.k, a.v)).ToList(),
+            ShopTypes = shopDto.Types.Select(a=>new ShopTypes(Id, a)).ToList(),
+            ShopPayment = shopDto.Payment.Zip(shopDto.Com, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopPayment(Id, a.k, a.v)).ToList()
+            
         };
         var shope = _ishopservice.EditShop(shops, (Guid)Userid, (Role)role);
         return new(new ShopDTO(shope, _appConfig));

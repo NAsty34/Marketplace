@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Text.Json.Serialization;
 using data;
 using data.model;
 
@@ -25,20 +27,44 @@ public class ShopDTO
         isBlock = _shop.IsActive;
         Owner = new UserDto(_shop.Creator);
         Categories = _shop.ShopCategory.Select(a => a.CategoryId);
-        Deliveris = _shop.ShopDeliveries.Select(a => a.DeliveryId);
+        
         Types = _shop.ShopTypes.Select(a => a.TypeId);
-        Payments = _shop.ShopPayment.Select(a => a.Paymentid);
+
+        Payment = _shop.ShopPayment.Select(a => a.Paymentid);
+        Com = _shop.ShopPayment.Select(a => a.commision);
+        
+
+        Payments = _shop.ShopPayment.Select(a => new ShopPaymentDTO()
+        {
+            commision =a.commision,
+            IdPayment = a.Paymentid
+        });
+        Deliveris = _shop.ShopDeliveries.Select(a => new ShopDeliveryDTO()
+        {
+            IdDelivery = a.DeliveryId,
+            Price = a.Price
+        });
+        
+        //MinPrice = _shop.ShopDeliveries.Select(a=>a.Price);
     }
-    public  Guid Id { get; set; }
     
-    public  IEnumerable<Guid> Categories { get; set; }
-    public  IEnumerable<Guid> Deliveris { get; set; }
-    public  IEnumerable<Guid> Types { get; set; }
-    public  IEnumerable<Guid> Payments { get; set; }
+    public  Guid Id { get; set; }
+    [JsonIgnore]
+    public  IEnumerable<Guid> Payment { get; set; }
+    [JsonIgnore]
+    public IEnumerable<double> Com { get; set; }
+    public  IEnumerable<ShopPaymentDTO> Payments { get; set; }
     public  string? Name { get; set; }
     public  string? Description { get; set; }
     public  string? Logo { get; set; }
     public  string? Inn { get; set; }
+    public  IEnumerable<Guid> Categories { get; set; }
+    [JsonIgnore]
+    public  IEnumerable<Guid> Deliveri { get; set; }
+    [JsonIgnore]
+    public IEnumerable<double> MinPrice { get; set; }
+    public IEnumerable<ShopDeliveryDTO> Deliveris { get; set; }
+    public  IEnumerable<Guid> Types { get; set; }
     public bool isPublic { get; set; }
     public bool isBlock { get; set; }
     public UserDto Owner { get; set; }

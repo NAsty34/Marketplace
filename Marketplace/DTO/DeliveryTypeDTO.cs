@@ -12,5 +12,7 @@ public class DeliveryTypeDTO:DictionaryDTO<DeliveryType>
     {
         t.Id = Id;
         t.Name = Name;
+        t.Free = Free;
     }
+    public bool Free { get; set; }
 }

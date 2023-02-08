@@ -7,7 +7,7 @@ namespace logic.Service;
 
 public class BaseService<T> : IBaseService<T> where T : DictionaryBase
 {
-    private IBaseRopository<T> _baseRopository;
+    protected IBaseRopository<T> _baseRopository;
 
     public BaseService(IBaseRopository<T> _base)
     {
@@ -20,13 +20,13 @@ public class BaseService<T> : IBaseService<T> where T : DictionaryBase
 
    
 
-    public void Create(T t)
+    public virtual void Create(T t)
     {
         _baseRopository.Create(t);
         _baseRopository.Save();
     }
 
-    public T Edit(T t)
+    public virtual T Edit(T t)
     {
         var FromDB = _baseRopository.GetById(t.Id);
         FromDB.Name = t.Name;
@@ -39,4 +39,5 @@ public class BaseService<T> : IBaseService<T> where T : DictionaryBase
         _baseRopository.Delete(id);
         _baseRopository.Save();
     }
+    
 }

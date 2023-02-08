@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using data;
@@ -11,9 +12,11 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230206112814_updateSP")]
+    partial class updateSP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,9 +306,6 @@ namespace data.Migrations
                     b.Property<Guid?>("LogoId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("MinPrice")
-                        .HasColumnType("double precision");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -341,9 +341,6 @@ namespace data.Migrations
 
                     b.Property<Guid>("DeliveryId")
                         .HasColumnType("uuid");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("double precision");
 
                     b.HasKey("shopid", "DeliveryId");
 
@@ -489,14 +486,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("28d6c474-5754-4326-93db-3f86498e5f00"),
-                            CreateDate = new DateTime(2023, 2, 8, 3, 5, 54, 913, DateTimeKind.Local).AddTicks(32),
+                            Id = new Guid("38c8dd14-c49f-4387-adfc-ffa8c87f02b0"),
+                            CreateDate = new DateTime(2023, 2, 6, 14, 28, 13, 431, DateTimeKind.Local).AddTicks(7655),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$7HSGeeowHoGGv3u7I5UeO..xYcEyPCT5ElUBAMPREyFjKfkO8oL2q",
+                            Password = "$2a$11$dRj.Wdpth9cbBXdF43kWve4JpAT7qPBZLMhtFtczRtE7BcZoTJ162",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"

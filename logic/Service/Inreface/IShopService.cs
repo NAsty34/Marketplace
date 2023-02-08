@@ -1,4 +1,5 @@
 using data.model;
+using Type = data.model.Type;
 
 namespace logic.Service.Inreface;
 

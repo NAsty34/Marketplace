@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Type = data.model.Type;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,8 +65,14 @@ builder.Services.AddTransient <IFeedbackRepositiry, FeedbackRepositoty>();
 builder.Services.AddTransient <IShopRepository, ShopRepository>();
 builder.Services.AddTransient <IFileInfoRepository, FileInfoRepository>();
 builder.Services.AddScoped(typeof(IShopDictionaryRepository<>), typeof(ShopDictionaryRepository<>));
-builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+
 builder.Services.AddScoped(typeof(IBaseRopository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped <IBaseRopository<Category>, CategoryRepository>();
+
+builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+builder.Services.AddScoped <IBaseService<Category>, CategoryService>();
+builder.Services.AddScoped <IBaseService<Type>, TypeService>();
+
 
 
 builder.Services.AddTransient <IAuthService, AuthServer>();

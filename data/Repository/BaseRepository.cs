@@ -88,5 +88,5 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
         t.IsActive = value;
     }
 
- 
+    
 }

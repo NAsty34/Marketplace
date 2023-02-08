@@ -8,4 +8,5 @@ public class DictionaryBaseRepository:BaseRepository<DictionaryBase>, IDictionar
     public DictionaryBaseRepository(DBContext _dbContext) : base(_dbContext)
     {
     }
+    
 }

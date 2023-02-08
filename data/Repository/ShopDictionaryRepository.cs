@@ -15,6 +15,8 @@ public class ShopDictionaryRepository<T> : IShopDictionaryRepository<T> where T 
         this._dbSet = _dbContext.Set<T>();
     }
 
+    
+
     public void DeleteAllByShop(Guid shopid)
     {
         _dbSet.RemoveRange(_dbSet.Where(a => a.shopid == shopid));

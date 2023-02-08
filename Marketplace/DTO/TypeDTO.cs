@@ -13,5 +13,7 @@ public class TypeDTO:DictionaryDTO<Type>
     {
         t.Id = Id;
         t.Name = Name;
+        Discription = t.discription;
     }
+    public string Discription { get; set; }
 }

@@ -12,5 +12,7 @@ public class PaymentMethodDTO:DictionaryDTO<PaymentMethod>
     {
         t.Id = Id;
         t.Name = Name;
+        Commission = t.Commission;
     }
+    public bool Commission { get; set; }
 }
