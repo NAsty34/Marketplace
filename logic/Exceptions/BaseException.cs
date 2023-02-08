@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace logic.Exceptions;
 
 public class BaseException:Exception
@@ -11,7 +13,7 @@ public class BaseException:Exception
         Code = code;
     }
 
-    public BaseException(string msg, int code) : base(msg)
+    public BaseException(string msg, int code, HttpStatusCode httpStatusCode) : base(msg)
     {
         Code = code;
         Status = 200;

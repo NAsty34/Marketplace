@@ -170,13 +170,13 @@ public class ShopService:IShopService
         var idsCategory = shop.ShopCategory.Select(a => a.CategoryId);
         if (Caropository.GetByIds(idsCategory).Count() != idsCategory.Count())
         {
-            throw new SystemException("Category not found");
+            throw new CategoryNotFoundException();
         }
 
         var idsType = shop.ShopTypes.Select(a => a.TypeId);
         if (Taropository.GetByIds(idsType).Count() != idsType.Count())
         {
-            throw new SystemException("Type not found");
+            throw new TypeNotFoundException();
         }
 
         var idspayment = shop.ShopPayment.Select(a => a.Paymentid);
@@ -189,19 +189,19 @@ public class ShopService:IShopService
             if (!paymentList[i].Commission) spList[i].commision = 0;
             if (spList[i].commision > 1 || spList[i].commision < 0)
             {
-                throw new SystemException("Коммисия не подходит");
+                throw new CommissionNotUseException();
             }
         }
         
         if (idpayment.Count() != idspayment.Count())
         {
-            throw new SystemException("Payment Method not found");
+            throw new PyementNotFoundException();
         }
 
         var idsdelivery = shop.ShopDeliveries.Select((a => a.DeliveryId));
         if (daRopository.GetByIds(idsdelivery).Count() != idsdelivery.Count())
         {
-            throw new SystemException("Delivery Type not found");
+            throw new DeliveryNotFoundException();
         }
 
         var deliverylist = daRopository.GetByIds(idsdelivery).ToList();

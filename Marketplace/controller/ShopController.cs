@@ -100,7 +100,6 @@ public class ShopController:UserBaseController
             ShopDeliveries = shopDto.Deliveri.Zip(shopDto.MinPrice, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopDelivery(Id, a.k, a.v)).ToList(),
             ShopPayment = shopDto.Payment.Zip(shopDto.Com, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopPayment(Id, a.k, a.v)).ToList(),
             
-            
         };
         
         if (file != null)

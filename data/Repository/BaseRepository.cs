@@ -28,15 +28,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 
     public Page<T> GetPage(IQueryable<T> _queryable, int page, int size)
     {
-        IEnumerable<T> items = _queryable.Skip((page-1) * size).Take(size).ToList();
-        Page<T> p = new Page<T>();
-        p.Count = items.Count();
-        p.CurrentPage = page;
-        p.Size = size;
-        p.Items = items;
-        p.Total = _queryable.Count();
-        p.TotalPages = (int)Math.Ceiling(p.Total / (double)size);
-        return p;
+        return _queryable.GetPage(page, size);
     }
     
     public Page<T> GetPage(int page, int size)

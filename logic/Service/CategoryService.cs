@@ -3,6 +3,7 @@ using Dapper;
 using data.model;
 using data.Repository;
 using data.Repository.Interface;
+using logic.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace logic.Service;
@@ -29,7 +30,7 @@ public class CategoryService:BaseService<Category>
         var FromDB = _baseRopository.GetById(t.Id);
         if (FromDB == null)
         {
-            throw new SystemException("Category not found");
+            throw new CategoryNotFoundException();
         }
         CheckParent(t);
         
@@ -37,7 +38,7 @@ public class CategoryService:BaseService<Category>
 
         if (children.Contains(t.parent.Id))
         {
-            throw new SystemException("Категория не может иметь своих потомков в роли родителя");
+            throw new CategoryParentException();
         }
         
         
@@ -52,12 +53,12 @@ public class CategoryService:BaseService<Category>
         if (t.parent == null) return;
         if (t.parent.Id.Equals(t.Id))
         {
-            throw new SystemException("потомок категории сама категория");
+            throw new CategoryParentCategoryException();
         }
         var parent = _baseRopository.GetById(t.parent.Id);
         if (parent == null)
         {
-            throw new SystemException("Parent not found");
+            throw new ParentNotFoundException();
         }
         t.parent = parent;
     }
