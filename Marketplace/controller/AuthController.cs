@@ -18,7 +18,7 @@ public class AuthController: Controller
     
     [Route("/api/v1/auth/login")]
     [HttpPost]
-    public ResponceDto<TokenDTO> Login([FromBody]LoginDTO loginDto)
+    public async Task<ResponceDto<TokenDTO>> Login([FromBody]LoginDTO loginDto)
     {
         var a = _authService.Login(loginDto.Email, loginDto.Password);
         TokenDTO tokenDto = new TokenDTO();

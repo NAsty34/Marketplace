@@ -13,28 +13,28 @@ public class BaseService<T> : IBaseService<T> where T : DictionaryBase
     {
         this._baseRopository = _base;
     }
-    public Page<T> Page(int page, int size)
+    public async Task<Page<T>> Page(int page, int size)
     {
-        return _baseRopository.GetPage(page, size);
+        return await _baseRopository.GetPage(page, size);
     }
 
    
 
-    public virtual void Create(T t)
+    public virtual async void Create(T t)
     {
-        _baseRopository.Create(t);
-        _baseRopository.Save();
+         _baseRopository.Create(t);
+         _baseRopository.Save();
     }
 
-    public virtual T Edit(T t)
+    public virtual async Task<T> Edit(T t)
     {
-        var FromDB = _baseRopository.GetById(t.Id);
+        var FromDB = await _baseRopository.GetById(t.Id);
         FromDB.Name = t.Name;
         _baseRopository.Save();
         return FromDB;
     }
 
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
         _baseRopository.Delete(id);
         _baseRopository.Save();

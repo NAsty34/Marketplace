@@ -25,9 +25,9 @@ public class CategoryService:BaseService<Category>
         _baseRopository.Save();
     }
 
-    public override Category Edit(Category t)
+    public override async Task<Category> Edit(Category t)
     {
-        var FromDB = _baseRopository.GetById(t.Id);
+        var FromDB = await _baseRopository.GetById(t.Id);
         if (FromDB == null)
         {
             throw new CategoryNotFoundException();
@@ -48,14 +48,14 @@ public class CategoryService:BaseService<Category>
         return FromDB;
     }
 
-    private void CheckParent(Category t)
+    private async void CheckParent(Category t)
     {
         if (t.parent == null) return;
         if (t.parent.Id.Equals(t.Id))
         {
             throw new CategoryParentCategoryException();
         }
-        var parent = _baseRopository.GetById(t.parent.Id);
+        var parent = await _baseRopository.GetById(t.parent.Id);
         if (parent == null)
         {
             throw new ParentNotFoundException();

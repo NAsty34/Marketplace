@@ -8,31 +8,31 @@ namespace data.Repository;
 
 public class ShopRepository:BaseRepository<Shop>, IShopRepository
 {
-    public Page<Shop> GetPublicShops()
+    public async Task<Page<Shop>> GetPublicShops()
     { 
-        return GetPage(
+        return await GetPage(
             _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.isPublic && a.IsActive),1,20
             );
         
     }
 
-    public Page<Shop> GetSellerShops(Guid id)
+    public async Task<Page<Shop>> GetSellerShops(Guid id)
     {
-        return GetPage(
+        return await GetPage(
             _dbSet.Include(s=>((Shop)s).Creator).Where(a => a.CreatorId == id),1,20
             );
         
     }
 
-    public Shop? GetByInn(string inn)
+    public async Task<Shop?> GetByInn(string inn)
     {
         return _dbSet.Include(a=>a.Creator).FirstOrDefault(a => a.Inn == inn && a.IsActive);
         
     }
 
-    public Page<Shop> GetPage(int page, int size)
+    public async Task<Page<Shop>> GetPage(int page, int size)
     {
-        return GetPage(
+        return await GetPage(
             _dbSet.Where(a=>!a.IsDeleted),page,size
         );
     }

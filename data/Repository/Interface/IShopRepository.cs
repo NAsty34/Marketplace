@@ -4,9 +4,9 @@ namespace data.Repository.Interface;
 
 public interface IShopRepository:IBaseRopository<Shop>
 {
-    Page<Shop> GetPublicShops();
-    Page<Shop> GetSellerShops(Guid id);
-    Shop? GetByInn(string inn);
-    Page<Shop> GetPage(int page, int size);
+    Task<Page<Shop>> GetPublicShops();
+    Task<Page<Shop>> GetSellerShops(Guid id);
+    Task<Shop?> GetByInn(string inn);
+    Task<Page<Shop>> GetPage(int page, int size);
 
 }

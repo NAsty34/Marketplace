@@ -33,21 +33,21 @@ public class ShopController:UserBaseController
 
     [Route("/api/v1/shops")]
     [HttpGet]
-    public ResponceDto<Page<ShopDTO>> Shops()
+    public async Task<ResponceDto<Page<ShopDTO>>> Shops()
     {
      logger.Log(LogLevel.Information, "============" + Userid);   
         Page<Shop> shop;
         if (role.Equals(Role.Admin))
         {
-            shop = _ishopservice.GetShops();
+            shop = await _ishopservice.GetShops();
         }
         else if (role.Equals(Role.Buyer))
         {
-            shop = _ishopservice.GetPublicShops();
+            shop = await _ishopservice.GetPublicShops();
         }
         else
         {
-            shop = _ishopservice.GetSellerShops((Guid)Userid);
+            shop = await _ishopservice.GetSellerShops((Guid)Userid);
         }
 
         Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a, _appConfig)));
@@ -56,9 +56,9 @@ public class ShopController:UserBaseController
 
     [Route("/api/v1/shops/{id}")]
     [HttpGet]
-    public ResponceDto<ShopDTO> GetShop(Guid id)
+    public async Task<ResponceDto<ShopDTO>> GetShop(Guid id)
     {
-        var selshop = _ishopservice.GetShop(id);
+        var selshop = await _ishopservice.GetShop(id);
         if (role.Equals(Role.Buyer) && !selshop.isPublic)
         {
 
@@ -82,7 +82,7 @@ public class ShopController:UserBaseController
             throw new SystemException("Access denied");
         }
         
-        var user = _userServer.GetUser((Guid)Userid);
+        var user = await _userServer.GetUser((Guid)Userid);
         Guid Id = new Guid();
         /*logger.Log(LogLevel.Information, "==========="+shopDto.Payment.First());
         logger.Log(LogLevel.Information, "==========="+shopDto.Com.First());
@@ -104,7 +104,7 @@ public class ShopController:UserBaseController
         
         if (file != null)
         {
-            data.model.FileInfo fileIn = _fileInfoService.Addfile(file, shops.Id);
+            data.model.FileInfo fileIn = await _fileInfoService.Addfile(file, shops.Id);
             shops.Logo = fileIn;
         }
         _ishopservice.CreateShop(shops);
@@ -113,7 +113,7 @@ public class ShopController:UserBaseController
 
     [Route("/api/v1/shops/{shopid}")]
     [HttpPut]
-    public ResponceDto<ShopDTO> EditShops([FromForm] ShopDTO shopDto, IFormFile file, Guid shopid)
+    public async Task<ResponceDto<ShopDTO>> EditShops([FromForm] ShopDTO shopDto, IFormFile file, Guid shopid)
     {
         
         
@@ -126,7 +126,7 @@ public class ShopController:UserBaseController
         data.model.FileInfo fi=null;
         if (file != null)
         {
-            fi = _fileInfoService.Addfile(file, shopid);
+            fi = await _fileInfoService.Addfile(file, shopid);
         }
         Guid Id = shopid;
         var shops = new Shop()
@@ -143,37 +143,37 @@ public class ShopController:UserBaseController
             ShopPayment = shopDto.Payment.Zip(shopDto.Com, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopPayment(Id, a.k, a.v)).ToList()
             
         };
-        var shope = _ishopservice.EditShop(shops, (Guid)Userid, (Role)role);
+        var shope = await _ishopservice.EditShop(shops, (Guid)Userid, (Role)role);
         return new(new ShopDTO(shope, _appConfig));
     }
 
     [Route("/api/v1/shops/block/{id}")]
     [HttpGet]
-    public ResponceDto<ShopDTO> BlockShop(Guid id)
+    public async Task<ResponceDto<ShopDTO>> BlockShop(Guid id)
     {
         if (!role.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }
-        var blockshop = _ishopservice.ChangeBlockShop(id, false);
+        var blockshop = await _ishopservice.ChangeBlockShop(id, false);
         return new(new ShopDTO(blockshop, _appConfig));
     }
 
     [Route("/api/v1/shops/unblock/{id}")]
     [HttpGet]
-    public ResponceDto<ShopDTO> UnblockGetShops(Guid id)
+    public async Task<ResponceDto<ShopDTO>> UnblockGetShops(Guid id)
     {
         if (!role.Equals(Role.Admin))
         {
             throw new SystemException("Access denied");
         }
-        var unblockshop = _ishopservice.ChangeBlockShop(id, true);
+        var unblockshop = await _ishopservice.ChangeBlockShop(id, true);
         return new(new ShopDTO(unblockshop, _appConfig));
     }
 
     [Route("/api/v1/shops/{id}")]
     [HttpDelete]
-    public ResponceDto<string> DeleteShop(Guid id)
+    public async Task<ResponceDto<string>> DeleteShop(Guid id)
     {
         _ishopservice.DeleteShop(id);
         return new("Shop ok deleted");

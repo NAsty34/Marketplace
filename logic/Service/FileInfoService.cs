@@ -16,7 +16,7 @@ public class FileInfoService:IFileInfoService
         this.appConfig = _appConfig;
         this._fileInfoRepository = fileInfoRepository;
     }
-    public data.model.FileInfo Addfile(IFormFile file, Guid entityId)
+    public async Task<data.model.FileInfo> Addfile(IFormFile file, Guid entityId)
     {
         var extension = Path.GetExtension(file.FileName);
         if (extension != ".png" && extension != ".jpg") throw new LogoException();
@@ -31,7 +31,7 @@ public class FileInfoService:IFileInfoService
         new DirectoryInfo($"{appConfig["BasePath"]}/{entityId}").Create();
         using (var fileStream = new FileStream(fullPath, FileMode.Append))
         {
-            file.CopyToAsync(fileStream);
+            await file.CopyToAsync(fileStream);
         }
         return fi;
     }

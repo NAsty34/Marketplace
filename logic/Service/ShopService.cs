@@ -44,14 +44,14 @@ public class ShopService:IShopService
         this.daRopository = daRopository;
     }
     
-    public Page<Shop> GetShops()
+    public async Task<Page<Shop>> GetShops()
     {
-        return _shopRepository.GetPage(1, 20);
+        return await _shopRepository.GetPage(1, 20);
     }
 
-    public Shop GetShop(Guid id)
+    public async Task<Shop> GetShop(Guid id)
     {
-        var shopid = _shopRepository.GetById(id);
+        var shopid = await _shopRepository.GetById(id);
         if (shopid == null)
         {
             throw new ShopNotFoundException();
@@ -60,9 +60,9 @@ public class ShopService:IShopService
         return shopid;
     }
 
-    public void DeleteShop(Guid id)
+    public async void DeleteShop(Guid id)
     {
-        var shopid = _shopRepository.GetById(id);
+        var shopid = await _shopRepository.GetById(id);
         if (shopid != null)
         {
             CategoriesShop.DeleteAllByShop(id);
@@ -99,9 +99,9 @@ public class ShopService:IShopService
 
    
 
-    public Shop EditShop(Shop shop, Guid userid, Role role)
+    public async Task<Shop> EditShop(Shop shop, Guid userid, Role role)
     {
-        var FromDB = _shopRepository.GetById(shop.Id);
+        var FromDB = await _shopRepository.GetById(shop.Id);
         if (FromDB == null)
         {
             throw new ShopNotFoundException();
@@ -135,26 +135,26 @@ public class ShopService:IShopService
         return FromDB;
     }
 
-    public Page<Shop> GetPublicShops()
+    public async Task<Page<Shop>> GetPublicShops()
     {
-        return _shopRepository.GetPublicShops();
+        return await _shopRepository.GetPublicShops();
     }
 
-    public Page<Shop> GetSellerShops(Guid id)
+    public async Task<Page<Shop>> GetSellerShops(Guid id)
     
     {
-        var shopid = _repositoryUser.GetById(id);
+        var shopid = await _repositoryUser.GetById(id);
         if (shopid == null)
         {
             throw new UserNotFoundException();
         }
         
-        return _shopRepository.GetSellerShops(shopid.Id);
+        return await _shopRepository.GetSellerShops(shopid.Id);
     }
 
-    public Shop ChangeBlockShop(Guid id, bool value)
+    public async Task<Shop> ChangeBlockShop(Guid id, bool value)
     {
-        var shopid = _shopRepository.GetById(id);
+        var shopid = await _shopRepository.GetById(id);
         if (shopid is null)
         {
             throw new ShopNotFoundException();
@@ -165,22 +165,24 @@ public class ShopService:IShopService
         return shopid;
     }
 
-    private void ChekField(Shop shop)
+    private async void ChekField(Shop shop)
     {
         var idsCategory = shop.ShopCategory.Select(a => a.CategoryId);
-        if (Caropository.GetByIds(idsCategory).Count() != idsCategory.Count())
+        var cids = await Caropository.GetByIds(idsCategory); 
+        if (cids.Count() != idsCategory.Count())
         {
             throw new CategoryNotFoundException();
         }
 
         var idsType = shop.ShopTypes.Select(a => a.TypeId);
-        if (Taropository.GetByIds(idsType).Count() != idsType.Count())
+        var tids = await Taropository.GetByIds(idsType); 
+        if (tids.Count() != idsType.Count())
         {
             throw new TypeNotFoundException();
         }
 
         var idspayment = shop.ShopPayment.Select(a => a.Paymentid);
-        var idpayment = paRopository.GetByIds(idspayment);
+        var idpayment = await paRopository.GetByIds(idspayment);
         var paymentList = idpayment.ToList();
         var spList = shop.ShopPayment.ToList();
         
@@ -199,16 +201,18 @@ public class ShopService:IShopService
         }
 
         var idsdelivery = shop.ShopDeliveries.Select((a => a.DeliveryId));
-        if (daRopository.GetByIds(idsdelivery).Count() != idsdelivery.Count())
+        var dids = await daRopository.GetByIds(idsdelivery); 
+        if (dids.Count() != idsdelivery.Count())
         {
             throw new DeliveryNotFoundException();
         }
 
-        var deliverylist = daRopository.GetByIds(idsdelivery).ToList();
+        var deliverylist = await daRopository.GetByIds(idsdelivery);
+        var delivList = deliverylist.ToList();
         var delist = shop.ShopDeliveries.ToList();
-        for (int i = 0; i < deliverylist.Count(); i++)
+        for (int i = 0; i < delivList.Count(); i++)
         {
-            if (!deliverylist[i].Free) delist[i].Price = 0;
+            if (!delivList[i].Free) delist[i].Price = 0;
         }
 
 

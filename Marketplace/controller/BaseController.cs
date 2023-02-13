@@ -21,15 +21,15 @@ public class BaseController<T, U>:Controller where U: DictionaryDTO<T>
 
     
     [HttpGet]
-    public ResponceDto<Page<U>> All()
+    public async Task<ResponceDto<Page<U>>> All()
     {
-        Page<T> GetAll = BaseService.Page(1, 20);
+        Page<T> GetAll = await BaseService.Page(1, 20);
         Page<U> result = _mapper.Map<Page<U>>(GetAll);
         return new (result);
     }
     
     [HttpPost]
-    public ResponceDto<U> Create([FromBody] T _t)
+    public async Task<ResponceDto<U>> Create([FromBody] T _t)
     {
         BaseService.Create(_t);
         U result = _mapper.Map<U>(_t);
@@ -37,9 +37,9 @@ public class BaseController<T, U>:Controller where U: DictionaryDTO<T>
     }
     [Authorize (Roles = "Admin")]
     [HttpPut]
-    public ResponceDto<U> Edit([FromBody] T _t)
+    public async Task<ResponceDto<U>> Edit([FromBody] T _t)
     {
-        BaseService.Edit(_t);
+        await BaseService.Edit(_t);
         U result = _mapper.Map<U>(_t);
         return new (result);
     }

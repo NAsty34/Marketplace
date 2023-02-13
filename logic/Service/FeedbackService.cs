@@ -19,27 +19,27 @@ public class FeedbackService:IFeedbackService
         this._shopRepository = _shopRepository;
         this._repositoryUser = _repositoryUser;
     }
-    public Page<Feedback> GetByUser(Guid id, bool isAdmin)
+    public async Task<Page<Feedback>> GetByUser(Guid id, bool isAdmin)
     {
-        return _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin);
+        return await _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin);
     }
 
-    public Page<Feedback> GetByShop(Guid id, bool isAdmin)
+    public async Task<Page<Feedback>> GetByShop(Guid id, bool isAdmin)
     {
-        return _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
+        return await _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
     }
 
-    public void AddFeedback(Feedback feedback)
+    public async void AddFeedback(Feedback feedback)
     {
-        feedback.Creator = _repositoryUser.GetById((Guid)feedback.CreatorId);
-        feedback.Shop = _shopRepository.GetById(feedback.ShopId);
+        feedback.Creator = await _repositoryUser.GetById((Guid)feedback.CreatorId);
+        feedback.Shop = await _shopRepository.GetById(feedback.ShopId);
         _feedbackRepositiry.Create(feedback);
         _feedbackRepositiry.Save();
     }
 
-    public Feedback EditFeedback(Feedback feedback, Guid userid, Role role)
+    public async Task<Feedback> EditFeedback(Feedback feedback, Guid userid, Role role)
     {
-        var fromdb = _feedbackRepositiry.GetById(feedback.Id);
+        var fromdb = await _feedbackRepositiry.GetById(feedback.Id);
         if (fromdb == null)
         {
             throw new FeedbackNotFoundException();
@@ -58,9 +58,9 @@ public class FeedbackService:IFeedbackService
         return fromdb;
     }
 
-    public void DeleteFeedback(Guid feedback, Guid userid, Role role)
+    public async void DeleteFeedback(Guid feedback, Guid userid, Role role)
     {
-        var fromdb = _feedbackRepositiry.GetById(feedback);
+        var fromdb = await _feedbackRepositiry.GetById(feedback);
         if (fromdb == null)
         {
             throw new FeedbackNotFoundException();
@@ -76,9 +76,9 @@ public class FeedbackService:IFeedbackService
         _feedbackRepositiry.Save();
     }
 
-    public Feedback ChangeBlockFeedback(Guid id, bool value)
+    public async Task<Feedback> ChangeBlockFeedback(Guid id, bool value)
     {
-        var feedid = _feedbackRepositiry.GetById(id);
+        var feedid = await _feedbackRepositiry.GetById(id);
         if (feedid== null)
         {
             throw new FeedbackNotFoundException();

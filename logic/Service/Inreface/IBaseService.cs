@@ -5,8 +5,8 @@ namespace logic.Service;
 
 public interface IBaseService<T> 
 {
-    public Page<T> Page(int page, int size);
+    public Task<Page<T>> Page(int page, int size);
     public void Create(T t);
-    public T Edit(T t);
+    public Task<T> Edit(T t);
     public void Delete (Guid id);
 }

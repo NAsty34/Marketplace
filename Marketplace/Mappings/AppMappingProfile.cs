@@ -9,6 +9,9 @@ public class AppMappingProfile : Profile
 {
     public AppMappingProfile()
     {
+        CreateMap<Shop, ShopDTO>();
+        CreateMap<Shop, ShopDTO>().ReverseMap();
+        
         CreateMap<Category, CategoryDto>();
         CreateMap<Category, CategoryDto>().ReverseMap();
         CreateMap<Page<Category>, Page<CategoryDto>>();

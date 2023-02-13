@@ -16,47 +16,47 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
         this._dbSet = this._dbContext.Set<T>();
     }
 
-    public T? GetById(Guid id)
+    public async Task<T?> GetById(Guid id)
     {
         return _dbSet.Find(id);
     }
 
-    public IEnumerable<T> GetByIds(IEnumerable<Guid> ids)
+    public async Task<IEnumerable<T>> GetByIds(IEnumerable<Guid> ids)
     {
         return _dbSet.Where(a => ids.Contains(a.Id));
     }
 
-    public Page<T> GetPage(IQueryable<T> _queryable, int page, int size)
+    public async Task<Page<T>> GetPage(IQueryable<T> queryable, int page, int size)
     {
-        return _queryable.GetPage(page, size);
+        return queryable.GetPage(page, size);
     }
     
-    public Page<T> GetPage(int page, int size)
+    public async Task<Page<T>> GetPage(int page, int size)
     {
-        return GetPage(_dbSet, page, size);
+        return await GetPage(_dbSet, page, size);
     }
 
-    public void Create(T t)
+    public async void Create(T t)
     {
         _dbSet.Add(t);
     }
 
-    public void Create(IEnumerable<T> _t)
+    public async void Create(IEnumerable<T> _t)
     {
-        _dbSet.AddRange(_t);
+         _dbSet.AddRange(_t);
         
     }
 
-    public void Save()
+    public async void Save()
     {
         _dbContext.SaveChanges();
     }
 
-    public void Edit(T t)
+    public async void Edit(T t)
     {
-        _dbContext.Entry(t).State = EntityState.Modified;
+       _dbContext.Entry(t).State = EntityState.Modified;
     }
-    public void Edit(IEnumerable<T> _t)
+    public async void Edit(IEnumerable<T> _t)
     {
         foreach (var baseEntity in _t)
         {
@@ -64,18 +64,18 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
         }
     }
 
-    public void Delete(T t)
+    public async void Delete(T t)
     {
         t.IsDeleted = true;
     }
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
-        var shopid = GetById(id);
+        var shopid = await GetById(id);
         shopid.IsDeleted = true;
     }
    
 
-    public void SetActivite(T t, bool value)
+    public async void SetActivite(T t, bool value)
     {
         t.IsActive = value;
     }

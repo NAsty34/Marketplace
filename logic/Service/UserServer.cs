@@ -17,14 +17,14 @@ public class UserServer:IUserServer
         this._hashService = hashService;
         this._shopService = shopService;
     }
-    public Page<User> GetUsers()
+    public async Task<Page<User>> GetUsers()
     {
-        return userrepository.GetPage(1, 20);
+        return await userrepository.GetPage(1, 20);
     }
 
-    public User? GetUser(Guid id)
+    public async Task<User> GetUser(Guid id)
     {
-        var userid = userrepository.GetById(id);
+        var userid = await userrepository.GetById(id);
         if (userid == null)
         {
             throw new UserNotFoundException();
@@ -33,9 +33,9 @@ public class UserServer:IUserServer
         return userid;
     }
 
-    public User EditUser(User user)
+    public async Task<User> EditUser(User user)
     {
-        var fromdb = GetUser(user.Id);
+        var fromdb = await GetUser(user.Id);
         if (fromdb == null)
         {
             throw new UserNotFoundException();
@@ -48,7 +48,7 @@ public class UserServer:IUserServer
         return fromdb;
     }
 
-    public void CreateAdmin(User user)
+    public async void CreateAdmin(User user)
     {
         if (userrepository.GetUser(user.Email) != null)
         {
@@ -60,9 +60,9 @@ public class UserServer:IUserServer
         userrepository.Save();
     }
 
-    public User ChangeBlockUser(Guid id, bool value)
+    public async Task<User> ChangeBlockUser(Guid id, bool value)
     {
-        var userid = userrepository.GetById(id);
+        var userid = await userrepository.GetById(id);
         if (userid == null)
         {
             throw new UserNotFoundException();
@@ -73,24 +73,24 @@ public class UserServer:IUserServer
         return userid;
     }
 
-    public List<Shop> GetFavoriteShops(Guid userid)
+    public async Task<List<Shop>> GetFavoriteShops(Guid userid)
     {
-        var user = userrepository.GetById(userid);
+        var user = await userrepository.GetById(userid);
         return user.FavoriteShops;
     }
 
-    public Shop CreateFavShop(Guid shopid, Guid userid)
+    public async Task<Shop> CreateFavShop(Guid shopid, Guid userid)
     {
-        var user = userrepository.GetById(userid);
-        var shop = _shopService.GetShop(shopid);
+        var user = await userrepository.GetById(userid);
+        var shop = await _shopService.GetShop(shopid);
         user.FavoriteShops.Add(shop);
         userrepository.Save();
         return shop;
     }
-    public Shop DelFavShop(Guid shopid, Guid userid)
+    public async Task<Shop> DelFavShop(Guid shopid, Guid userid)
     {
-        var user = userrepository.GetById(userid);
-        var shop = _shopService.GetShop(shopid);
+        var user = await userrepository.GetById(userid);
+        var shop = await _shopService.GetShop(shopid);
         user.FavoriteShops.Remove(shop);
         userrepository.Save();
         return shop;

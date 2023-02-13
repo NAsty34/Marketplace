@@ -25,15 +25,16 @@ public class ProfileController : UserBaseController
 
     [Route("/api/v1/me")]
     [HttpGet]
-    public ResponceDto<UserDto> GetProfile()
+    public async Task<ResponceDto<UserDto>> GetProfile()
     {
-        var user = _UserServer.GetUser((Guid)Userid);
+        var user = await _UserServer.GetUser((Guid)Userid);
         return new (new UserDto(user));
+        
     }
     
     [Route("/api/v1/me")]
     [HttpPut]
-    public ResponceDto<UserDto> EditProfile([FromBody]UserDto userDto)
+    public async Task<ResponceDto<UserDto>> EditProfile([FromBody]UserDto userDto)
     {
         User user = new User()
         {
@@ -42,30 +43,31 @@ public class ProfileController : UserBaseController
             Patronymic = userDto.Patronymic,
             Id = (Guid)Userid
         };
-        user = _UserServer.EditUser(user);
+        user = await _UserServer.EditUser(user);
         return new(new UserDto(user));
     }
 
     [Route("/api/v1/me/shops")]
     [HttpGet]
-    public ResponceDto<IEnumerable<ShopDTO>> FavoriteShops()
+    public async Task<ResponceDto<IEnumerable<ShopDTO>>> FavoriteShops()
     {
-        return new ResponceDto<IEnumerable<ShopDTO>>(_UserServer.GetFavoriteShops((Guid)Userid).Select(a=>new ShopDTO(a, appConfig)));
+        var list = await _UserServer.GetFavoriteShops((Guid)Userid);
+        return new ResponceDto<IEnumerable<ShopDTO>>( list.Select(a=>new ShopDTO(a, appConfig)));
     }
 
     [Route("/api/v1/me/shops/{shopid}")]
     [HttpGet]
-    public ResponceDto<ShopDTO> CreateFavoriteShops(Guid shopid)
+    public async Task<ResponceDto<ShopDTO>> CreateFavoriteShops(Guid shopid)
     {
-        var shop = _UserServer.CreateFavShop(shopid, (Guid)Userid);
+        var shop = await _UserServer.CreateFavShop(shopid, (Guid)Userid);
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
     
     [Route("/api/v1/me/shops/{shopid}")]
     [HttpDelete]
-    public ResponceDto<ShopDTO> DelFavoriteShops(Guid shopid)
+    public async Task<ResponceDto<ShopDTO>> DelFavoriteShops(Guid shopid)
     {
-        var shop = _UserServer.DelFavShop(shopid, (Guid)Userid);
+        var shop = await _UserServer.DelFavShop(shopid, (Guid)Userid);
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
 

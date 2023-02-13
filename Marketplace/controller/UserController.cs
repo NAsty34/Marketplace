@@ -20,9 +20,9 @@ public class UserController:UserBaseController
 
     [Route("/api/v1/users")]
     [HttpGet]
-    public ResponceDto<Page<UserDto>> GetUsers()
+    public async Task<ResponceDto<Page<UserDto>>> GetUsers()
     {
-        var users = _userServer.GetUsers();
+        var users =await _userServer.GetUsers();
         Page<UserDto> pageuser = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
         
         return new(pageuser);
@@ -30,40 +30,40 @@ public class UserController:UserBaseController
 
     [Route("/api/v1/users/{id}")]
     [HttpGet]
-    public ResponceDto<UserDto> GetUser(Guid id)
+    public async Task<ResponceDto<UserDto>> GetUser(Guid id)
     {
-        var user = _userServer.GetUser(id);
+        var user = await _userServer.GetUser(id);
         UserDto userD = new UserDto(user);
         return new(userD);
     }
     
     [Route("/api/v1/user/block/{id}")]
     [HttpGet]
-    public ResponceDto<UserDto> BlockUser(Guid id)
+    public async Task<ResponceDto<UserDto>> BlockUser(Guid id)
     {
         if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
-        var blockuser = _userServer.ChangeBlockUser(id, false);
+        var blockuser = await _userServer.ChangeBlockUser(id, false);
         return new(new UserDto(blockuser));
     }
 
     [Route("/api/v1/user/unblock/{id}")]
     [HttpGet]
-    public ResponceDto<UserDto> UnblockUser(Guid id)
+    public async Task<ResponceDto<UserDto>> UnblockUser(Guid id)
     {
         if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
-        var unblockuser = _userServer.ChangeBlockUser(id, true);
+        var unblockuser =await _userServer.ChangeBlockUser(id, true);
         return new(new UserDto(unblockuser));
     }
 
     [Route("/api/v1/user/admin")]
     [HttpPost]
-    public ResponceDto<UserDto> CreateAdmin([FromBody] RegisterDTO userDto)
+    public async Task<ResponceDto<UserDto>> CreateAdmin([FromBody] RegisterDTO userDto)
     {
         if (!role.Equals(Role.Admin))
         {
