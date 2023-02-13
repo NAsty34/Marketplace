@@ -22,7 +22,7 @@ public class UserDto
     public string Name { get; set; }
     public  string Surname { get; set; }
     public  string Patronymic { get; set; }
-    [EmailAddress]
+    
     public  string Email { get; set; }
     public Role role { get; set; }
     public Guid Id { get; set; }

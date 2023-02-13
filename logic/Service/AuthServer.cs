@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Dadata.Model;
+using System.Text.RegularExpressions;
 using data.model;
 using data.Repository;
 using logic.Exceptions;
@@ -26,6 +26,8 @@ public class AuthServer:IAuthService
             throw new RoleException();
         if (string.IsNullOrEmpty(user.Email) )
             throw new EmailException();
+        if (!new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$").IsMatch(user.Password))
+            throw new PasswordIncorrectException();
         var Emailuser = _userRepository.GetUser(user.Email);
         if (Emailuser != null)
         {

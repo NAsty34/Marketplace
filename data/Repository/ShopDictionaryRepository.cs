@@ -17,13 +17,13 @@ public class ShopDictionaryRepository<T> : IShopDictionaryRepository<T> where T 
 
     
 
-    public void DeleteAllByShop(Guid shopid)
+    public async void DeleteAllByShop(Guid shopid)
     {
         _dbSet.RemoveRange(_dbSet.Where(a => a.shopid == shopid));
         _dbContext.SaveChanges();
     }
 
-    public void CreateRange(IEnumerable<T> ids)
+    public async void CreateRange(IEnumerable<T> ids)
     {
         _dbSet.AddRange(ids);
         _dbContext.SaveChanges();

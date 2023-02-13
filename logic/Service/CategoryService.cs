@@ -34,7 +34,7 @@ public class CategoryService:BaseService<Category>
         }
         CheckParent(t);
         
-        var children = categoryRepository.Children(t.Id);
+        var children = await categoryRepository.Children(t.Id);
 
         if (children.Contains(t.parent.Id))
         {
