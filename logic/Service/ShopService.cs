@@ -44,9 +44,9 @@ public class ShopService:IShopService
         this.daRopository = daRopository;
     }
     
-    public async Task<Page<Shop>> GetShops()
+    public async Task<Page<Shop>> GetShops(FiltersShops filtersShops)
     {
-        return await _shopRepository.GetPage(1, 20);
+        return await _shopRepository.GetPage(filtersShops);
     }
 
     public async Task<Shop> GetShop(Guid id)
@@ -75,9 +75,9 @@ public class ShopService:IShopService
         
     }
 
-    public void CreateShop(Shop shop)
+    public async Task<Shop> CreateShop(Shop shop)
     {
-        if (_shopRepository.GetByInn(shop.Inn) != null)
+        if (await _shopRepository.GetByInn(shop.Inn) != null)
         {
             throw new InnAlreadyUseException();
         }
@@ -91,10 +91,9 @@ public class ShopService:IShopService
         }*/
         ChekField(shop);
         
-        
-        
         _shopRepository.Create(shop);
         _shopRepository.Save();
+        return shop;
     }
 
    
@@ -133,23 +132,6 @@ public class ShopService:IShopService
        
         _shopRepository.Save();
         return FromDB;
-    }
-
-    public async Task<Page<Shop>> GetPublicShops()
-    {
-        return await _shopRepository.GetPublicShops();
-    }
-
-    public async Task<Page<Shop>> GetSellerShops(Guid id)
-    
-    {
-        var shopid = await _repositoryUser.GetById(id);
-        if (shopid == null)
-        {
-            throw new UserNotFoundException();
-        }
-        
-        return await _shopRepository.GetSellerShops(shopid.Id);
     }
 
     public async Task<Shop> ChangeBlockShop(Guid id, bool value)
@@ -214,8 +196,12 @@ public class ShopService:IShopService
         {
             if (!delivList[i].Free) delist[i].Price = 0;
         }
-
-
-
     }
+
+    public async Task<Page<Shop>> GetShopSerch(string name, string description)
+    {
+        return await _shopRepository.GetByNameAnddescription(name, description);
+    }
+
+    
 }

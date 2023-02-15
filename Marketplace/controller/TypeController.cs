@@ -14,4 +14,5 @@ public class TypeController:BaseController<Type, TypeDTO>
     public TypeController(IBaseService<Type> _base, IMapper mapper) : base(_base, mapper)
     {
     }
+
 }

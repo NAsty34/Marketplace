@@ -11,6 +11,7 @@ public class User:BaseEntity
     [Required]
     public string? Patronymic { get; set; }
     [Required]
+    [EmailAddress]
     public string? Email { get; set; }
     [Required]
     public Role Role { get; set; }

@@ -33,23 +33,22 @@ public class ShopController:UserBaseController
 
     [Route("/api/v1/shops")]
     [HttpGet]
-    public async Task<ResponceDto<Page<ShopDTO>>> Shops()
+    public async Task<ResponceDto<Page<ShopDTO>>> Shops(FiltersShops filtersShops)
     {
-     logger.Log(LogLevel.Information, "============" + Userid);   
-        Page<Shop> shop;
-        if (role.Equals(Role.Admin))
+     /*logger.Log(LogLevel.Information, "============" + filtersShops);*/
+     filtersShops.User = null;
+     filtersShops.IsPublic = null;
+        
+        if (role.Equals(Role.Buyer))
         {
-            shop = await _ishopservice.GetShops();
-        }
-        else if (role.Equals(Role.Buyer))
-        {
-            shop = await _ishopservice.GetPublicShops();
+            filtersShops.IsPublic = true;
         }
         else
         {
-            shop = await _ishopservice.GetSellerShops((Guid)Userid);
+            filtersShops.User = Userid;
         }
-
+        
+        Page<Shop> shop = await _ishopservice.GetShops(filtersShops);
         Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a, _appConfig)));
         return new(result);
     }
@@ -107,7 +106,7 @@ public class ShopController:UserBaseController
             data.model.FileInfo fileIn = await _fileInfoService.Addfile(file, shops.Id);
             shops.Logo = fileIn;
         }
-        _ishopservice.CreateShop(shops);
+        await _ishopservice.CreateShop(shops);
         return new(new ShopDTO(shops, _appConfig));
     }
 
@@ -115,8 +114,6 @@ public class ShopController:UserBaseController
     [HttpPut]
     public async Task<ResponceDto<ShopDTO>> EditShops([FromForm] ShopDTO shopDto, IFormFile file, Guid shopid)
     {
-        
-        
         if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
@@ -178,4 +175,16 @@ public class ShopController:UserBaseController
         _ishopservice.DeleteShop(id);
         return new("Shop ok deleted");
     }
+
+    [Route("/api/v1/shops/{name}/{description}")]
+    [HttpGet]
+    public async Task<ResponceDto<Page<ShopDTO>>> SearchShops(string name, string description)
+    {
+        Page<Shop> shop;
+        shop = await _ishopservice.GetShopSerch(name, description);
+        Page<ShopDTO> result = Page<ShopDTO>.Create(shop, shop.Items.Select(a => new ShopDTO(a, _appConfig)));
+        return new(result);
+    }
+    
+
 }
