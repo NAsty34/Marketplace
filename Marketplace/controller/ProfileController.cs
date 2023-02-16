@@ -27,7 +27,7 @@ public class ProfileController : UserBaseController
     [HttpGet]
     public async Task<ResponceDto<UserDto>> GetProfile()
     {
-        var user = await _UserServer.GetUser((Guid)Userid);
+        var user = await _UserServer.GetUser(Userid.Value);
         return new (new UserDto(user));
         
     }
@@ -41,7 +41,7 @@ public class ProfileController : UserBaseController
             Name = userDto.Name,
             Surname = userDto.Surname,
             Patronymic = userDto.Patronymic,
-            Id = (Guid)Userid
+            Id = Userid.Value
         };
         user = await _UserServer.EditUser(user);
         return new(new UserDto(user));
@@ -51,7 +51,7 @@ public class ProfileController : UserBaseController
     [HttpGet]
     public async Task<ResponceDto<IEnumerable<ShopDTO>>> FavoriteShops()
     {
-        var list = await _UserServer.GetFavoriteShops((Guid)Userid);
+        var list = await _UserServer.GetFavoriteShops(Userid.Value);
         return new ResponceDto<IEnumerable<ShopDTO>>( list.Select(a=>new ShopDTO(a, appConfig)));
     }
 
@@ -59,7 +59,7 @@ public class ProfileController : UserBaseController
     [HttpGet]
     public async Task<ResponceDto<ShopDTO>> CreateFavoriteShops(Guid shopid)
     {
-        var shop = await _UserServer.CreateFavShop(shopid, (Guid)Userid);
+        var shop = await _UserServer.CreateFavShop(shopid, Userid.Value);
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
     
@@ -67,7 +67,7 @@ public class ProfileController : UserBaseController
     [HttpDelete]
     public async Task<ResponceDto<ShopDTO>> DelFavoriteShops(Guid shopid)
     {
-        var shop = await _UserServer.DelFavShop(shopid, (Guid)Userid);
+        var shop = await _UserServer.DelFavShop(shopid, Userid.Value);
         return new ResponceDto<ShopDTO>(new ShopDTO(shop, appConfig));
     }
 

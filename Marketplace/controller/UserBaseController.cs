@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using data.model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Marketplace.controller;
 

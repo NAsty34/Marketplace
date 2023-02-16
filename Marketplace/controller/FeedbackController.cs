@@ -64,7 +64,7 @@ public class FeedbackController:UserBaseController
             Stars = feedbackDto.Stars,
             Id = id
         };
-        var upfeed = await _feedbackService.EditFeedback(feed, (Guid)Userid, (Role)role);
+        var upfeed = await _feedbackService.EditFeedback(feed, Userid.Value, (Role)role);
         return new(new FeedbackDTO(upfeed, appConfig));
     }
 
@@ -72,7 +72,7 @@ public class FeedbackController:UserBaseController
     [HttpDelete]
     public async Task<ResponceDto<string>> DeleteFeedback(Guid id)
     {
-        _feedbackService.DeleteFeedback(id, (Guid)Userid, (Role)role);
+        _feedbackService.DeleteFeedback(id, Userid.Value, (Role)role);
         return new("Успешно удалено!");
     }
     [Route("/api/v1/feedback/block/{id}")]

@@ -27,7 +27,7 @@ public class JWTService:IJWTService
             issuer: appConfig["ISSUER"],
             audience: appConfig["AUDIENCE"],
             claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)), // время действия 2 минуты
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)), // время действия
             signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["KEY"])),SecurityAlgorithms.HmacSha256));
         
         return jwt;

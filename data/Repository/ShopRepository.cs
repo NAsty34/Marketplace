@@ -21,6 +21,8 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
         if (filtersShops.Id != null) q = q.Where(a => filtersShops.Id.Contains(a.Id));
         if (filtersShops.User != null) q = q.Where(a => a.CreatorId == filtersShops.User.Value);
         if (filtersShops.Name != null) q = q.Where(a => a.Name != null && a.Name.Contains(filtersShops.Name));
+        if (filtersShops.Description != null)
+            q = q.Where(a => a.Description != null && a.Description.Contains(filtersShops.Description));
         if (filtersShops.category != null) q = q.Where(a => a.ShopCategory.Select(sc => sc.CategoryId).Any(c => filtersShops.category.Contains(c)));
         if (filtersShops.deliveries != null) q = q.Where(a => a.ShopDeliveries.Select(sc => sc.DeliveryId).Any(c => filtersShops.deliveries.Contains(c)));
         if (filtersShops.payment != null) q = q.Where(a => a.ShopPayment.Select(sc => sc.Paymentid).Any(c => filtersShops.payment.Contains(c)));
@@ -34,13 +36,6 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
         );
     }
 
-    public async Task<Page<Shop>> GetByNameAnddescription(string name,string description)
-    {
-        return await GetPage(
-            _dbSet.Include(a => a.Creator).Where(a => a.Name == name && a.Description == description && a.IsActive), 1,
-            20
-        );
-    }
 
 
     public ShopRepository(DBContext _dbContext) : base(_dbContext)

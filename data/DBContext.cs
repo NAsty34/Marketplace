@@ -29,18 +29,18 @@ public class DBContext:DbContext
         });
         modelBuilder.Entity<User>(a =>
         {
-            a.HasMany(u => u.FavoriteShops)
-                .WithMany(s => s.Users)
-                .UsingEntity(f => f.ToTable(("FavoriteShops")));
-            a.HasQueryFilter(p => !p.IsDeleted);
+            a.HasMany(ufs => ufs.FavoriteShops)
+                .WithMany(shopuser => shopuser.Users)
+                .UsingEntity(userfavoriteshop => userfavoriteshop.ToTable(("FavoriteShops")));
+            a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
         });
 
         modelBuilder.Entity<Shop>(a =>
         {
-            a.HasOne(e => e.Creator)
-                .WithMany(e => e.Shops)
-                .HasForeignKey(k => k.CreatorId);
-            a.HasQueryFilter(p => !p.IsDeleted);
+            a.HasOne(creatorshop => creatorshop.Creator)
+                .WithMany(shop => shop.Shops)
+                .HasForeignKey(idcreaatorshop => idcreaatorshop.CreatorId);
+            a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
         });
 
         modelBuilder.Entity<ShopCategory>(a =>

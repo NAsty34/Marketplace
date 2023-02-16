@@ -2,6 +2,7 @@ using data.model;
 using data.Repository;
 using logic.Exceptions;
 using logic.Service.Inreface;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace logic.Service;
 
@@ -58,6 +59,7 @@ public class UserServer:IUserServer
         user.Password = _hashService.Hash(user.Password);
         userrepository.Create(user);
         userrepository.Save();
+        
     }
 
     public async Task<User> ChangeBlockUser(Guid id, bool value)

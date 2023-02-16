@@ -1,10 +1,8 @@
-using System.Security.Claims;
 using data.model;
 using logic.Exceptions;
 using logic.Service;
 using Microsoft.AspNetCore.Mvc;
 using Marketplace.DTO;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Marketplace.controller;
@@ -13,7 +11,7 @@ public class UserController:UserBaseController
 {
     private readonly IUserServer _userServer;
 
-    public UserController(ILogger<UserBaseController> logger, IUserServer userServer)
+    public UserController(IUserServer userServer)
     {
         this._userServer = userServer;
     }
@@ -63,11 +61,11 @@ public class UserController:UserBaseController
 
     [Route("/api/v1/user/admin")]
     [HttpPost]
-    public async Task<ResponceDto<UserDto>> CreateAdmin([FromBody] RegisterDTO userDto)
+    public Task<ResponceDto<UserDto>> CreateAdmin([FromBody] RegisterDTO userDto)
     {
         if (!role.Equals(Role.Admin))
         {
-            //throw new AccessDeniedException();
+            throw new AccessDeniedException();
         }
         var adminuser = new User()
         {
@@ -84,6 +82,6 @@ public class UserController:UserBaseController
             IsDeleted = false
         };
         _userServer.CreateAdmin(adminuser);
-        return new(new UserDto(adminuser));
+        return Task.FromResult<ResponceDto<UserDto>>(new(new UserDto(adminuser)));
     }
 }

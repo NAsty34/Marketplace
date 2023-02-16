@@ -11,6 +11,5 @@ public interface IShopService
     public Task<Shop> CreateShop(Shop shop);
     public Task<Shop> EditShop(Shop shop, Guid userid, Role role);
     public Task<Shop> ChangeBlockShop(Guid id, bool value);
-    public Task<Page<Shop>> GetShopSerch(string name, string description);
     
 }

@@ -31,7 +31,7 @@ public class FeedbackService:IFeedbackService
 
     public async void AddFeedback(Feedback feedback)
     {
-        feedback.Creator = await _repositoryUser.GetById((Guid)feedback.CreatorId);
+        feedback.Creator = await _repositoryUser.GetById(feedback.CreatorId.Value);
         feedback.Shop = await _shopRepository.GetById(feedback.ShopId);
         _feedbackRepositiry.Create(feedback);
         _feedbackRepositiry.Save();
