@@ -6,10 +6,10 @@ public class ShopDictionaryBase
     {
     }
 
-    public ShopDictionaryBase(Guid shopid, Guid guid)
+    public ShopDictionaryBase(Guid shopId, Guid guid)
     {
-        this.shopid = shopid;
+        ShopId = shopId;
     }
   //  public Guid Id { get; set; }
-    public Guid shopid { get; set; }
+    public Guid ShopId { get; set; }
 }

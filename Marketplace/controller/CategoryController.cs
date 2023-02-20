@@ -11,7 +11,9 @@ namespace Marketplace.controller;
 [Route("/api/v1/categories")]
 public class CategoryController:BaseController<Category, CategoryDto>
 {
-    public CategoryController(IBaseService<Category> _base, IMapper mapper) : base(_base, mapper)
+    
+    public CategoryController(IBaseService<Category> @base, IMapper mapper) : base(@base, mapper)
     {
     }
+    
 }

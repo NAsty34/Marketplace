@@ -1,6 +1,4 @@
-using logic.Exceptions;
 using logic.Service.Inreface;
-using Microsoft.Extensions.Configuration;
 
 namespace logic.Service;
 

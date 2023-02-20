@@ -4,7 +4,7 @@ namespace logic.Exceptions;
 
 public class PasswordIncorrectException:BaseException
 {
-    public PasswordIncorrectException() : base("Неверный пароль", 12, HttpStatusCode.Forbidden)
+    public PasswordIncorrectException() : base("Неверный пароль", HttpStatusCode.Forbidden)
     {
     }
 

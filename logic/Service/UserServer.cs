@@ -2,30 +2,29 @@ using data.model;
 using data.Repository;
 using logic.Exceptions;
 using logic.Service.Inreface;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace logic.Service;
 
 public class UserServer:IUserServer
 {
-    private readonly IRepositoryUser userrepository;
+    private readonly IRepositoryUser _userrepository;
     private readonly IHashService _hashService;
     private readonly IShopService _shopService;
 
     public UserServer(IRepositoryUser userrepository, IHashService hashService, IShopService shopService)
     {
-        this.userrepository = userrepository;
-        this._hashService = hashService;
-        this._shopService = shopService;
+        _userrepository = userrepository;
+        _hashService = hashService;
+        _shopService = shopService;
     }
     public async Task<Page<User>> GetUsers()
     {
-        return await userrepository.GetPage(1, 20);
+        return await _userrepository.GetPage(1, 20);
     }
 
     public async Task<User> GetUser(Guid id)
     {
-        var userid = await userrepository.GetById(id);
+        var userid = await _userrepository.GetById(id);
         if (userid == null)
         {
             throw new UserNotFoundException();
@@ -45,56 +44,56 @@ public class UserServer:IUserServer
         fromdb.Name = user.Name;
         fromdb.Surname = user.Surname;
         fromdb.Patronymic = user.Patronymic;
-        userrepository.Save();
+        await _userrepository.Save();
         return fromdb;
     }
 
     public async void CreateAdmin(User user)
     {
-        if (userrepository.GetUser(user.Email) != null)
+        if (_userrepository.GetUser(user.Email!) != null)
         {
             throw new EmailException();
         }
 
-        user.Password = _hashService.Hash(user.Password);
-        userrepository.Create(user);
-        userrepository.Save();
+        user.Password = _hashService.Hash(user.Password!);
+        await _userrepository.Create(user);
+        await _userrepository.Save();
         
     }
 
     public async Task<User> ChangeBlockUser(Guid id, bool value)
     {
-        var userid = await userrepository.GetById(id);
+        var userid = await _userrepository.GetById(id);
         if (userid == null)
         {
             throw new UserNotFoundException();
         }
 
         userid.IsActive = value;
-        userrepository.Save();
+        await _userrepository.Save();
         return userid;
     }
 
     public async Task<List<Shop>> GetFavoriteShops(Guid userid)
     {
-        var user = await userrepository.GetById(userid);
+        var user = await _userrepository.GetById(userid);
         return user.FavoriteShops;
     }
 
     public async Task<Shop> CreateFavShop(Guid shopid, Guid userid)
     {
-        var user = await userrepository.GetById(userid);
+        var user = await _userrepository.GetById(userid);
         var shop = await _shopService.GetShop(shopid);
         user.FavoriteShops.Add(shop);
-        userrepository.Save();
+        await _userrepository.Save();
         return shop;
     }
     public async Task<Shop> DelFavShop(Guid shopid, Guid userid)
     {
-        var user = await userrepository.GetById(userid);
+        var user = await _userrepository.GetById(userid);
         var shop = await _shopService.GetShop(shopid);
         user.FavoriteShops.Remove(shop);
-        userrepository.Save();
+        await _userrepository.Save();
         return shop;
     }
 }

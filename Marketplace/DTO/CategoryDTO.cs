@@ -2,7 +2,7 @@ using data.model;
 
 namespace Marketplace.DTO;
 
-public class CategoryDto:DictionaryDTO<Category>
+public class CategoryDto:DictionaryDto<Category>
 {
     public CategoryDto()
     {
@@ -12,7 +12,6 @@ public class CategoryDto:DictionaryDTO<Category>
     {
         Id = t.Id;
         Name = t.Name;
-        //if (t.parent != null) ParentCategories = new CategoryDto(t.parent);
     }
-    public CategoryDto parent { get; set; }
+    public CategoryDto? Parent { get; set; }
 }

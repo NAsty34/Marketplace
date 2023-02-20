@@ -4,8 +4,8 @@ public class ResponceDto<T>
 {
     public ResponceDto(T t, int code)
     {
-        this.Data = t;
-        this.Code = code;
+        Data = t;
+        Code = code;
     }
     
     public ResponceDto(T t)

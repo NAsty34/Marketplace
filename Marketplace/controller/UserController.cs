@@ -1,6 +1,6 @@
 using data.model;
 using logic.Exceptions;
-using logic.Service;
+using logic.Service.Inreface;
 using Microsoft.AspNetCore.Mvc;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ public class UserController:UserBaseController
 
     public UserController(IUserServer userServer)
     {
-        this._userServer = userServer;
+        _userServer = userServer;
     }
 
     [Route("/api/v1/users")]
@@ -61,7 +61,7 @@ public class UserController:UserBaseController
 
     [Route("/api/v1/user/admin")]
     [HttpPost]
-    public Task<ResponceDto<UserDto>> CreateAdmin([FromBody] RegisterDTO userDto)
+    public Task<ResponceDto<UserDto>> CreateAdmin([FromBody] RegisterDto userDto)
     {
         if (!role.Equals(Role.Admin))
         {
@@ -73,7 +73,7 @@ public class UserController:UserBaseController
             Surname = userDto.Surname,
             Patronymic = userDto.Surname,
             Email = userDto.Email,
-            Role = userDto.role,
+            Role = userDto.Role,
             EmailIsVerified = true,
             CreateDate = DateTime.Now,
             CreatorId = userDto.Id,

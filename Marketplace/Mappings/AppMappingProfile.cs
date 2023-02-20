@@ -1,7 +1,6 @@
 using AutoMapper;
 using data.model;
 using Marketplace.DTO;
-using Type = data.model.Type;
 
 namespace Marketplace.Mappings;
 
@@ -9,27 +8,27 @@ public class AppMappingProfile : Profile
 {
     public AppMappingProfile()
     {
-        CreateMap<Shop, ShopDTO>();
-        CreateMap<Shop, ShopDTO>().ReverseMap();
+        CreateMap<Shop, ShopDto>();
+        CreateMap<Shop, ShopDto>().ReverseMap();
         
         CreateMap<Category, CategoryDto>();
         CreateMap<Category, CategoryDto>().ReverseMap();
         CreateMap<Page<Category>, Page<CategoryDto>>();
         CreateMap<Page<Category>, Page<CategoryDto>>().ReverseMap();
         
-        CreateMap<DeliveryType, DeliveryTypeDTO>();
-        CreateMap<DeliveryType, DeliveryTypeDTO>().ReverseMap();
-        CreateMap<Page<DeliveryType>, Page<DeliveryTypeDTO>>();
-        CreateMap<Page<DeliveryType>, Page<DeliveryTypeDTO>>().ReverseMap();
+        CreateMap<DeliveryType, DeliveryTypeDto>();
+        CreateMap<DeliveryType, DeliveryTypeDto>().ReverseMap();
+        CreateMap<Page<DeliveryType>, Page<DeliveryTypeDto>>();
+        CreateMap<Page<DeliveryType>, Page<DeliveryTypeDto>>().ReverseMap();
         
-        CreateMap<PaymentMethod, PaymentMethodDTO>();
-        CreateMap<PaymentMethod, PaymentMethodDTO>().ReverseMap();
-        CreateMap<Page<PaymentMethod>, Page<PaymentMethodDTO>>();
-        CreateMap<Page<PaymentMethod>, Page<PaymentMethodDTO>>().ReverseMap(); 
+        CreateMap<PaymentMethod, PaymentMethodDto>();
+        CreateMap<PaymentMethod, PaymentMethodDto>().ReverseMap();
+        CreateMap<Page<PaymentMethod>, Page<PaymentMethodDto>>();
+        CreateMap<Page<PaymentMethod>, Page<PaymentMethodDto>>().ReverseMap(); 
         
-        CreateMap<Type, TypeDTO>();
-        CreateMap<Type, TypeDTO>().ReverseMap();
-        CreateMap<Page<Type>, Page<TypeDTO>>();
-        CreateMap<Page<Type>, Page<TypeDTO>>().ReverseMap();
+        CreateMap<TypeEntity, TypeDto>();
+        CreateMap<TypeEntity, TypeDto>().ReverseMap();
+        CreateMap<Page<TypeEntity>, Page<TypeDto>>();
+        CreateMap<Page<TypeEntity>, Page<TypeDto>>().ReverseMap();
     }
 }

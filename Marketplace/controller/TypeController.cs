@@ -1,17 +1,16 @@
 using AutoMapper;
-using logic.Service;
+using data.model;
 using logic.Service.Inreface;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
-using Type = data.model.Type;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.controller;
 [Authorize]
 [Route("/api/v1/type")]
-public class TypeController:BaseController<Type, TypeDTO>
+public class TypeController:BaseController<TypeEntity, TypeDto>
 {
-    public TypeController(IBaseService<Type> _base, IMapper mapper) : base(_base, mapper)
+    public TypeController(IBaseService<TypeEntity> @base, IMapper mapper) : base(@base, mapper)
     {
     }
 

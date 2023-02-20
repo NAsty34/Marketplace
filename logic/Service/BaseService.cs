@@ -7,37 +7,38 @@ namespace logic.Service;
 
 public class BaseService<T> : IBaseService<T> where T : DictionaryBase
 {
-    protected IBaseRopository<T> _baseRopository;
+    protected IBaseRopository<T> BaseRopository;
 
-    public BaseService(IBaseRopository<T> _base)
+    public BaseService(IBaseRopository<T> baseRopository)
     {
-        this._baseRopository = _base;
+        BaseRopository = baseRopository;
     }
     public async Task<Page<T>> Page(int page, int size)
     {
-        return await _baseRopository.GetPage(page, size);
+        return await BaseRopository.GetPage(page, size);
     }
 
-   
 
-    public virtual async void Create(T t)
+    public virtual async Task Create(T t)
     {
-         _baseRopository.Create(t);
-         _baseRopository.Save();
+         t.CreateDate = DateTime.Now;
+          
+         await BaseRopository.Create(t);
+         await BaseRopository.Save();
     }
 
     public virtual async Task<T> Edit(T t)
     {
-        var FromDB = await _baseRopository.GetById(t.Id);
-        FromDB.Name = t.Name;
-        _baseRopository.Save();
-        return FromDB;
+        var fromDb = await BaseRopository.GetById(t.Id);
+        fromDb.Name = t.Name;
+        await BaseRopository.Save();
+        return fromDb;
     }
 
-    public async void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
-        _baseRopository.Delete(id);
-        _baseRopository.Save();
+        BaseRopository.Delete(id);
+        await BaseRopository.Save();
     }
     
 }

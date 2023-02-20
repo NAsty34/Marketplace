@@ -1,11 +1,10 @@
-using data.model;
 
 namespace Marketplace.DTO;
 
-public class ShopPaymentDTO
+public class ShopPaymentDto
 {
 
-    public ShopPaymentDTO()
+    public ShopPaymentDto()
     {
         
     }
@@ -16,5 +15,5 @@ public class ShopPaymentDTO
         commision = t.Com;
     }*/
     public Guid IdPayment { get; set; }
-    public double commision { get; set; }
+    public double Commision { get; set; }
 }

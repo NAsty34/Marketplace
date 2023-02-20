@@ -1,8 +1,8 @@
 namespace Marketplace.DTO;
 
-public class ShopDeliveryDTO
+public class ShopDeliveryDto
 {
-    public ShopDeliveryDTO()
+    public ShopDeliveryDto()
     {
         
     }

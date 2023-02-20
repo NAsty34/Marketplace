@@ -4,7 +4,7 @@ namespace logic.Exceptions;
 
 public class CodeIncorrectException:BaseException
 {
-    public CodeIncorrectException() : base("Неверный код", 13, HttpStatusCode.Forbidden)
+    public CodeIncorrectException() : base("Неверный код", HttpStatusCode.Forbidden)
     {
     }
 

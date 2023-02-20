@@ -1,45 +1,52 @@
-using System.Collections;
 using System.Text.Json.Serialization;
-using data;
 using data.model;
+using FileInfo = data.model.FileInfo;
 
 namespace Marketplace.DTO;
 
-public class ShopDTO
+public class ShopDto
 {
-
-    public ShopDTO()
+    private IConfiguration _configuration;
+    
+    public ShopDto()
     {
+        
     }
 
-    public ShopDTO(Shop _shop, IConfiguration appConfig)
+    public ShopDto(Shop shop, IConfiguration configuration)
     {
-        Id = _shop.Id;
-        Name = _shop.Name;
-        Description = _shop.Description;
-        if (_shop.Logo != null)
+        
+        _configuration = configuration;
+        var fileInfoOptions = new FileInfoOptions();
+        configuration.GetSection(FileInfoOptions.File).Bind(fileInfoOptions);
+        
+        Id = shop.Id;
+        Name = shop.Name;
+        Description = shop.Description;
+        if (shop.Logo != null)
         {
-            Logo = $"{appConfig["BaseUrl"]}/{appConfig["RequestPath"]}/{_shop.Id}/{_shop.Logo.Id}{_shop.Logo.Extension}";
+            Logo = $"{fileInfoOptions.BaseUrl}/{fileInfoOptions.RequestPath}/{shop.Creator.Id}/{shop.Logo.Id}{shop.Logo.Extension}";
+            
         }
         
-        Inn = _shop.Inn;
-        isPublic = _shop.isPublic;
-        isBlock = _shop.IsActive;
-        Owner = new UserDto(_shop.Creator);
-        Categories = _shop.ShopCategory.Select(a => a.CategoryId);
+        Inn = shop.Inn;
+        IsPublic = shop.IsPublic;
+        IsBlock = shop.IsActive;
+        Owner = new UserDto(shop.Creator);
+        Categories = shop.ShopCategory.Select(a => a.CategoryId);
         
-        Types = _shop.ShopTypes.Select(a => a.TypeId);
+        Types = shop.ShopTypes.Select(a => a.TypeId);
 
-        Payment = _shop.ShopPayment.Select(a => a.Paymentid);
-        Com = _shop.ShopPayment.Select(a => a.commision);
+        Payment = shop.ShopPayment.Select(a => a.PaymentId);
+        Com = shop.ShopPayment.Select(a => a.Commission);
         
 
-        Payments = _shop.ShopPayment.Select(a => new ShopPaymentDTO()
+        Payments = shop.ShopPayment.Select(a => new ShopPaymentDto()
         {
-            commision =a.commision,
-            IdPayment = a.Paymentid
+            Commision =a.Commission,
+            IdPayment = a.PaymentId
         });
-        Deliveris = _shop.ShopDeliveries.Select(a => new ShopDeliveryDTO()
+        Deliveris = shop.ShopDeliveries.Select(a => new ShopDeliveryDto()
         {
             IdDelivery = a.DeliveryId,
             Price = a.Price
@@ -50,23 +57,27 @@ public class ShopDTO
     
     public  Guid Id { get; set; }
     [JsonIgnore]
-    public  IEnumerable<Guid> Payment { get; set; }
+    public  IEnumerable<Guid> Payment { get; set; } = null!;
+
     [JsonIgnore]
-    public IEnumerable<double> Com { get; set; }
-    public  IEnumerable<ShopPaymentDTO> Payments { get; set; }
+    public IEnumerable<double> Com { get; set; } = null!;
+
+    public  IEnumerable<ShopPaymentDto> Payments { get; set; } = null!;
     public  string? Name { get; set; }
     public  string? Description { get; set; }
     public  string? Logo { get; set; }
     public  string? Inn { get; set; }
-    public  IEnumerable<Guid> Categories { get; set; }
+    public  IEnumerable<Guid> Categories { get; set; } = null!;
+
     [JsonIgnore]
-    public  IEnumerable<Guid> Deliveri { get; set; }
+    public  IEnumerable<Guid> Deliveri { get; set; } = null!;
+
     [JsonIgnore]
-    public IEnumerable<double> MinPrice { get; set; }
-    public IEnumerable<ShopDeliveryDTO> Deliveris { get; set; }
-    public  IEnumerable<Guid> Types { get; set; }
-    public bool isPublic { get; set; }
-    public bool isBlock { get; set; }
-    public UserDto Owner { get; set; }
-    
+    public IEnumerable<double> MinPrice { get; set; } = null!;
+
+    public IEnumerable<ShopDeliveryDto> Deliveris { get; set; } = null!;
+    public  IEnumerable<Guid> Types { get; set; } = null!;
+    public bool IsPublic { get; set; }
+    public bool IsBlock { get; set; }
+    public UserDto Owner { get; set; } = null!;
 }

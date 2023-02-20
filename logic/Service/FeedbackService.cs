@@ -1,4 +1,3 @@
-using data;
 using data.model;
 using data.Repository;
 using data.Repository.Interface;
@@ -13,11 +12,11 @@ public class FeedbackService:IFeedbackService
     private IShopRepository _shopRepository;
     private IRepositoryUser _repositoryUser;
 
-    public FeedbackService(IFeedbackRepositiry _feedbackRepositiry, IShopRepository _shopRepository, IRepositoryUser _repositoryUser)
+    public FeedbackService(IFeedbackRepositiry feedbackRepositiry, IShopRepository shopRepository, IRepositoryUser repositoryUser)
     {
-        this._feedbackRepositiry = _feedbackRepositiry;
-        this._shopRepository = _shopRepository;
-        this._repositoryUser = _repositoryUser;
+        _feedbackRepositiry = feedbackRepositiry;
+        _shopRepository = shopRepository;
+        _repositoryUser = repositoryUser;
     }
     public async Task<Page<Feedback>> GetByUser(Guid id, bool isAdmin)
     {
@@ -29,12 +28,12 @@ public class FeedbackService:IFeedbackService
         return await _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
     }
 
-    public async void AddFeedback(Feedback feedback)
+    public async Task AddFeedback(Feedback feedback)
     {
         feedback.Creator = await _repositoryUser.GetById(feedback.CreatorId.Value);
         feedback.Shop = await _shopRepository.GetById(feedback.ShopId);
-        _feedbackRepositiry.Create(feedback);
-        _feedbackRepositiry.Save();
+       await _feedbackRepositiry.Create(feedback);
+        await _feedbackRepositiry.Save();
     }
 
     public async Task<Feedback> EditFeedback(Feedback feedback, Guid userid, Role role)
@@ -54,11 +53,11 @@ public class FeedbackService:IFeedbackService
         fromdb.Content = feedback.Content;
         fromdb.EditDate = DateTime.Now;
         fromdb.EditorId = userid;
-        _feedbackRepositiry.Save();
+        await _feedbackRepositiry.Save();
         return fromdb;
     }
 
-    public async void DeleteFeedback(Guid feedback, Guid userid, Role role)
+    public async Task DeleteFeedback(Guid feedback, Guid userid, Role role)
     {
         var fromdb = await _feedbackRepositiry.GetById(feedback);
         if (fromdb == null)
@@ -73,7 +72,7 @@ public class FeedbackService:IFeedbackService
         fromdb.IsDeleted = true;
         fromdb.DeletorId = userid;
         fromdb.DeletedDate = DateTime.Now;
-        _feedbackRepositiry.Save();
+        await _feedbackRepositiry.Save();
     }
 
     public async Task<Feedback> ChangeBlockFeedback(Guid id, bool value)
@@ -85,7 +84,7 @@ public class FeedbackService:IFeedbackService
         }
 
         feedid.IsActive = value;
-        _feedbackRepositiry.Save();
+        await _feedbackRepositiry.Save();
         return feedid;
     }
 }

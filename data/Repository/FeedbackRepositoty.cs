@@ -7,7 +7,7 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 {
     public async Task<Page<Feedback>> GetFeedbackbyUser(Guid user, bool active)
     {
-        var findfeed = _dbSet.Where(a => a.CreatorId == user && !a.IsDeleted);
+        var findfeed = DbSet.Where(a => a.CreatorId == user && !a.IsDeleted);
         if (active)
         {
             findfeed = findfeed.Where(a => a.IsActive);
@@ -19,7 +19,7 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 
     public async Task<Page<Feedback>> GetFeedbackbyShop(Guid shop, bool active)
     {
-        var findfeed = _dbSet.Where(a => a.ShopId == shop && !a.IsDeleted);
+        var findfeed = DbSet.Where(a => a.ShopId == shop && !a.IsDeleted);
         if (active)
         {
             findfeed = findfeed.Where(a=>a.IsActive);
@@ -30,7 +30,7 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 
     }
 
-    public FeedbackRepositoty(DBContext _dbContext) : base(_dbContext)
+    public FeedbackRepositoty(DBContext dbContext) : base(dbContext)
     {
         
     }

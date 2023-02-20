@@ -2,6 +2,7 @@ using System.Security.Claims;
 using data.model;
 using logic.Exceptions;
 using logic.Service;
+using logic.Service.Inreface;
 using Marketplace.DTO;
 
 namespace Marketplace.controller;

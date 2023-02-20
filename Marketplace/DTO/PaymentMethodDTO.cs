@@ -2,13 +2,13 @@ using data.model;
 
 namespace Marketplace.DTO;
 
-public class PaymentMethodDTO:DictionaryDTO<PaymentMethod>
+public class PaymentMethodDto:DictionaryDto<PaymentMethod>
 {
-    public PaymentMethodDTO()
+    public PaymentMethodDto()
     {
         
     }
-    public PaymentMethodDTO(PaymentMethod t)
+    public PaymentMethodDto(PaymentMethod t)
     {
         t.Id = Id;
         t.Name = Name;

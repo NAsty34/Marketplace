@@ -1,7 +1,7 @@
 namespace Marketplace.DTO;
 
-public class TokenDTO
+public class TokenDto
 {
-    public string token { get; set; }
-    public DateTime exp { get; set; }
+    public string Token { get; set; }
+    public DateTime Exp { get; set; }
 }

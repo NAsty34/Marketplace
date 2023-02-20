@@ -2,7 +2,7 @@ using data.model;
 
 namespace data;
 
-public static class IQuerableExtension
+public static class QuerableExtension
 {
     public static Page<T> GetPage<T> (this IQueryable<T> queryable, int page, int size)
     {

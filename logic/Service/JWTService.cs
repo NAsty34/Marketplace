@@ -1,22 +1,28 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using data.model;
 using logic.Service.Inreface;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace logic.Service;
 
-public class JWTService:IJWTService
+public class JwtService:IJwtService
 {
-    private readonly IConfiguration appConfig;
+    private readonly IConfiguration _appConfig;
+    private ILogger<User> _logger;
 
-    public JWTService(IConfiguration _appConfig)
+    public JwtService(IConfiguration appConfig, ILogger<User> logger)
     {
-        this.appConfig = _appConfig;
+        _appConfig = appConfig;
+        _logger = logger;
     }
-    public JwtSecurityToken GenerateJWT(Guid id, string role)
+    public JwtSecurityToken GenerateJwt(Guid id, string role)
     {
+        var jwtTokenOptions = new JWTTokenOptions();
+        _appConfig.GetSection(JWTTokenOptions.JWTToken).Bind(jwtTokenOptions);
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Role, role),
@@ -24,12 +30,12 @@ public class JWTService:IJWTService
         };
        
         var jwt = new JwtSecurityToken(
-            issuer: appConfig["ISSUER"],
-            audience: appConfig["AUDIENCE"],
+            issuer: jwtTokenOptions.ISSUER,
+            audience: jwtTokenOptions.AUDIENCE,
             claims: claims,
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)), // время действия
-            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["KEY"])),SecurityAlgorithms.HmacSha256));
-        
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtTokenOptions.KEY)),SecurityAlgorithms.HmacSha256));
+        //_logger.Log(LogLevel.Information, "===" + jwtTokenOptions.ISSUER+"===" + jwtTokenOptions.AUDIENCE + "===" + jwtTokenOptions.KEY);
         return jwt;
     }
 }

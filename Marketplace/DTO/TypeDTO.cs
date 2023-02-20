@@ -1,19 +1,19 @@
 
-using Type = data.model.Type;
+using data.model;
 
 namespace Marketplace.DTO;
 
-public class TypeDTO:DictionaryDTO<Type>
+public class TypeDto:DictionaryDto<TypeEntity>
 {
-    public TypeDTO()
+    public TypeDto()
     {
         
     }
-    public TypeDTO(Type t)
+    public TypeDto(TypeEntity t)
     {
         t.Id = Id;
         t.Name = Name;
-        Discription = t.discription;
+        Discription = t.Discription;
     }
     public string Discription { get; set; }
 }

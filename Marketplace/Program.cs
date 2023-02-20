@@ -12,12 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Type = data.model.Type;
 
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
+builder.Configuration.AddJsonFile("appsettings.Production.json");
+//builder.Services.Configure<ImagesConfiguration>(builder.Configuration.GetSection("Images"));
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
 var appConfig = builder.Configuration;
@@ -71,12 +72,12 @@ builder.Services.AddScoped <IBaseRopository<Category>, CategoryRepository>();
 
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped <IBaseService<Category>, CategoryService>();
-builder.Services.AddScoped <IBaseService<Type>, TypeService>();
+builder.Services.AddScoped <IBaseService<TypeEntity>, TypeService>();
 
 
 
 builder.Services.AddTransient <IAuthService, AuthServer>();
-builder.Services.AddTransient <IJWTService, JWTService>();
+builder.Services.AddTransient <IJwtService, JwtService>();
 builder.Services.AddTransient <IHashService, HashService>();
 builder.Services.AddTransient <ISendEmailService, SendEmailService>();
 builder.Services.AddTransient <IUserServer, UserServer>();
@@ -90,14 +91,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var jwt = new JWTTokenOptions();
+        appConfig.GetSection(JWTTokenOptions.JWTToken).Bind(jwt);
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = appConfig["ISSUER"],
+            ValidIssuer = jwt.ISSUER,
             ValidateAudience = true,
-            ValidAudience = appConfig["AUDIENCE"],
+            ValidAudience = jwt.AUDIENCE,
             ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["KEY"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.KEY)),
             ValidateIssuerSigningKey = true,
         };
     });
@@ -120,11 +123,12 @@ app.UseSwaggerUI(options =>
 });
 
 
-using (var scope = app.Services.CreateScope())
+/*using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DBContext>();
     db.Database.Migrate();
-}
+}*/
+
 
 app.UseStaticFiles(new StaticFileOptions()
 {

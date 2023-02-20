@@ -1,66 +1,88 @@
-using System.Data;
-using Dapper;
+using System.Diagnostics;
 using data.model;
 using data.Repository;
 using data.Repository.Interface;
 using logic.Exceptions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace logic.Service;
 
 public class CategoryService:BaseService<Category>
 {
-    private ILogger<CategoryService> logger;
-    private CategoryRepository categoryRepository;
-    public CategoryService(ILogger<CategoryService> logger, IBaseRopository<Category> _base) : base(_base)
+    private ILogger<CategoryService> _logger;
+    private CategoryRepository _categoryRepository;
+    private IConfiguration Configuration;
+    public CategoryService(IBaseRopository<Category> @base, ILogger<CategoryService> logger, IConfiguration configuration) : base(@base)
     {
-        this.logger = logger;
-        this.categoryRepository = (CategoryRepository?)_base;
+        _logger = logger;
+        Configuration = configuration;
+        _categoryRepository = (CategoryRepository)@base;
     }
-    public override void Create(Category t)
+    public override async Task<Category> Create(Category t)
     {
-        //logger.Log(LogLevel.Information,"=========CategoryService==========");
-        CheckParent(t);
-        _baseRopository.Create(t);
-        _baseRopository.Save();
+        //_logger.Log(LogLevel.Information,"=========CategoryService==========");
+       
+        
+        await CheckParent(t);
+        await BaseRopository.Create(t);
+        await BaseRopository.Save();
+        return t;
     }
 
     public override async Task<Category> Edit(Category t)
     {
-        var FromDB = await _baseRopository.GetById(t.Id);
-        if (FromDB == null)
+        var fromDb = await BaseRopository.GetById(t.Id);
+        if (fromDb == null)
         {
             throw new CategoryNotFoundException();
         }
-        CheckParent(t);
         
-        var children = await categoryRepository.Children(t.Id);
-
-        if (children.Contains(t.parent.Id))
+        await CheckParent(t);
+        
+        var children = await _categoryRepository.Children(t.Id);
+        if (children.Contains(t.Parent.Id))
         {
             throw new CategoryParentException();
         }
         
-        
-        FromDB.Name = t.Name;
-        FromDB.parent = t.parent;
-        _baseRopository.Save();
-        return FromDB;
+        fromDb.Name = t.Name;
+        fromDb.Parent = t.Parent;
+        await BaseRopository.Save();
+        return fromDb;
     }
 
-    private async void CheckParent(Category t)
+    private async Task CheckParent(Category t)
     {
-        if (t.parent == null) return;
-        if (t.parent.Id.Equals(t.Id))
+        var categoryoptions = new CategoryOptions();
+        Configuration.GetSection(CategoryOptions.Category).Bind(categoryoptions);
+
+        //if (t.Parent == null) return;
+
+        if (t.Parent.Id.Equals(t.Id))
         {
             throw new CategoryParentCategoryException();
         }
-        var parent = await _baseRopository.GetById(t.parent.Id);
+
+        var parent = await BaseRopository.GetById(t.Parent.Id);
+
         if (parent == null)
         {
             throw new ParentNotFoundException();
         }
-        t.parent = parent;
+
+        
+        var children = await _categoryRepository.Children(t.Parent.Id);
+        var countchild = children.Count();
+        //_logger.Log(LogLevel.Information, "=========CategoryService==========" + categoryoptions.MaxLevel);
+        
+        if (categoryoptions.MaxLevel != null && countchild >= categoryoptions.MaxLevel)
+        {
+            throw new CategoryMaxLevelException();
+        }
+        
+        t.Parent = parent;
+
     }
 }
 

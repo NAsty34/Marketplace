@@ -31,7 +31,6 @@ public class ErrorHandlingMiddleware
         ResponceDto<string> response = new ResponceDto<string>(ex.ToString(), 1);
         if (ex is BaseException)
         {
-            response.Code = (ex as BaseException).Code;
             code = (ex as BaseException).Status;
         };
         context.Response.ContentType = "application/json";

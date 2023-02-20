@@ -5,6 +5,8 @@ using data.model;
 using data.Repository;
 using logic.Exceptions;
 using logic.Service.Inreface;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace logic.Service;
 
@@ -12,44 +14,54 @@ public class AuthServer:IAuthService
 {
     private readonly IRepositoryUser _userRepository;
     private readonly ISendEmailService _sendEmailService;
-    private readonly IJWTService _jwtService;
-    public AuthServer(IRepositoryUser repositoryUser, IJWTService jwtService, ISendEmailService sendEmailService)
+    private readonly IJwtService _jwtService;
+    private ILogger<User> _logger;
+    private readonly IConfiguration _configuration;
+    public AuthServer(IRepositoryUser repositoryUser, IJwtService jwtService, ISendEmailService sendEmailService, ILogger<User> logger, IConfiguration configuration)
     {
-        this._userRepository = repositoryUser;
-        this._sendEmailService = sendEmailService;
-        this._jwtService = jwtService;
+        _userRepository = repositoryUser;
+        _sendEmailService = sendEmailService;
+        _logger = logger;
+        _configuration = configuration;
+        _jwtService = jwtService;
     }
     
-    public void Register(User user)
+    public async Task Register(User user)
     {
+        var regularOptions = new PasswordOprions();
+        _configuration.GetSection(PasswordOprions.Password).Bind(regularOptions);
+        
         if (!user.Role.Equals(Role.Buyer) && !user.Role.Equals(Role.Seller))
             throw new RoleException();
         if (string.IsNullOrEmpty(user.Email) )
             throw new EmailException();
-        if (!new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$").IsMatch(user.Password))
+        
+        /*_logger.Log(LogLevel.Information,"======do========"+new Regex($"{regularOptions.RegexForPassword}"));
+        _logger.Log(LogLevel.Information,"======pas========"+user.Password);*/
+       
+        if (!new Regex(regularOptions.RegexForPassword).IsMatch(user.Password))
             throw new PasswordIncorrectException();
-        var Emailuser = _userRepository.GetUser(user.Email);
-        if (Emailuser != null)
+        
+        var emailuser = _userRepository.GetUser(user.Email);
+        user.Id = new Guid();
+        if (emailuser != null)
         {
-            if (Emailuser.EmailIsVerified) throw new EmailException();
-            Emailuser.Password = user.Password;
-            user = Emailuser;
+            if (emailuser.EmailIsVerified) throw new EmailException();
+            emailuser.Password = user.Password;
+            user = emailuser;
         }
 
         var code = GeneratePassword();
+        
         user.EmailCode = BCrypt.Net.BCrypt.HashPassword(code);
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-        if (user.Id.Equals(Guid.Empty))
-        {
-            user.Id = new Guid();
-            _userRepository.Create(user);
-        }
-        _userRepository.Save();
-        _sendEmailService.Send(user.Email, "Код для подтверждения: "+code, "Admin sait");
+        if (emailuser == null) await _userRepository.Create(user);
         
+        await _userRepository.Save();
+        if (user.Email != null) await _sendEmailService.Send(user.Email, "Код для подтверждения: " + code, "Admin sait");
     }
 
-    public JwtSecurityToken Login(string email, string password)
+    public async Task<JwtSecurityToken> Login(string email, string password)
     {
         var user = _userRepository.GetUser(email);
         
@@ -67,24 +79,29 @@ public class AuthServer:IAuthService
         {
             throw new PasswordIncorrectException();
         }
-        var jwt = _jwtService.GenerateJWT(user.Id, user.Role.ToString());
+        var jwt = _jwtService.GenerateJwt(user.Id, user.Role.ToString());
+        
         return jwt;
     }
 
     public string GeneratePassword()
     {
-        const string chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-+_";
+        var regularOptions = new PasswordOprions();
+        _configuration.GetSection(PasswordOprions.Password).Bind(regularOptions);
+        /*const string chars = ;*/
         StringBuilder sb = new StringBuilder();
         Random rnd = new Random();
         for (int i = 0; i < 10; i++)
         {
-            int index = rnd.Next(chars.Length);
-            sb.Append(chars[index]);
+            int index = rnd.Next(regularOptions.CharsForPassword.Length);
+            sb.Append(regularOptions.CharsForPassword[index]);
+            
         }
+        
         return sb.ToString();
     }
 
-    public void EmailVerify(string email, string code)
+    public async Task EmailVerify(string email, string code)
     {
         var user = _userRepository.GetUser(email);
         if (user == null)
@@ -103,6 +120,6 @@ public class AuthServer:IAuthService
         }
 
         user.EmailIsVerified = true;
-        _userRepository.Save();
+        await _userRepository.Save();
     }
 }

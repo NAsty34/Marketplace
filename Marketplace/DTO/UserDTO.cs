@@ -1,6 +1,3 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using data.model;
 namespace Marketplace.DTO;
 
@@ -10,20 +7,20 @@ public class UserDto
     {
         
     }
-    public UserDto(User _user)
+    public UserDto(User user)
     {
-        Id = _user.Id;
-        Name = _user.Name;
-        Patronymic = _user.Patronymic;
-        Email = _user.Email;
-        Surname = _user.Surname;
-        role = _user.Role;
+        Id = user.Id;
+        Name = user.Name;
+        Patronymic = user.Patronymic;
+        Email = user.Email;
+        Surname = user.Surname;
+        Role = user.Role;
     }
     public string Name { get; set; }
     public  string Surname { get; set; }
     public  string Patronymic { get; set; }
     
     public  string Email { get; set; }
-    public Role role { get; set; }
+    public Role Role { get; set; }
     public Guid Id { get; set; }
 }

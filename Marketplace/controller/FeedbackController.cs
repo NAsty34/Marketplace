@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using data.model;
 using logic.Exceptions;
-using logic.Service;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Mvc;
 using Marketplace.DTO;
@@ -12,34 +10,34 @@ namespace Marketplace.controller;
 public class FeedbackController:UserBaseController
 {
     private IFeedbackService _feedbackService;
-    private IConfiguration appConfig;
+    private IConfiguration _appConfig;
 
-    public FeedbackController(ILogger<UserBaseController> logger, IFeedbackService _feedbackService, IConfiguration _appConfig)
+    public FeedbackController(IFeedbackService feedbackService, IConfiguration appConfig)
     {
-        this._feedbackService = _feedbackService;
-        this.appConfig = _appConfig;
+        _feedbackService = feedbackService;
+        _appConfig = appConfig;
     }
     [Route("/api/v1/users/{id}/feedback")]
     [HttpGet]
-    public async Task<ResponceDto<Page<FeedbackDTO>>> UserFeedback(Guid id)
+    public async Task<ResponceDto<Page<FeedbackDto>>> UserFeedback(Guid id)
     {
         var idfeedbyuser = await _feedbackService.GetByUser(id, role.Equals(Role.Admin));
-        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDTO(a, appConfig)));
+        Page<FeedbackDto> findfeed = Page<FeedbackDto>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDto(a, _appConfig)));
         return new(findfeed);
     }
 
     [Route("/api/v1/shops/{id}/feedback")]
     [HttpGet]
-    public async Task<ResponceDto<Page<FeedbackDTO>>> ShopFeedback(Guid id)
+    public async Task<ResponceDto<Page<FeedbackDto>>> ShopFeedback(Guid id)
     {
         var idfeedbyshop = await _feedbackService.GetByShop(id, role.Equals(Role.Admin));
-        Page<FeedbackDTO> findfeed = Page<FeedbackDTO>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDTO(a, appConfig)));
+        Page<FeedbackDto> findfeed = Page<FeedbackDto>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDto(a, _appConfig)));
         return new(findfeed);
     }
 
     [Route("/api/v1/shops/{id}/feedback")]
     [HttpPost]
-    public async Task<ResponceDto<FeedbackDTO>> AddFeedback([FromBody]FeedbackDTO feedbackDto, Guid id)
+    public async Task<ResponceDto<FeedbackDto>> AddFeedback([FromBody]FeedbackDto feedbackDto, Guid id)
     {
         var feed = new Feedback()
         {
@@ -50,13 +48,13 @@ public class FeedbackController:UserBaseController
             CreatorId = Userid
 
         };
-        _feedbackService.AddFeedback(feed);
-        return new(new FeedbackDTO(feed, appConfig));
+        await _feedbackService.AddFeedback(feed);
+        return new(new FeedbackDto(feed, _appConfig));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
     [HttpPut]
-    public async Task<ResponceDto<FeedbackDTO>> EditFeedback([FromBody]FeedbackDTO feedbackDto, Guid id)
+    public async Task<ResponceDto<FeedbackDto>> EditFeedback([FromBody]FeedbackDto feedbackDto, Guid id)
     {
         var feed = new Feedback()
         {
@@ -65,37 +63,37 @@ public class FeedbackController:UserBaseController
             Id = id
         };
         var upfeed = await _feedbackService.EditFeedback(feed, Userid.Value, (Role)role);
-        return new(new FeedbackDTO(upfeed, appConfig));
+        return new(new FeedbackDto(upfeed, _appConfig));
     }
 
     [Route("/api/v1/shops/feedback/{id}")]
     [HttpDelete]
     public async Task<ResponceDto<string>> DeleteFeedback(Guid id)
     {
-        _feedbackService.DeleteFeedback(id, Userid.Value, (Role)role);
+        await _feedbackService.DeleteFeedback(id, Userid.Value, (Role)role);
         return new("Успешно удалено!");
     }
     [Route("/api/v1/feedback/block/{id}")]
     [HttpGet]
-    public async Task<ResponceDto<FeedbackDTO>> BlockFeedback(Guid id)
+    public async Task<ResponceDto<FeedbackDto>> BlockFeedback(Guid id)
     {
         if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
         var blockfeed = await _feedbackService.ChangeBlockFeedback(id, false);
-        return new(new FeedbackDTO(blockfeed, appConfig));
+        return new(new FeedbackDto(blockfeed, _appConfig));
     }
 
     [Route("/api/v1/feedback/unblock/{id}")]
     [HttpGet]
-    public async Task<ResponceDto<FeedbackDTO>> UnblockFeedback(Guid id)
+    public async Task<ResponceDto<FeedbackDto>> UnblockFeedback(Guid id)
     {
         if (!role.Equals(Role.Admin))
         {
             throw new AccessDeniedException();
         }
         var unblockfeed = await _feedbackService.ChangeBlockFeedback(id, true);
-        return new(new FeedbackDTO(unblockfeed, appConfig));
+        return new(new FeedbackDto(unblockfeed, _appConfig));
     }
 }

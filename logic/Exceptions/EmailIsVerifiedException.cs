@@ -4,7 +4,7 @@ namespace logic.Exceptions;
 
 public class EmailIsVerifiedException:BaseException
 {
-    public EmailIsVerifiedException() : base("Подтвердите почту",11, HttpStatusCode.Unauthorized)
+    public EmailIsVerifiedException() : base("Подтвердите почту", HttpStatusCode.Unauthorized)
     {
     }
 

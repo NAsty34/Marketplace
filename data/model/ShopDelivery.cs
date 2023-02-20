@@ -6,11 +6,11 @@ public class ShopDelivery:ShopDictionaryBase
     {
         
     }
-    public ShopDelivery(Guid shopid, Guid guid, double price) : base(shopid, guid)
+    public ShopDelivery(Guid shopId, Guid guid, double price) : base(shopId, guid)
     {
-        this.shopid = shopid;
-        this.DeliveryId = guid;
-        this.Price = price;
+        ShopId = shopId;
+        DeliveryId = guid;
+        Price = price;
     }
     public Guid DeliveryId { get; set; }
     public double Price { get; set; }

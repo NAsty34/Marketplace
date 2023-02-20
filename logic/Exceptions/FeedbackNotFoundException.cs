@@ -4,5 +4,5 @@ namespace logic.Exceptions;
 
 public class FeedbackNotFoundException:BaseException
 {
-    public FeedbackNotFoundException():base("Feedback not found", 4, HttpStatusCode.NotFound){}
+    public FeedbackNotFoundException():base("Feedback not found", HttpStatusCode.NotFound){}
 }

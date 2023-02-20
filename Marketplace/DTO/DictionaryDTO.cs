@@ -1,19 +1,16 @@
-using data.model;
 
 namespace Marketplace.DTO;
 
-public class DictionaryDTO<T>
+public class DictionaryDto<T>
 {
-    protected DictionaryDTO()
+    protected DictionaryDto()
     {
     }
-    public DictionaryDTO(T t)
+    public DictionaryDto(T t)
     {
         
     }
 
-    
-
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
 }

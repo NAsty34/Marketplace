@@ -1,6 +1,6 @@
 using data.model;
 
-namespace logic.Service;
+namespace logic.Service.Inreface;
 
 public interface IUserServer
 {

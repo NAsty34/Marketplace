@@ -6,10 +6,10 @@ public class ShopTypes:ShopDictionaryBase
     {
         
     }
-    public ShopTypes(Guid shopid, Guid guid) : base(shopid, guid)
+    public ShopTypes(Guid shopId, Guid guid) : base(shopId, guid)
     {
-        this.shopid = shopid;
-        this.TypeId = guid;
+        ShopId = shopId;
+        TypeId = guid;
     }
     public Guid TypeId { get; set; }
 }

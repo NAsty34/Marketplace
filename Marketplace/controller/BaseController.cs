@@ -1,6 +1,5 @@
 using AutoMapper;
 using data.model;
-using logic.Service;
 using logic.Service.Inreface;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -8,48 +7,48 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.controller;
 
-public class BaseController<T, U>:Controller where U: DictionaryDTO<T>
+public class BaseController<T, U>:Controller where U: DictionaryDto<T>
 {
-    private readonly IBaseService<T> BaseService;
+    private readonly IBaseService<T> _baseService;
     private readonly IMapper _mapper;
     
-    public BaseController(IBaseService<T> _base, IMapper mapper)
+    public BaseController(IBaseService<T> @base, IMapper mapper)
     {
-        this._mapper = mapper;
-        this.BaseService = _base;
+        _mapper = mapper;
+        _baseService = @base;
     }
 
     
     [HttpGet]
     public async Task<ResponceDto<Page<U>>> All()
     {
-        Page<T> GetAll = await BaseService.Page(1, 20);
-        Page<U> result = _mapper.Map<Page<U>>(GetAll);
+        Page<T> getAll = await _baseService.Page(1, 20);
+        Page<U> result = _mapper.Map<Page<U>>(getAll);
         return new (result);
     }
     
     [HttpPost]
-    public async Task<ResponceDto<U>> Create([FromBody] T _t)
+    public async Task<ResponceDto<U>> Create([FromBody] T t)
     {
-        BaseService.Create(_t);
-        U result = _mapper.Map<U>(_t);
+        await _baseService.Create(t);
+        U result = _mapper.Map<U>(t);
         return new (result);
     }
-    [Authorize (Roles = "Admin")]
+    [Authorize (Roles = nameof(Role.Admin))]
     [HttpPut]
-    public async Task<ResponceDto<U>> Edit([FromBody] T _t)
+    public async Task<ResponceDto<U>> Edit([FromBody] T t)
     {
-        await BaseService.Edit(_t);
-        U result = _mapper.Map<U>(_t);
+        await _baseService.Edit(t);
+        U result = _mapper.Map<U>(t);
         return new (result);
     }
     
-    [Authorize (Roles = "Admin")]
+    [Authorize (Roles = nameof(Role.Admin))]
     [Route("{id}")]
     [HttpDelete]
     public string Delete(Guid id)
     {
-        BaseService.Delete(id);
+        _baseService.Delete(id);
         return ("Успешно удалено");
     }
 }

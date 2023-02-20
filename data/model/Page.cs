@@ -22,5 +22,5 @@ public class Page<T>
     public int Size { get; set; }
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
-    public IEnumerable<T> Items { get; set; }
+    public IEnumerable<T>? Items { get; set; }
 }

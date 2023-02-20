@@ -1,14 +1,7 @@
-using Dadata;
-using data;
 using data.model;
-using data.Repository;
 using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
-using MailKit.Security;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Type = data.model.Type;
 
 namespace logic.Service;
 
@@ -16,32 +9,28 @@ public class ShopService:IShopService
 {
 
     private IShopRepository _shopRepository;
-    private IRepositoryUser _repositoryUser;
-    private IShopDictionaryRepository<ShopCategory> CategoriesShop;
-    private IShopDictionaryRepository<ShopDelivery> DeliveryShop;
-    private IShopDictionaryRepository<ShopPayment> PaymentShop;
-    private IShopDictionaryRepository<ShopTypes> TypeShop;
-    private IBaseRopository<Category> Caropository;
-    private IBaseRopository<Type> Taropository;
-    private IBaseRopository<PaymentMethod> paRopository;
-    private IBaseRopository<DeliveryType> daRopository;
-    private readonly IConfiguration appConfig;
-    private ILogger<ShopService> _logger;
-    public ShopService(IShopRepository _ishoprepository, IRepositoryUser _repositoryUser, IConfiguration _appConfig, IShopDictionaryRepository<ShopCategory> categoriesShop, ILogger<ShopService> _logger, IShopDictionaryRepository<ShopDelivery> deliveryShop, IShopDictionaryRepository<ShopPayment> paymentShop, IShopDictionaryRepository<ShopTypes> typeShop, 
-        IBaseRopository<Category> Caropository, IBaseRopository<Type> Taropository, IBaseRopository<PaymentMethod> paRopository, IBaseRopository<DeliveryType> daRopository)
+    //private IRepositoryUser _repositoryUser;
+    private IShopDictionaryRepository<ShopCategory> _categoriesShop;
+    private IShopDictionaryRepository<ShopDelivery> _deliveryShop;
+    private IShopDictionaryRepository<ShopPayment> _paymentShop;
+    private IShopDictionaryRepository<ShopTypes> _typeShop;
+    private IBaseRopository<Category> _caropository;
+    private IBaseRopository<TypeEntity> _taropository;
+    private IBaseRopository<PaymentMethod> _paRopository;
+    private IBaseRopository<DeliveryType> _daRopository;
+    
+    public ShopService(IShopRepository ishoprepository, IShopDictionaryRepository<ShopCategory> categoriesShop, IShopDictionaryRepository<ShopDelivery> deliveryShop, IShopDictionaryRepository<ShopPayment> paymentShop, IShopDictionaryRepository<ShopTypes> typeShop, 
+        IBaseRopository<Category> caropository, IBaseRopository<TypeEntity> taropository, IBaseRopository<PaymentMethod> paRopository, IBaseRopository<DeliveryType> daRopository)
     {
-        this._shopRepository = _ishoprepository;
-        this._repositoryUser = _repositoryUser;
-        this.appConfig = _appConfig;
-        this.CategoriesShop = categoriesShop;
-        this.DeliveryShop = deliveryShop;
-        this.PaymentShop = paymentShop;
-        this.TypeShop = typeShop;
-        this._logger = _logger;
-        this.Caropository = Caropository;
-        this.Taropository = Taropository;
-        this.paRopository = paRopository;
-        this.daRopository = daRopository;
+        _shopRepository = ishoprepository;
+        _categoriesShop = categoriesShop;
+        _deliveryShop = deliveryShop;
+        _paymentShop = paymentShop;
+        _typeShop = typeShop;
+        _caropository = caropository;
+        _taropository = taropository;
+        _paRopository = paRopository;
+        _daRopository = daRopository;
     }
     
     public async Task<Page<Shop>> GetShops(FiltersShops filtersShops)
@@ -60,17 +49,17 @@ public class ShopService:IShopService
         return shopid;
     }
 
-    public async void DeleteShop(Guid id)
+    public async Task DeleteShop(Guid id)
     {
         var shopid = await _shopRepository.GetById(id);
         if (shopid != null)
         {
-            CategoriesShop.DeleteAllByShop(id);
-            DeliveryShop.DeleteAllByShop(id);
-            PaymentShop.DeleteAllByShop(id);
-            TypeShop.DeleteAllByShop(id);
+            await _categoriesShop.DeleteAllByShop(id);
+            await _deliveryShop.DeleteAllByShop(id);
+            await _paymentShop.DeleteAllByShop(id);
+            await _typeShop.DeleteAllByShop(id);
             _shopRepository.Delete(shopid);
-            _shopRepository.Save();
+            await _shopRepository.Save();
         }
         
     }
@@ -82,28 +71,28 @@ public class ShopService:IShopService
             throw new InnAlreadyUseException();
         }
         var idsCategory = shop.ShopCategory.Select(a => a.CategoryId);
-        var cids = await Caropository.GetByIds(idsCategory); 
+        var cids = await _caropository.GetByIds(idsCategory); 
         if (cids.Count() != idsCategory.Count())
         {
             throw new CategoryNotFoundException();
         }
 
         var idsType = shop.ShopTypes.Select(a => a.TypeId);
-        var tids = await Taropository.GetByIds(idsType); 
+        var tids = await _taropository.GetByIds(idsType); 
         if (tids.Count() != idsType.Count())
         {
             throw new TypeNotFoundException();
         }
 
-        var idspayment = shop.ShopPayment.Select(a => a.Paymentid);
-        var idpayment = await paRopository.GetByIds(idspayment);
+        var idspayment = shop.ShopPayment.Select(a => a.PaymentId);
+        var idpayment = await _paRopository.GetByIds(idspayment);
         var paymentList = idpayment.ToList();
         var spList = shop.ShopPayment.ToList();
         
         for (int i = 0; i < paymentList.Count(); i++)
         {
-            if (!paymentList[i].Commission) spList[i].commision = 0;
-            if (spList[i].commision > 1 || spList[i].commision < 0)
+            if (!paymentList[i].Commission) spList[i].Commission = 0;
+            if (spList[i].Commission > 1 || spList[i].Commission < 0)
             {
                 throw new CommissionNotUseException();
             }
@@ -115,13 +104,13 @@ public class ShopService:IShopService
         }
 
         var idsdelivery = shop.ShopDeliveries.Select((a => a.DeliveryId));
-        var dids = await daRopository.GetByIds(idsdelivery); 
+        var dids = await _daRopository.GetByIds(idsdelivery); 
         if (dids.Count() != idsdelivery.Count())
         {
             throw new DeliveryNotFoundException();
         }
 
-        var deliverylist = await daRopository.GetByIds(idsdelivery);
+        var deliverylist = await _daRopository.GetByIds(idsdelivery);
         var delivList = deliverylist.ToList();
         var delist = shop.ShopDeliveries.ToList();
         for (int i = 0; i < delivList.Count(); i++)
@@ -138,8 +127,8 @@ public class ShopService:IShopService
         }*/
       
         
-        _shopRepository.Create(shop);
-        _shopRepository.Save();
+        await _shopRepository.Create(shop);
+        await _shopRepository.Save();
         return shop;
     }
 
@@ -147,51 +136,51 @@ public class ShopService:IShopService
 
     public async Task<Shop> EditShop(Shop shop, Guid userid, Role role)
     {
-        var FromDB = await _shopRepository.GetById(shop.Id);
-        if (FromDB == null)
+        var fromDb = await _shopRepository.GetById(shop.Id);
+        if (fromDb == null)
         {
             throw new ShopNotFoundException();
         }
 
-        if (role != Role.Admin && FromDB.CreatorId != userid)
+        if (role != Role.Admin && fromDb.CreatorId != userid)
         {
             throw new AccessDeniedException();
         }
 
-        FromDB.Description = shop.Description;
-        FromDB.Logo = shop.Logo;
-        FromDB.Inn = shop.Inn;
-        FromDB.Name = shop.Name;
-        FromDB.isPublic = shop.isPublic;
+        fromDb.Description = shop.Description;
+        fromDb.Logo = shop.Logo;
+        fromDb.Inn = shop.Inn;
+        fromDb.Name = shop.Name;
+        fromDb.IsPublic = shop.IsPublic;
 
-        CategoriesShop.DeleteAllByShop(shop.Id);
-        DeliveryShop.DeleteAllByShop(shop.Id);
-        PaymentShop.DeleteAllByShop(shop.Id);
-        TypeShop.DeleteAllByShop(shop.Id);
+        await _categoriesShop.DeleteAllByShop(shop.Id);
+        await _deliveryShop.DeleteAllByShop(shop.Id);
+        await _paymentShop.DeleteAllByShop(shop.Id);
+        await _typeShop.DeleteAllByShop(shop.Id);
         
         var idsCategory = shop.ShopCategory.Select(a => a.CategoryId);
-        var cids = await Caropository.GetByIds(idsCategory); 
+        var cids = await _caropository.GetByIds(idsCategory); 
         if (cids.Count() != idsCategory.Count())
         {
             throw new CategoryNotFoundException();
         }
 
         var idsType = shop.ShopTypes.Select(a => a.TypeId);
-        var tids = await Taropository.GetByIds(idsType); 
+        var tids = await _taropository.GetByIds(idsType); 
         if (tids.Count() != idsType.Count())
         {
             throw new TypeNotFoundException();
         }
 
-        var idspayment = shop.ShopPayment.Select(a => a.Paymentid);
-        var idpayment = await paRopository.GetByIds(idspayment);
+        var idspayment = shop.ShopPayment.Select(a => a.PaymentId);
+        var idpayment = await _paRopository.GetByIds(idspayment);
         var paymentList = idpayment.ToList();
         var spList = shop.ShopPayment.ToList();
         
         for (int i = 0; i < paymentList.Count(); i++)
         {
-            if (!paymentList[i].Commission) spList[i].commision = 0;
-            if (spList[i].commision > 1 || spList[i].commision < 0)
+            if (!paymentList[i].Commission) spList[i].Commission = 0;
+            if (spList[i].Commission > 1 || spList[i].Commission < 0)
             {
                 throw new CommissionNotUseException();
             }
@@ -203,13 +192,13 @@ public class ShopService:IShopService
         }
 
         var idsdelivery = shop.ShopDeliveries.Select((a => a.DeliveryId));
-        var dids = await daRopository.GetByIds(idsdelivery); 
+        var dids = await _daRopository.GetByIds(idsdelivery); 
         if (dids.Count() != idsdelivery.Count())
         {
             throw new DeliveryNotFoundException();
         }
 
-        var deliverylist = await daRopository.GetByIds(idsdelivery);
+        var deliverylist = await _daRopository.GetByIds(idsdelivery);
         var delivList = deliverylist.ToList();
         var delist = shop.ShopDeliveries.ToList();
         for (int i = 0; i < delivList.Count(); i++)
@@ -217,14 +206,14 @@ public class ShopService:IShopService
             if (!delivList[i].Free) delist[i].Price = 0;
         }
         
-        FromDB.ShopCategory = shop.ShopCategory;
-        FromDB.ShopDeliveries = shop.ShopDeliveries;
-        FromDB.ShopPayment = shop.ShopPayment;
-        FromDB.ShopTypes = shop.ShopTypes;
+        fromDb.ShopCategory = shop.ShopCategory;
+        fromDb.ShopDeliveries = shop.ShopDeliveries;
+        fromDb.ShopPayment = shop.ShopPayment;
+        fromDb.ShopTypes = shop.ShopTypes;
         
        
-        _shopRepository.Save();
-        return FromDB;
+        await _shopRepository.Save();
+        return fromDb;
     }
 
     public async Task<Shop> ChangeBlockShop(Guid id, bool value)
@@ -236,7 +225,7 @@ public class ShopService:IShopService
         }
 
         shopid.IsActive = !value;
-        _shopRepository.Save();
+        await _shopRepository.Save();
         return shopid;
     }
 

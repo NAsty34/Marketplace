@@ -1,34 +1,44 @@
+
+using data.model;
 using data.Repository.Interface;
-using Microsoft.Extensions.Configuration;
 using logic.Exceptions;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using FileInfo = data.model.FileInfo;
 
 namespace logic.Service;
 
 public class FileInfoService:IFileInfoService
 {
-    private readonly IConfiguration appConfig;
+    private readonly IConfiguration _appConfig;
     private readonly IFileInfoRepository _fileInfoRepository;
+    private ILogger<FileInfo> _logger;
 
-    public FileInfoService(IConfiguration _appConfig, IFileInfoRepository fileInfoRepository)
+    public FileInfoService(IFileInfoRepository fileInfoRepository, IConfiguration appConfig, ILogger<FileInfo> logger)
     {
-        this.appConfig = _appConfig;
-        this._fileInfoRepository = fileInfoRepository;
+        _appConfig = appConfig;
+        _logger = logger;
+        _fileInfoRepository = fileInfoRepository;
     }
-    public async Task<data.model.FileInfo> Addfile(IFormFile file, Guid entityId)
+    public async Task<FileInfo> Addfile(IFormFile file, Guid entityId)
     {
+        var fileInfoOptions = new FileInfoOptions();
+        _appConfig.GetSection(FileInfoOptions.File).Bind(fileInfoOptions);
+        
         var extension = Path.GetExtension(file.FileName);
-        if (extension != ".png" && extension != ".jpg") throw new LogoException();
+        if (extension is not ".png" and not ".jpg") throw new LogoException();
         data.model.FileInfo fi = new data.model.FileInfo()
         {
             Name = file.FileName,
             Extension = extension
         };
-        _fileInfoRepository.Create(fi);
-        _fileInfoRepository.Save();
-        string fullPath = $"{appConfig["BasePath"]}/{entityId}/{fi.Id}{extension}";
-        new DirectoryInfo($"{appConfig["BasePath"]}/{entityId}").Create();
+        await _fileInfoRepository.Create(fi);
+        await _fileInfoRepository.Save();
+        string fullPath = $"{fileInfoOptions.BasePath}/{entityId}/{fi.Id}{extension}";
+        new DirectoryInfo($"{fileInfoOptions.BasePath}/{entityId}").Create();
+        //_logger.Log(LogLevel.Information, "======" + $"{fileInfoOptions.BaseUrl}/{fileInfoOptions.RequestPath}");
         using (var fileStream = new FileStream(fullPath, FileMode.Append))
         {
             await file.CopyToAsync(fileStream);

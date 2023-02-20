@@ -4,5 +4,5 @@ namespace logic.Exceptions;
 
 public class UserNotFoundException:BaseException
 {
-    public UserNotFoundException():base("User not found", 10, HttpStatusCode.NotFound){}
+    public UserNotFoundException():base("User not found", HttpStatusCode.NotFound){}
 }

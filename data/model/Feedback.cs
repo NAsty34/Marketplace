@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace data.model;
@@ -10,5 +9,5 @@ public class Feedback:BaseEntity
     public string? Content { get; set; }
     public Guid ShopId { get; set; }
     public virtual Shop? Shop { get; set; }
-    public virtual User Creator { get; set; }
+    public virtual User? Creator { get; set; }
 }

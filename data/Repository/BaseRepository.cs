@@ -7,23 +7,23 @@ namespace data.Repository;
 public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 {
 
-    protected DBContext _dbContext;
-    protected DbSet<T> _dbSet;
+    protected DBContext DbContext;
+    protected DbSet<T> DbSet;
 
-    public BaseRepository(DBContext _dbContext)
+    public BaseRepository(DBContext dbContext)
     {
-        this._dbContext = _dbContext;
-        this._dbSet = this._dbContext.Set<T>();
+        DbContext = dbContext;
+        DbSet = DbContext.Set<T>();
     }
 
     public async Task<T?> GetById(Guid id)
     {
-        return _dbSet.Find(id);
+       return await DbSet.FindAsync(id);
     }
 
     public async Task<IEnumerable<T>> GetByIds(IEnumerable<Guid> ids)
     {
-        return _dbSet.Where(a => ids.Contains(a.Id));
+        return DbSet.Where(a => ids.Contains(a.Id));
     }
 
     public async Task<Page<T>> GetPage(IQueryable<T> queryable, int page, int size)
@@ -33,34 +33,34 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
     
     public async Task<Page<T>> GetPage(int page, int size)
     {
-        return await GetPage(_dbSet, page, size);
+        return await GetPage(DbSet, page, size);
     }
 
-    public async void Create(T t)
+    public async Task Create(T t)
     {
-        _dbSet.Add(t);
+         await DbSet.AddAsync(t);
     }
 
-    public async void Create(IEnumerable<T> _t)
+    public async Task Create(IEnumerable<T> t)
     {
-         _dbSet.AddRange(_t);
+         await DbSet.AddRangeAsync(t);
         
     }
 
-    public async void Save()
+    public async Task Save()
     {
-        _dbContext.SaveChanges();
+        await DbContext.SaveChangesAsync();
     }
 
     public async void Edit(T t)
     {
-       _dbContext.Entry(t).State = EntityState.Modified;
+       DbContext.Entry(t).State = EntityState.Modified;
     }
-    public async void Edit(IEnumerable<T> _t)
+    public async void Edit(IEnumerable<T> t)
     {
-        foreach (var baseEntity in _t)
+        foreach (var baseEntity in t)
         {
-            _dbContext.Entry(baseEntity).State = EntityState.Modified;
+           DbContext.Entry(baseEntity).State = EntityState.Modified;
         }
     }
 
@@ -71,7 +71,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
     public async void Delete(Guid id)
     {
         var shopid = await GetById(id);
-        shopid.IsDeleted = true;
+        shopid!.IsDeleted = true;
     }
    
 

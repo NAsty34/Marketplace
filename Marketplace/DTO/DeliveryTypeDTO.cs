@@ -2,13 +2,13 @@ using data.model;
 
 namespace Marketplace.DTO;
 
-public class DeliveryTypeDTO:DictionaryDTO<DeliveryType>
+public class DeliveryTypeDto:DictionaryDto<DeliveryType>
 {
-    public DeliveryTypeDTO()
+    public DeliveryTypeDto()
     {
         
     }
-    public DeliveryTypeDTO(DeliveryType t)
+    public DeliveryTypeDto(DeliveryType t)
     {
         t.Id = Id;
         t.Name = Name;

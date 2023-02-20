@@ -1,6 +1,6 @@
 namespace Marketplace.DTO;
 
-public class RegisterDTO:UserDto
+public class RegisterDto:UserDto
 {
-    public string Password { get; set; }
+    public string Password { get; set; } = null!;
 }

@@ -6,27 +6,27 @@ namespace data.Repository;
 
 public class ShopDictionaryRepository<T> : IShopDictionaryRepository<T> where T : ShopDictionaryBase
 {
-    protected DBContext _dbContext;
-    protected DbSet<T> _dbSet;
+    protected DBContext DbContext;
+    protected DbSet<T> DbSet;
 
-    public ShopDictionaryRepository(DBContext _dbContext)
+    public ShopDictionaryRepository(DBContext dbContext)
     {
-        this._dbContext = _dbContext;
-        this._dbSet = _dbContext.Set<T>();
+        DbContext = dbContext;
+        DbSet = dbContext.Set<T>();
     }
 
     
 
-    public async void DeleteAllByShop(Guid shopid)
+    public async Task DeleteAllByShop(Guid shopid)
     {
-        _dbSet.RemoveRange(_dbSet.Where(a => a.shopid == shopid));
-        _dbContext.SaveChanges();
+        DbSet.RemoveRange(DbSet.Where(a => a.ShopId == shopid));
+        await DbContext.SaveChangesAsync();
     }
 
-    public async void CreateRange(IEnumerable<T> ids)
+    public async Task CreateRange(IEnumerable<T> ids)
     {
-        _dbSet.AddRange(ids);
-        _dbContext.SaveChanges();
+        await DbSet.AddRangeAsync(ids);
+        await DbContext.SaveChangesAsync();
     }
 
 }

@@ -6,14 +6,14 @@ public class ShopPayment:ShopDictionaryBase
     {
         
     }
-    public ShopPayment(Guid shopid, Guid guid, double com) : base(shopid, guid)
+    public ShopPayment(Guid shopId, Guid guid, double com) : base(shopId, guid)
     {
-        this.shopid = shopid;
-        this.Paymentid = guid;
-        this.commision = com;
+        ShopId = shopId;
+        PaymentId = guid;
+        Commission = com;
     }
 
 
-    public Guid Paymentid { get; set; }
-    public double commision { get; set; }
+    public Guid PaymentId { get; set; }
+    public double Commission { get; set; }
 }

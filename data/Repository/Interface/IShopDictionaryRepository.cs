@@ -5,7 +5,7 @@ namespace data.Repository.Interface;
 public interface IShopDictionaryRepository<T>
 {
     
-    public void DeleteAllByShop(Guid shopid);
-    public void CreateRange(IEnumerable<T> ids);
+    public Task DeleteAllByShop(Guid shopid);
+    public Task CreateRange(IEnumerable<T> ids);
     
 }

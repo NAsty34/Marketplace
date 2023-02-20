@@ -71,15 +71,14 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("parentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("parentId");
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Categories");
                 });
@@ -118,7 +117,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -202,7 +200,6 @@ namespace data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Extension")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
@@ -212,7 +209,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -254,7 +250,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -282,6 +277,7 @@ namespace data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("EditDate")
@@ -300,6 +296,9 @@ namespace data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("LogoId")
                         .HasColumnType("uuid");
 
@@ -307,10 +306,8 @@ namespace data.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("isPublic")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -323,20 +320,20 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.ShopCategory", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("shopid", "CategoryId");
+                    b.HasKey("ShopId", "CategoryId");
 
                     b.ToTable("ShopCategories");
                 });
 
             modelBuilder.Entity("data.model.ShopDelivery", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("DeliveryId")
@@ -345,41 +342,41 @@ namespace data.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("double precision");
 
-                    b.HasKey("shopid", "DeliveryId");
+                    b.HasKey("ShopId", "DeliveryId");
 
                     b.ToTable("ShopDeliveries");
                 });
 
             modelBuilder.Entity("data.model.ShopPayment", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Paymentid")
+                    b.Property<Guid>("PaymentId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("commision")
+                    b.Property<double>("Commission")
                         .HasColumnType("double precision");
 
-                    b.HasKey("shopid", "Paymentid");
+                    b.HasKey("ShopId", "PaymentId");
 
                     b.ToTable("ShopPayments");
                 });
 
             modelBuilder.Entity("data.model.ShopTypes", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("shopid", "TypeId");
+                    b.HasKey("ShopId", "TypeId");
 
                     b.ToTable("ShopTypes");
                 });
 
-            modelBuilder.Entity("data.model.Type", b =>
+            modelBuilder.Entity("data.model.TypeEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -397,6 +394,10 @@ namespace data.Migrations
                     b.Property<Guid?>("DeletorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Discription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -410,11 +411,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("discription")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -489,14 +485,14 @@ namespace data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a7a6a412-1d2e-4406-bd2f-99416333ca2d"),
-                            CreateDate = new DateTime(2023, 2, 13, 17, 22, 38, 169, DateTimeKind.Local).AddTicks(5737),
+                            Id = new Guid("8250dcb8-7733-4aa0-99ec-2aaf106515fa"),
+                            CreateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             EmailIsVerified = true,
                             IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
-                            Password = "$2a$11$UD0oLCWrwYI.n/nGDAPjLeSv7GvctWqWJ2aUPLSk1fjf/yf4EmIN6",
+                            Password = "$2a$11$mcTYNXuhvDMShOBRU1/lA.wx6CVO3cARfz5NbnMhAWvwlhi1XcFxu",
                             Patronymic = "Admin",
                             Role = "Admin",
                             Surname = "Admin"
@@ -520,11 +516,11 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.Category", b =>
                 {
-                    b.HasOne("data.model.Category", "parent")
+                    b.HasOne("data.model.Category", "Parent")
                         .WithMany()
-                        .HasForeignKey("parentId");
+                        .HasForeignKey("ParentId");
 
-                    b.Navigation("parent");
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("data.model.Feedback", b =>
@@ -565,7 +561,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopCategory")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -574,7 +570,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopDeliveries")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -583,7 +579,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopPayment")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -592,7 +588,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopTypes")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -6,18 +6,14 @@ public class FiltersShops
     
     public string? Name { get; set; }
     public string? Description { get; set; }
-    public override string ToString()
-    {
-        return Id + " " + Name+" "+category+" ";
-    }
-
+  
     public bool? IsPublic { get; set; }
     public Guid? User { get; set; }
-    public int? page { get; set; }
-    public int? size { get; set; }
-    public IEnumerable<Guid>? category { get; set; }
-    public IEnumerable<Guid>? deliveries { get; set; }
-    public IEnumerable<Guid>? payment { get; set; }
-    public IEnumerable<Guid>? types { get; set; }
+    public int? Page { get; set; }
+    public int? Size { get; set; }
+    public IEnumerable<Guid>? Category { get; set; }
+    public IEnumerable<Guid>? Deliveries { get; set; }
+    public IEnumerable<Guid>? Payment { get; set; }
+    public IEnumerable<Guid>? Types { get; set; }
 }
 

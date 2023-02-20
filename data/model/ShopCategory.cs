@@ -6,12 +6,12 @@ public class ShopCategory:ShopDictionaryBase
     {
         
     }
-    public ShopCategory(Guid shopid, Guid guid) : base(shopid, guid)
+    public ShopCategory(Guid shopId, Guid guid) : base(shopId, guid)
     {
-        this.shopid = shopid;
-        this.CategoryId = guid;
+        ShopId = shopId;
+        CategoryId = guid;
     }
 
-  
+    
     public Guid CategoryId { get; set; } 
 }
