@@ -27,12 +27,15 @@ public class BaseService<T> : IBaseService<T> where T : DictionaryBase
          await BaseRopository.Save();
     }
 
-    public virtual async Task<T> Edit(T t)
+    public virtual async Task Edit(T t)
     {
         var fromDb = await BaseRopository.GetById(t.Id);
-        fromDb.Name = t.Name;
+        if (fromDb != null)
+        {
+            fromDb.Name = t.Name;
+            
+        }
         await BaseRopository.Save();
-        return fromDb;
     }
 
     public async Task Delete(Guid id)

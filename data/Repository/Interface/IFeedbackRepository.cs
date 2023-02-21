@@ -1,7 +1,6 @@
 using data.model;
-using data.Repository.Interface;
 
-namespace data.Repository;
+namespace data.Repository.Interface;
 
 public interface IFeedbackRepositiry:IBaseRopository<Feedback>
 {

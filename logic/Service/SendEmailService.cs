@@ -3,19 +3,18 @@ using logic.Service.Inreface;
 using MimeKit;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace logic.Service;
 
 public class SendEmailService:ISendEmailService
 {
     private readonly IConfiguration _appConfig;
-    private ILogger<User> _logger;
+    //private ILogger<User> _logger;
 
-    public SendEmailService(IConfiguration appConfig, ILogger<User> logger)
+    public SendEmailService(IConfiguration appConfig)
     {
         _appConfig = appConfig;
-        _logger = logger;
+        //_logger = logger;
     }
     public async Task Send(string email, string text, string header)
     {

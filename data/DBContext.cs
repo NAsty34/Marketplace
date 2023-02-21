@@ -59,7 +59,7 @@ public class DBContext : DbContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Shop> Shops { get; set; } = null!;
     public DbSet<Feedback> Feedbacks { get; set; } = null!;
-    public DbSet<model.FileInfo> FileInfos { get; set; } = null!;
+    public DbSet<FileInfoEntity> FileInfos { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<DeliveryType> DeliveryTypes { get; set; } = null!;
     public DbSet<TypeEntity> Types { get; set; } = null!;

@@ -21,7 +21,7 @@ public class FeedbackController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<Page<FeedbackDto>>> UserFeedback(Guid id)
     {
-        var idfeedbyuser = await _feedbackService.GetByUser(id, role.Equals(Role.Admin));
+        var idfeedbyuser = await _feedbackService.GetByUser(id, Role.Equals(data.model.Role.Admin));
         Page<FeedbackDto> findfeed = Page<FeedbackDto>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDto(a, _appConfig)));
         return new(findfeed);
     }
@@ -30,7 +30,7 @@ public class FeedbackController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<Page<FeedbackDto>>> ShopFeedback(Guid id)
     {
-        var idfeedbyshop = await _feedbackService.GetByShop(id, role.Equals(Role.Admin));
+        var idfeedbyshop = await _feedbackService.GetByShop(id, Role.Equals(data.model.Role.Admin));
         Page<FeedbackDto> findfeed = Page<FeedbackDto>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDto(a, _appConfig)));
         return new(findfeed);
     }
@@ -45,7 +45,7 @@ public class FeedbackController:UserBaseController
             CreateDate = DateTime.Now,
             Stars = feedbackDto.Stars,
             ShopId = id,
-            CreatorId = Userid
+            CreatorId = Userid.Value
 
         };
         await _feedbackService.AddFeedback(feed);
@@ -62,7 +62,7 @@ public class FeedbackController:UserBaseController
             Stars = feedbackDto.Stars,
             Id = id
         };
-        var upfeed = await _feedbackService.EditFeedback(feed, Userid.Value, (Role)role);
+        var upfeed = await _feedbackService.EditFeedback(feed, Userid.Value, (Role)Role);
         return new(new FeedbackDto(upfeed, _appConfig));
     }
 
@@ -70,14 +70,14 @@ public class FeedbackController:UserBaseController
     [HttpDelete]
     public async Task<ResponceDto<string>> DeleteFeedback(Guid id)
     {
-        await _feedbackService.DeleteFeedback(id, Userid.Value, (Role)role);
+        await _feedbackService.DeleteFeedback(id, Userid.Value, (Role)Role);
         return new("Успешно удалено!");
     }
     [Route("/api/v1/feedback/block/{id}")]
     [HttpGet]
     public async Task<ResponceDto<FeedbackDto>> BlockFeedback(Guid id)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -89,7 +89,7 @@ public class FeedbackController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<FeedbackDto>> UnblockFeedback(Guid id)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }

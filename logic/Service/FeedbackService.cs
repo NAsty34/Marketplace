@@ -1,5 +1,4 @@
 using data.model;
-using data.Repository;
 using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
@@ -30,7 +29,7 @@ public class FeedbackService:IFeedbackService
 
     public async Task AddFeedback(Feedback feedback)
     {
-        feedback.Creator = await _repositoryUser.GetById(feedback.CreatorId.Value);
+        feedback.Creator = await _repositoryUser.GetById(feedback.CreatorId);
         feedback.Shop = await _shopRepository.GetById(feedback.ShopId);
        await _feedbackRepositiry.Create(feedback);
         await _feedbackRepositiry.Save();

@@ -1,6 +1,5 @@
 using AutoMapper;
 using data.model;
-using logic.Service;
 using logic.Service.Inreface;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;

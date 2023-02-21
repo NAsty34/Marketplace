@@ -9,12 +9,12 @@ namespace Marketplace.controller;
 public class AuthController: Controller
 {
     private readonly IAuthService _authService;
-    private ILogger<User> _logger;
+    //private ILogger<User> _logger;
 
-    public AuthController(IAuthService authService, ILogger<User> logger)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _logger = logger;
+        //_logger = logger;
     }
     
     [Route("/api/v1/auth/login")]

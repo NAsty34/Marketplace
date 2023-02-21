@@ -31,7 +31,7 @@ public class ShopController:UserBaseController
      filtersShops.User = null;
      filtersShops.IsPublic = null;
         
-        if (role.Equals(Role.Buyer))
+        if (Role.Equals(data.model.Role.Buyer))
         {
             filtersShops.IsPublic = true;
         }
@@ -50,13 +50,13 @@ public class ShopController:UserBaseController
     public async Task<ResponceDto<ShopDto>> GetShop(Guid id)
     {
         var selshop = await _ishopservice.GetShop(id);
-        if (role.Equals(Role.Buyer) && !selshop.IsPublic)
+        if (Role.Equals(data.model.Role.Buyer) && !selshop.IsPublic)
         {
 
             throw new AccessDeniedException();
         }
         
-        if (selshop.CreatorId != Userid && role.Equals(Role.Seller))
+        if (selshop.CreatorId != Userid && Role.Equals(data.model.Role.Seller))
         {
             throw new AccessDeniedException();
         }
@@ -68,7 +68,7 @@ public class ShopController:UserBaseController
     public async Task<ResponceDto<ShopDto>> CreateShop([FromForm] ShopDto shopDto, IFormFile file)
     {
         
-        if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Seller) && !Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -95,7 +95,7 @@ public class ShopController:UserBaseController
         
         if (file != null)
         {
-            data.model.FileInfo fileIn = await _fileInfoService.Addfile(file, user.Id);
+            FileInfoEntity fileIn = await _fileInfoService.Addfile(file, user.Id);
             
             shops.Logo = fileIn;
         }
@@ -107,13 +107,13 @@ public class ShopController:UserBaseController
     [HttpPut]
     public async Task<ResponceDto<ShopDto>> EditShops([FromForm] ShopDto shopDto, IFormFile file, Guid shopid)
     {
-        if (!role.Equals(Role.Seller) && !role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Seller) && !Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }
         
         //if (role.Equals(Role.Admin)) Userid = Userid;
-        data.model.FileInfo fi=null;
+        FileInfoEntity fi=null;
         if (file != null)
         {
             fi = await _fileInfoService.Addfile(file, shopid);
@@ -134,7 +134,7 @@ public class ShopController:UserBaseController
             ShopPayment = shopDto.Payment.Zip(shopDto.Com, (guid, d) => new {k=guid, v=d}).Select(a=>new ShopPayment(id, a.k, a.v)).ToList()
             
         };
-        var shope = await _ishopservice.EditShop(shops, Userid.Value, (Role)role);
+        var shope = await _ishopservice.EditShop(shops, Userid.Value, (Role)Role);
         return new(new ShopDto(shope, _appConfig));
     }
 
@@ -142,7 +142,7 @@ public class ShopController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<ShopDto>> BlockShop(Guid id)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -154,7 +154,7 @@ public class ShopController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<ShopDto>> UnblockGetShops(Guid id)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }

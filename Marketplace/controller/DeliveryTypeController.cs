@@ -11,7 +11,7 @@ namespace Marketplace.controller;
 [Route("/api/v1/delivery")]
 public class DeliveryTypeController:BaseController<DeliveryType, DeliveryTypeDto>
 {
-    public DeliveryTypeController(IBaseService<DeliveryType> _base, IMapper mapper) : base(_base, mapper)
+    public DeliveryTypeController(IBaseService<DeliveryType> @base, IMapper mapper) : base(@base, mapper)
     {
     }
 

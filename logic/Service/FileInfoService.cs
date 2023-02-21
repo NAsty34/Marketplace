@@ -1,35 +1,34 @@
-
 using data.model;
 using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using FileInfo = data.model.FileInfo;
 
 namespace logic.Service;
 
-public class FileInfoService:IFileInfoService
+public class FileInfoService : IFileInfoService
 {
     private readonly IConfiguration _appConfig;
-    private readonly IFileInfoRepository _fileInfoRepository;
-    private ILogger<FileInfo> _logger;
 
-    public FileInfoService(IFileInfoRepository fileInfoRepository, IConfiguration appConfig, ILogger<FileInfo> logger)
+    private readonly IFileInfoRepository _fileInfoRepository;
+    // private ILogger<FileInfo> _logger;
+
+    public FileInfoService(IFileInfoRepository fileInfoRepository, IConfiguration appConfig)
     {
         _appConfig = appConfig;
-        _logger = logger;
+        //_logger = logger;
         _fileInfoRepository = fileInfoRepository;
     }
-    public async Task<FileInfo> Addfile(IFormFile file, Guid entityId)
+
+    public async Task<FileInfoEntity> Addfile(IFormFile file, Guid entityId)
     {
         var fileInfoOptions = new FileInfoOptions();
         _appConfig.GetSection(FileInfoOptions.File).Bind(fileInfoOptions);
-        
+
         var extension = Path.GetExtension(file.FileName);
         if (extension is not ".png" and not ".jpg") throw new LogoException();
-        data.model.FileInfo fi = new data.model.FileInfo()
+        FileInfoEntity fi = new FileInfoEntity()
         {
             Name = file.FileName,
             Extension = extension
@@ -43,6 +42,7 @@ public class FileInfoService:IFileInfoService
         {
             await file.CopyToAsync(fileStream);
         }
+
         return fi;
     }
 }

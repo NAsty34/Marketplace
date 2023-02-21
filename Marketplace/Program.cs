@@ -91,16 +91,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var jwt = new JWTTokenOptions();
-        appConfig.GetSection(JWTTokenOptions.JWTToken).Bind(jwt);
+        var jwt = new JwtTokenOptions();
+        appConfig.GetSection(JwtTokenOptions.JwtToken).Bind(jwt);
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = jwt.ISSUER,
+            ValidIssuer = jwt.Issuer,
             ValidateAudience = true,
-            ValidAudience = jwt.AUDIENCE,
+            ValidAudience = jwt.Audience,
             ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.KEY)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
             ValidateIssuerSigningKey = true,
         };
     });

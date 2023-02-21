@@ -1,5 +1,5 @@
 using data.model;
-using data.Repository;
+using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
 
@@ -55,7 +55,7 @@ public class UserServer:IUserServer
             throw new EmailException();
         }
 
-        user.Password = _hashService.Hash(user.Password!);
+        user.Password = _hashService.Hash(user.Password);
         await _userrepository.Create(user);
         await _userrepository.Save();
         

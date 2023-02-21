@@ -70,8 +70,8 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
     }
     public async void Delete(Guid id)
     {
-        var shopid = await GetById(id);
-        shopid!.IsDeleted = true;
+        var shopId = await GetById(id);
+        shopId!.IsDeleted = true;
     }
    
 

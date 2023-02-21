@@ -16,7 +16,7 @@ public class User:BaseEntity
     [Required]
     public Role Role { get; set; }
     [Required]
-    public string? Password { get; set; }
+    public string Password { get; set; } = null!;
 
     public virtual List<Shop> FavoriteShops { get; set; } = new();
     public virtual List<Shop> Shops { get; set; } = new();

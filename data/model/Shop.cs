@@ -8,7 +8,7 @@ public class Shop:BaseEntity
     
     public  string Name { get; set; } = null!;
     public  string Description { get; set; } = null!;
-    public  virtual FileInfo? Logo { get; set; }
+    public  virtual FileInfoEntity Logo { get; set; }
     
     public  string Inn { get; set; } = null!;
     public bool IsPublic { get; set; }

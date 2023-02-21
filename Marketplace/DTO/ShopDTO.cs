@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using data.model;
-using FileInfo = data.model.FileInfo;
 
 namespace Marketplace.DTO;
 

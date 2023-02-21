@@ -1,22 +1,20 @@
-using System.Diagnostics;
 using data.model;
 using data.Repository;
 using data.Repository.Interface;
 using logic.Exceptions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace logic.Service;
 
 public class CategoryService:BaseService<Category>
 {
-    private ILogger<CategoryService> _logger;
+   // private ILogger<CategoryService> _logger;
     private CategoryRepository _categoryRepository;
-    private IConfiguration Configuration;
-    public CategoryService(IBaseRopository<Category> @base, ILogger<CategoryService> logger, IConfiguration configuration) : base(@base)
+    private readonly IConfiguration _configuration;
+    public CategoryService(IBaseRopository<Category> @base, IConfiguration configuration) : base(@base)
     {
-        _logger = logger;
-        Configuration = configuration;
+        //_logger = logger;
+        _configuration = configuration;
         _categoryRepository = (CategoryRepository)@base;
     }
     public override async Task<Category> Create(Category t)
@@ -41,7 +39,7 @@ public class CategoryService:BaseService<Category>
         await CheckParent(t);
         
         var children = await _categoryRepository.Children(t.Id);
-        if (children.Contains(t.Parent.Id))
+        if (t.Parent!= null && children.Contains(t.Parent.Id))
         {
             throw new CategoryParentException();
         }
@@ -55,9 +53,9 @@ public class CategoryService:BaseService<Category>
     private async Task CheckParent(Category t)
     {
         var categoryoptions = new CategoryOptions();
-        Configuration.GetSection(CategoryOptions.Category).Bind(categoryoptions);
+        _configuration.GetSection(CategoryOptions.Category).Bind(categoryoptions);
 
-        //if (t.Parent == null) return;
+        if (t.Parent == null) return;
 
         if (t.Parent.Id.Equals(t.Id))
         {

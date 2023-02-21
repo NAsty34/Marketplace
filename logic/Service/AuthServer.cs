@@ -2,11 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.RegularExpressions;
 using data.model;
-using data.Repository;
+using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace logic.Service;
 
@@ -15,13 +14,13 @@ public class AuthServer:IAuthService
     private readonly IRepositoryUser _userRepository;
     private readonly ISendEmailService _sendEmailService;
     private readonly IJwtService _jwtService;
-    private ILogger<User> _logger;
+    //private ILogger<User> _logger;
     private readonly IConfiguration _configuration;
-    public AuthServer(IRepositoryUser repositoryUser, IJwtService jwtService, ISendEmailService sendEmailService, ILogger<User> logger, IConfiguration configuration)
+    public AuthServer(IRepositoryUser repositoryUser, IJwtService jwtService, ISendEmailService sendEmailService, IConfiguration configuration)
     {
         _userRepository = repositoryUser;
         _sendEmailService = sendEmailService;
-        _logger = logger;
+       // _logger = logger;
         _configuration = configuration;
         _jwtService = jwtService;
     }

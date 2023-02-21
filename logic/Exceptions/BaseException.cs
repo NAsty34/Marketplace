@@ -12,7 +12,7 @@ public class BaseException:Exception
         Status = status;
     }*/
 
-    public BaseException(string msg, HttpStatusCode httpStatusCode) : base(msg)
+    protected BaseException(string msg, HttpStatusCode httpStatusCode) : base(msg)
     {
         Status = 200;
     }

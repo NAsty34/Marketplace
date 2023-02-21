@@ -6,7 +6,7 @@ using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Marketplace.controller;
-[Authorize(Roles = nameof(Role.Admin))]
+[Authorize(Roles = nameof(data.model.Role.Admin))]
 public class UserController:UserBaseController
 {
     private readonly IUserServer _userServer;
@@ -39,7 +39,7 @@ public class UserController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<UserDto>> BlockUser(Guid id)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -51,7 +51,7 @@ public class UserController:UserBaseController
     [HttpGet]
     public async Task<ResponceDto<UserDto>> UnblockUser(Guid id)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }
@@ -63,7 +63,7 @@ public class UserController:UserBaseController
     [HttpPost]
     public Task<ResponceDto<UserDto>> CreateAdmin([FromBody] RegisterDto userDto)
     {
-        if (!role.Equals(Role.Admin))
+        if (!Role.Equals(data.model.Role.Admin))
         {
             throw new AccessDeniedException();
         }

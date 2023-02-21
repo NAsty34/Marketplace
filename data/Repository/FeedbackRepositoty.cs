@@ -1,4 +1,5 @@
 using data.model;
+using data.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace data.Repository;
