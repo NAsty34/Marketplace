@@ -65,6 +65,7 @@ builder.Services.AddTransient <IRepositoryUser, UserRepository>();
 builder.Services.AddTransient <IFeedbackRepositiry, FeedbackRepositoty>();
 builder.Services.AddTransient <IShopRepository, ShopRepository>();
 builder.Services.AddTransient <IFileInfoRepository, FileInfoRepository>();
+builder.Services.AddTransient <IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IShopDictionaryRepository<>), typeof(ShopDictionaryRepository<>));
 
 builder.Services.AddScoped(typeof(IBaseRopository<>), typeof(BaseRepository<>));
@@ -84,6 +85,7 @@ builder.Services.AddTransient <IUserServer, UserServer>();
 builder.Services.AddTransient <IShopService, ShopService>();
 builder.Services.AddTransient <IFeedbackService, FeedbackService>();
 builder.Services.AddTransient <IFileInfoService, FileInfoService>();
+builder.Services.AddTransient <IProductService, ProductService>();
 
 builder.Services.AddAuthorization();
 

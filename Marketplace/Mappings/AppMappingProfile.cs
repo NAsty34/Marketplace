@@ -11,6 +11,9 @@ public class AppMappingProfile : Profile
         CreateMap<Shop, ShopDto>();
         CreateMap<Shop, ShopDto>().ReverseMap();
         
+        CreateMap<ProductEntity, ProductDto>();
+        CreateMap<ProductEntity, ProductDto>().ReverseMap();
+        
         CreateMap<Category, CategoryDto>();
         CreateMap<Category, CategoryDto>().ReverseMap();
         CreateMap<Page<Category>, Page<CategoryDto>>();

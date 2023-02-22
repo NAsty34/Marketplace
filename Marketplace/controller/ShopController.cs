@@ -25,7 +25,7 @@ public class ShopController:UserBaseController
 
     [Route("/api/v1/shops")]
     [HttpGet]
-    public async Task<ResponceDto<Page<ShopDto>>> Shops(FiltersShops filtersShops)
+    public async Task<ResponceDto<Page<ShopDto>>> Shops(FiltersShops filtersShops, int? page, int? size)
     {
      /*logger.Log(LogLevel.Information, "============" + filtersShops);*/
      filtersShops.User = null;
@@ -40,8 +40,8 @@ public class ShopController:UserBaseController
             filtersShops.User = Userid;
         }
         
-        Page<Shop> shop = await _ishopservice.GetShops(filtersShops);
-        Page<ShopDto> result = Page<ShopDto>.Create(shop, shop.Items.Select(a => new ShopDto(a, _appConfig)));
+        var shop = await _ishopservice.GetShops(filtersShops, page, size);
+        var result = Page<ShopDto>.Create(shop, shop.Items.Select(a => new ShopDto(a, _appConfig)));
         return new(result);
     }
 
@@ -138,8 +138,8 @@ public class ShopController:UserBaseController
         return new(new ShopDto(shope, _appConfig));
     }
 
-    [Route("/api/v1/shops/block/{id}")]
-    [HttpGet]
+    [Route("/api/v1/shops/{id}/block")]
+    [HttpPatch]
     public async Task<ResponceDto<ShopDto>> BlockShop(Guid id)
     {
         if (!Role.Equals(data.model.Role.Admin))
@@ -150,8 +150,8 @@ public class ShopController:UserBaseController
         return new(new ShopDto(blockshop, _appConfig));
     }
 
-    [Route("/api/v1/shops/unblock/{id}")]
-    [HttpGet]
+    [Route("/api/v1/shops/{id}/unblock")]
+    [HttpPatch]
     public async Task<ResponceDto<ShopDto>> UnblockGetShops(Guid id)
     {
         if (!Role.Equals(data.model.Role.Admin))

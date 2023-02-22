@@ -17,22 +17,23 @@ public class FeedbackService:IFeedbackService
         _shopRepository = shopRepository;
         _repositoryUser = repositoryUser;
     }
-    public async Task<Page<Feedback>> GetByUser(Guid id, bool isAdmin)
+    public async Task<Page<Feedback>> GetByUser(Guid id, bool isAdmin, int? page, int? size)
     {
-        return await _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin);
+        return await _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin, page, size);
     }
 
-    public async Task<Page<Feedback>> GetByShop(Guid id, bool isAdmin)
+    public async Task<Page<Feedback>> GetByShop(Guid id, bool isAdmin, int? page, int? size)
     {
-        return await _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin);
+        return await _feedbackRepositiry.GetFeedbackbyShop(id, isAdmin, page, size);
     }
 
-    public async Task AddFeedback(Feedback feedback)
+    public async Task<Feedback> AddFeedback(Feedback feedback)
     {
-        feedback.Creator = await _repositoryUser.GetById(feedback.CreatorId);
+        feedback.Creator = await _repositoryUser.GetById(feedback.CreatorId.Value);
         feedback.Shop = await _shopRepository.GetById(feedback.ShopId);
        await _feedbackRepositiry.Create(feedback);
         await _feedbackRepositiry.Save();
+        return feedback;
     }
 
     public async Task<Feedback> EditFeedback(Feedback feedback, Guid userid, Role role)

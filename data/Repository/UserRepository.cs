@@ -14,4 +14,6 @@ public class UserRepository : BaseRepository<User>, IRepositoryUser
     public UserRepository(DBContext dbContext) : base(dbContext)
     {
     }
+
+    
 }

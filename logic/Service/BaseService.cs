@@ -13,7 +13,7 @@ public class BaseService<T> : IBaseService<T> where T : DictionaryBase
     {
         BaseRopository = baseRopository;
     }
-    public async Task<Page<T>> Page(int page, int size)
+    public async Task<Page<T>> Page(int? page, int? size)
     {
         return await BaseRopository.GetPage(page, size);
     }

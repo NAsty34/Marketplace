@@ -18,9 +18,9 @@ public class UserController:UserBaseController
 
     [Route("/api/v1/users")]
     [HttpGet]
-    public async Task<ResponceDto<Page<UserDto>>> GetUsers()
+    public async Task<ResponceDto<Page<UserDto>>> GetUsers(int? page, int? size)
     {
-        var users =await _userServer.GetUsers();
+        var users =await _userServer.GetUsers(page, size);
         Page<UserDto> pageuser = Page<UserDto>.Create(users, users.Items.Select(a => new UserDto(a)));
         
         return new(pageuser);
@@ -35,8 +35,8 @@ public class UserController:UserBaseController
         return new(userD);
     }
     
-    [Route("/api/v1/user/block/{id}")]
-    [HttpGet]
+    [Route("/api/v1/user/{id}/block")]
+    [HttpPatch]
     public async Task<ResponceDto<UserDto>> BlockUser(Guid id)
     {
         if (!Role.Equals(data.model.Role.Admin))
@@ -47,8 +47,8 @@ public class UserController:UserBaseController
         return new(new UserDto(blockuser));
     }
 
-    [Route("/api/v1/user/unblock/{id}")]
-    [HttpGet]
+    [Route("/api/v1/user/{id}/unblock")]
+    [HttpPatch]
     public async Task<ResponceDto<UserDto>> UnblockUser(Guid id)
     {
         if (!Role.Equals(data.model.Role.Admin))

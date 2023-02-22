@@ -12,8 +12,8 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20230208000555_newfree")]
-    partial class newfree
+    [Migration("20230221153708_createadmin")]
+    partial class createadmin
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,15 +74,14 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("parentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("parentId");
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Categories");
                 });
@@ -121,7 +120,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -177,7 +175,7 @@ namespace data.Migrations
                     b.ToTable("Feedback");
                 });
 
-            modelBuilder.Entity("data.model.FileInfo", b =>
+            modelBuilder.Entity("data.model.FileInfoEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -205,7 +203,6 @@ namespace data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Extension")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
@@ -215,7 +212,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -257,12 +253,82 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("PaymentMethods");
+                });
+
+            modelBuilder.Entity("data.model.ProductEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("DeletorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Depth")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EditDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("double precision");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PartNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("PhotoIdId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Width")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("PhotoIdId");
+
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("data.model.Shop", b =>
@@ -285,6 +351,7 @@ namespace data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("EditDate")
@@ -303,6 +370,9 @@ namespace data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("LogoId")
                         .HasColumnType("uuid");
 
@@ -310,10 +380,8 @@ namespace data.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("isPublic")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -326,20 +394,20 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.ShopCategory", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("shopid", "CategoryId");
+                    b.HasKey("ShopId", "CategoryId");
 
                     b.ToTable("ShopCategories");
                 });
 
             modelBuilder.Entity("data.model.ShopDelivery", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("DeliveryId")
@@ -348,41 +416,41 @@ namespace data.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("double precision");
 
-                    b.HasKey("shopid", "DeliveryId");
+                    b.HasKey("ShopId", "DeliveryId");
 
                     b.ToTable("ShopDeliveries");
                 });
 
             modelBuilder.Entity("data.model.ShopPayment", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Paymentid")
+                    b.Property<Guid>("PaymentId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("commision")
+                    b.Property<double>("Commission")
                         .HasColumnType("double precision");
 
-                    b.HasKey("shopid", "Paymentid");
+                    b.HasKey("ShopId", "PaymentId");
 
                     b.ToTable("ShopPayments");
                 });
 
             modelBuilder.Entity("data.model.ShopTypes", b =>
                 {
-                    b.Property<Guid>("shopid")
+                    b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("shopid", "TypeId");
+                    b.HasKey("ShopId", "TypeId");
 
                     b.ToTable("ShopTypes");
                 });
 
-            modelBuilder.Entity("data.model.Type", b =>
+            modelBuilder.Entity("data.model.TypeEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -400,6 +468,10 @@ namespace data.Migrations
                     b.Property<Guid?>("DeletorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Discription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -413,11 +485,6 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("discription")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -488,22 +555,6 @@ namespace data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("28d6c474-5754-4326-93db-3f86498e5f00"),
-                            CreateDate = new DateTime(2023, 2, 8, 3, 5, 54, 913, DateTimeKind.Local).AddTicks(32),
-                            Email = "admin@gmail.com",
-                            EmailIsVerified = true,
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Admin",
-                            Password = "$2a$11$7HSGeeowHoGGv3u7I5UeO..xYcEyPCT5ElUBAMPREyFjKfkO8oL2q",
-                            Patronymic = "Admin",
-                            Role = "Admin",
-                            Surname = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("ShopUser", b =>
@@ -523,11 +574,11 @@ namespace data.Migrations
 
             modelBuilder.Entity("data.model.Category", b =>
                 {
-                    b.HasOne("data.model.Category", "parent")
+                    b.HasOne("data.model.Category", "Parent")
                         .WithMany()
-                        .HasForeignKey("parentId");
+                        .HasForeignKey("ParentId");
 
-                    b.Navigation("parent");
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("data.model.Feedback", b =>
@@ -547,6 +598,21 @@ namespace data.Migrations
                     b.Navigation("Shop");
                 });
 
+            modelBuilder.Entity("data.model.ProductEntity", b =>
+                {
+                    b.HasOne("data.model.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("data.model.FileInfoEntity", "PhotoId")
+                        .WithMany()
+                        .HasForeignKey("PhotoIdId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("PhotoId");
+                });
+
             modelBuilder.Entity("data.model.Shop", b =>
                 {
                     b.HasOne("data.model.User", "Creator")
@@ -555,7 +621,7 @@ namespace data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("data.model.FileInfo", "Logo")
+                    b.HasOne("data.model.FileInfoEntity", "Logo")
                         .WithMany()
                         .HasForeignKey("LogoId");
 
@@ -568,7 +634,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopCategory")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -577,7 +643,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopDeliveries")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -586,7 +652,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopPayment")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -595,7 +661,7 @@ namespace data.Migrations
                 {
                     b.HasOne("data.model.Shop", null)
                         .WithMany("ShopTypes")
-                        .HasForeignKey("shopid")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

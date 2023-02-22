@@ -20,9 +20,9 @@ public class BaseController<T, U>:Controller where U: DictionaryDto<T>
 
     
     [HttpGet]
-    public async Task<ResponceDto<Page<U>>> All()
+    public async Task<ResponceDto<Page<U>>> All( int? page, int? size)
     {
-        Page<T> getAll = await _baseService.Page(1, 20);
+        Page<T> getAll = await _baseService.Page(page, size);
         Page<U> result = _mapper.Map<Page<U>>(getAll);
         return new (result);
     }

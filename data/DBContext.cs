@@ -16,25 +16,16 @@ public class DBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().HasData(new User
-        {
-            Id = Guid.NewGuid(),
-            Name = "Admin",
-            Patronymic = "Admin",
-            Surname = "Admin",
-            Role = Role.Admin, 
-            EmailIsVerified = true,
-            Email = "admin@gmail.com",
-            Password = BCrypt.Net.BCrypt.HashPassword(_appConfig["AdminPassword"])
-        });
+        
         modelBuilder.Entity<User>(a =>
         {
             a.HasMany(ufs => ufs.FavoriteShops)
                 .WithMany(shopuser => shopuser.Users)
                 .UsingEntity(userfavoriteshop => userfavoriteshop.ToTable(("FavoriteShops")));
             a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
+            
         });
-
+        
         modelBuilder.Entity<Shop>(a =>
         {
             a.HasOne(creatorshop => creatorshop.Creator)
@@ -42,6 +33,12 @@ public class DBContext : DbContext
                 .HasForeignKey(idcreaatorshop => idcreaatorshop.CreatorId);
             a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
         });
+
+        modelBuilder.Entity<ProductEntity>(a =>
+        {
+          a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
+        });
+       
         
         modelBuilder.Entity<ShopCategory>(a => { a.HasKey(u => new { shopid = u.ShopId, u.CategoryId }); });
 
@@ -52,6 +49,9 @@ public class DBContext : DbContext
         modelBuilder.Entity<ShopPayment>(a => { a.HasKey(u => new { shopid = u.ShopId, Paymentid = u.PaymentId }); });
 
         modelBuilder.Entity<User>().Property(d => d.Role).HasConversion(new EnumToStringConverter<Role>());
+        modelBuilder.Entity<ProductEntity>().Property(a => a.Country)
+            .HasConversion(new EnumToStringConverter<Country>());
+        
         base.OnModelCreating(modelBuilder);
     }
 
@@ -68,4 +68,5 @@ public class DBContext : DbContext
     public DbSet<ShopDelivery> ShopDeliveries { get; set; } = null!;
     public DbSet<ShopPayment> ShopPayments { get; set; } = null!;
     public DbSet<ShopTypes> ShopTypes { get; set; } = null!;
+    public DbSet<ProductEntity> Product { get; set; } = null!;
 }

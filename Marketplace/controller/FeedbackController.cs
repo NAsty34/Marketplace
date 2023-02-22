@@ -19,18 +19,18 @@ public class FeedbackController:UserBaseController
     }
     [Route("/api/v1/users/{id}/feedback")]
     [HttpGet]
-    public async Task<ResponceDto<Page<FeedbackDto>>> UserFeedback(Guid id)
+    public async Task<ResponceDto<Page<FeedbackDto>>> UserFeedback(Guid id, int? page, int? size)
     {
-        var idfeedbyuser = await _feedbackService.GetByUser(id, Role.Equals(data.model.Role.Admin));
+        var idfeedbyuser = await _feedbackService.GetByUser(id, Role.Equals(data.model.Role.Admin), page, size);
         Page<FeedbackDto> findfeed = Page<FeedbackDto>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a => new FeedbackDto(a, _appConfig)));
         return new(findfeed);
     }
 
     [Route("/api/v1/shops/{id}/feedback")]
     [HttpGet]
-    public async Task<ResponceDto<Page<FeedbackDto>>> ShopFeedback(Guid id)
+    public async Task<ResponceDto<Page<FeedbackDto>>> ShopFeedback(Guid id, int? page, int? size)
     {
-        var idfeedbyshop = await _feedbackService.GetByShop(id, Role.Equals(data.model.Role.Admin));
+        var idfeedbyshop = await _feedbackService.GetByShop(id, Role.Equals(data.model.Role.Admin),page,size);
         Page<FeedbackDto> findfeed = Page<FeedbackDto>.Create(idfeedbyshop, idfeedbyshop.Items.Select(a => new FeedbackDto(a, _appConfig)));
         return new(findfeed);
     }
@@ -73,8 +73,8 @@ public class FeedbackController:UserBaseController
         await _feedbackService.DeleteFeedback(id, Userid.Value, (Role)Role);
         return new("Успешно удалено!");
     }
-    [Route("/api/v1/feedback/block/{id}")]
-    [HttpGet]
+    [Route("/api/v1/feedback/{id}/block")]
+    [HttpPatch]
     public async Task<ResponceDto<FeedbackDto>> BlockFeedback(Guid id)
     {
         if (!Role.Equals(data.model.Role.Admin))
@@ -85,8 +85,8 @@ public class FeedbackController:UserBaseController
         return new(new FeedbackDto(blockfeed, _appConfig));
     }
 
-    [Route("/api/v1/feedback/unblock/{id}")]
-    [HttpGet]
+    [Route("/api/v1/feedback/{id}/unblock")]
+    [HttpPatch]
     public async Task<ResponceDto<FeedbackDto>> UnblockFeedback(Guid id)
     {
         if (!Role.Equals(data.model.Role.Admin))

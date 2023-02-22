@@ -6,7 +6,7 @@ namespace data.Repository;
 
 public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
 {
-    public async Task<Page<Feedback>> GetFeedbackbyUser(Guid user, bool active)
+    public async Task<Page<Feedback>> GetFeedbackbyUser(Guid user, bool active, int? page, int? size)
     {
         var findfeed = DbSet.Where(a => a.CreatorId == user && !a.IsDeleted);
         if (active)
@@ -15,10 +15,10 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
         }
         return await GetPage(
             findfeed.Include(s => s.Creator).Include(s => s.Shop),
-            1, 20);
+            page, size);
     }
 
-    public async Task<Page<Feedback>> GetFeedbackbyShop(Guid shop, bool active)
+    public async Task<Page<Feedback>> GetFeedbackbyShop(Guid shop, bool active,int? page, int? size)
     {
         var findfeed = DbSet.Where(a => a.ShopId == shop && !a.IsDeleted);
         if (active)
@@ -27,7 +27,7 @@ public class FeedbackRepositoty: BaseRepository<Feedback>, IFeedbackRepositiry
         }
         return await GetPage(
             findfeed.Include(s => s.Creator)
-                .Include(s => s.Shop), 1, 20);
+                .Include(s => s.Shop), page, size);
 
     }
 

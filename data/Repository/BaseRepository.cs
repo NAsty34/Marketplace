@@ -26,12 +26,12 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
         return DbSet.Where(a => ids.Contains(a.Id));
     }
 
-    public async Task<Page<T>> GetPage(IQueryable<T> queryable, int page, int size)
+    public async Task<Page<T>> GetPage(IQueryable<T> queryable, int? page, int? size)
     {
         return queryable.GetPage(page, size);
     }
     
-    public async Task<Page<T>> GetPage(int page, int size)
+    public async Task<Page<T>> GetPage(int? page, int? size)
     {
         return await GetPage(DbSet, page, size);
     }
@@ -52,11 +52,11 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
         await DbContext.SaveChangesAsync();
     }
 
-    public async void Edit(T t)
+    public async Task Edit(T t)
     {
        DbContext.Entry(t).State = EntityState.Modified;
     }
-    public async void Edit(IEnumerable<T> t)
+    public async Task Edit(IEnumerable<T> t)
     {
         foreach (var baseEntity in t)
         {
@@ -64,18 +64,18 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
         }
     }
 
-    public async void Delete(T t)
+    public async Task Delete(T t)
     {
         t.IsDeleted = true;
     }
-    public async void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         var shopId = await GetById(id);
         shopId!.IsDeleted = true;
     }
    
 
-    public async void SetActivite(T t, bool value)
+    public async Task SetActivite(T t, bool value)
     {
         t.IsActive = value;
     }

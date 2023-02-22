@@ -4,7 +4,7 @@ namespace logic.Service.Inreface;
 
 public interface IUserServer
 {
-    Task<Page<User>> GetUsers(); // получение всех объектов
+    Task<Page<User>> GetUsers( int? page, int? size); // получение всех объектов
  
     Task<User> GetUser(Guid id); // получение одного объекта по id
     Task<User> EditUser(User user);

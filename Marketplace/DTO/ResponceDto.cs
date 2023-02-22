@@ -10,7 +10,7 @@ public class ResponceDto<T>
     
     public ResponceDto(T t)
     {
-        this.Data = t;
+        Data = t;
     }
     
     public int Code { get; set; }

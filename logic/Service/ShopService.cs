@@ -33,9 +33,9 @@ public class ShopService:IShopService
         _daRopository = daRopository;
     }
     
-    public async Task<Page<Shop>> GetShops(FiltersShops filtersShops)
+    public async Task<Page<Shop>> GetShops(FiltersShops filtersShops, int? page, int? size)
     {
-        return await _shopRepository.GetPage(filtersShops);
+        return await _shopRepository.GetPage(filtersShops,page,size);
     }
 
     public async Task<Shop> GetShop(Guid id)

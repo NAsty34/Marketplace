@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace data.Migrations
 {
     /// <inheritdoc />
-    public partial class twokey : Migration
+    public partial class ProductEntity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    parentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ParentId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -25,14 +25,14 @@ namespace data.Migrations
                     DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_Categories_parentId",
-                        column: x => x.parentId,
+                        name: "FK_Categories_Categories_ParentId",
+                        column: x => x.ParentId,
                         principalTable: "Categories",
                         principalColumn: "Id");
                 });
@@ -51,7 +51,7 @@ namespace data.Migrations
                     DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,8 +63,8 @@ namespace data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Extension = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Extension = table.Column<string>(type: "text", nullable: true),
                     EntityId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -94,7 +94,7 @@ namespace data.Migrations
                     DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -106,7 +106,7 @@ namespace data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Discription = table.Column<string>(type: "text", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -115,7 +115,7 @@ namespace data.Migrations
                     DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -150,15 +150,55 @@ namespace data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Product",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PartNumber = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Weight = table.Column<double>(type: "double precision", nullable: false),
+                    Width = table.Column<double>(type: "double precision", nullable: false),
+                    Height = table.Column<double>(type: "double precision", nullable: false),
+                    Depth = table.Column<double>(type: "double precision", nullable: false),
+                    Country = table.Column<string>(type: "text", nullable: false),
+                    PhotoIdId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeletorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Product", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Product_FileInfos_PhotoIdId",
+                        column: x => x.PhotoIdId,
+                        principalTable: "FileInfos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Product_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Shop",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     LogoId = table.Column<Guid>(type: "uuid", nullable: true),
                     Inn = table.Column<string>(type: "text", nullable: false),
-                    isPublic = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPublic = table.Column<bool>(type: "boolean", nullable: false),
+                    MinPrice = table.Column<double>(type: "double precision", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
                     EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -245,15 +285,15 @@ namespace data.Migrations
                 name: "ShopCategories",
                 columns: table => new
                 {
-                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopCategories", x => new { x.shopid, x.CategoryId });
+                    table.PrimaryKey("PK_ShopCategories", x => new { x.ShopId, x.CategoryId });
                     table.ForeignKey(
-                        name: "FK_ShopCategories_Shop_shopid",
-                        column: x => x.shopid,
+                        name: "FK_ShopCategories_Shop_ShopId",
+                        column: x => x.ShopId,
                         principalTable: "Shop",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -263,15 +303,16 @@ namespace data.Migrations
                 name: "ShopDeliveries",
                 columns: table => new
                 {
-                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
-                    DeliveryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DeliveryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Price = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopDeliveries", x => new { x.shopid, x.DeliveryId });
+                    table.PrimaryKey("PK_ShopDeliveries", x => new { x.ShopId, x.DeliveryId });
                     table.ForeignKey(
-                        name: "FK_ShopDeliveries_Shop_shopid",
-                        column: x => x.shopid,
+                        name: "FK_ShopDeliveries_Shop_ShopId",
+                        column: x => x.ShopId,
                         principalTable: "Shop",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -281,15 +322,16 @@ namespace data.Migrations
                 name: "ShopPayments",
                 columns: table => new
                 {
-                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
-                    Paymentid = table.Column<Guid>(type: "uuid", nullable: false)
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PaymentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Commission = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopPayments", x => new { x.shopid, x.Paymentid });
+                    table.PrimaryKey("PK_ShopPayments", x => new { x.ShopId, x.PaymentId });
                     table.ForeignKey(
-                        name: "FK_ShopPayments_Shop_shopid",
-                        column: x => x.shopid,
+                        name: "FK_ShopPayments_Shop_ShopId",
+                        column: x => x.ShopId,
                         principalTable: "Shop",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -299,29 +341,24 @@ namespace data.Migrations
                 name: "ShopTypes",
                 columns: table => new
                 {
-                    shopid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     TypeId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopTypes", x => new { x.shopid, x.TypeId });
+                    table.PrimaryKey("PK_ShopTypes", x => new { x.ShopId, x.TypeId });
                     table.ForeignKey(
-                        name: "FK_ShopTypes_Shop_shopid",
-                        column: x => x.shopid,
+                        name: "FK_ShopTypes_Shop_ShopId",
+                        column: x => x.ShopId,
                         principalTable: "Shop",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "CreateDate", "CreatorId", "DeletedDate", "DeletorId", "EditDate", "EditorId", "Email", "EmailCode", "EmailIsVerified", "IsActive", "IsDeleted", "Name", "Password", "Patronymic", "Role", "Surname" },
-                values: new object[] { new Guid("6c27ad12-5b8e-44b6-b3dc-175dadbaec44"), new DateTime(2023, 2, 2, 15, 26, 53, 268, DateTimeKind.Local).AddTicks(7061), null, null, null, null, null, "admin@gmail.com", null, true, true, false, "Admin", "$2a$11$DeJMEufeuS8e8aGGQB6KcOwrldKZN6yaxKC.MvS8Vykqa5Xc.UlC.", "Admin", "Admin", "Admin" });
-
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_parentId",
+                name: "IX_Categories_ParentId",
                 table: "Categories",
-                column: "parentId");
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteShops_UsersId",
@@ -337,6 +374,16 @@ namespace data.Migrations
                 name: "IX_Feedback_ShopId",
                 table: "Feedback",
                 column: "ShopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Product_CreatorId",
+                table: "Product",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Product_PhotoIdId",
+                table: "Product",
+                column: "PhotoIdId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shop_CreatorId",
@@ -366,6 +413,9 @@ namespace data.Migrations
 
             migrationBuilder.DropTable(
                 name: "PaymentMethods");
+
+            migrationBuilder.DropTable(
+                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "ShopCategories");

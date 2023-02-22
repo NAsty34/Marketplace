@@ -17,9 +17,9 @@ public class UserServer:IUserServer
         _hashService = hashService;
         _shopService = shopService;
     }
-    public async Task<Page<User>> GetUsers()
+    public async Task<Page<User>> GetUsers(int? page, int? size)
     {
-        return await _userrepository.GetPage(1, 20);
+        return await _userrepository.GetPage(page, size);
     }
 
     public async Task<User> GetUser(Guid id)

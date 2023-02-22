@@ -12,8 +12,8 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20230218122112_typeentity")]
-    partial class typeentity
+    [Migration("20230221153337_ProductEntity")]
+    partial class ProductEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -175,7 +175,7 @@ namespace data.Migrations
                     b.ToTable("Feedback");
                 });
 
-            modelBuilder.Entity("data.model.FileInfo", b =>
+            modelBuilder.Entity("data.model.FileInfoEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -258,6 +258,77 @@ namespace data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentMethods");
+                });
+
+            modelBuilder.Entity("data.model.ProductEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("DeletorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Depth")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EditDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("double precision");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PartNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("PhotoIdId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Width")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("PhotoIdId");
+
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("data.model.Shop", b =>
@@ -484,22 +555,6 @@ namespace data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("651646d2-abcf-4ff7-be72-2d5f2b9c93c2"),
-                            CreateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@gmail.com",
-                            EmailIsVerified = true,
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Admin",
-                            Password = "$2a$11$UlSC.XXt2TBZj9JcUeX3yeTVH065xDyKMpBjZ8gR.ffMBH2nt3RVK",
-                            Patronymic = "Admin",
-                            Role = "Admin",
-                            Surname = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("ShopUser", b =>
@@ -543,6 +598,21 @@ namespace data.Migrations
                     b.Navigation("Shop");
                 });
 
+            modelBuilder.Entity("data.model.ProductEntity", b =>
+                {
+                    b.HasOne("data.model.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("data.model.FileInfoEntity", "PhotoId")
+                        .WithMany()
+                        .HasForeignKey("PhotoIdId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("PhotoId");
+                });
+
             modelBuilder.Entity("data.model.Shop", b =>
                 {
                     b.HasOne("data.model.User", "Creator")
@@ -551,7 +621,7 @@ namespace data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("data.model.FileInfo", "Logo")
+                    b.HasOne("data.model.FileInfoEntity", "Logo")
                         .WithMany()
                         .HasForeignKey("LogoId");
 

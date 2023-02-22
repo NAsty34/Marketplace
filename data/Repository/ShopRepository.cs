@@ -13,7 +13,7 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
         
     }
 
-    public async Task<Page<Shop>> GetPage(FiltersShops filtersShops)
+    public async Task<Page<Shop>> GetPage(FiltersShops filtersShops, int? page, int? size)
     {
         var q = (IQueryable<Shop>)DbSet;
         if (filtersShops.IsPublic != null) q = q.Where(a => a.IsPublic && a.IsActive);
@@ -30,8 +30,8 @@ public class ShopRepository:BaseRepository<Shop>, IShopRepository
         
         return await GetPage(
             q,
-            filtersShops.Page ?? 1,
-            filtersShops.Size ?? 20
+            filtersShops.Page ?? page,
+            filtersShops.Size ?? size
         );
     }
 
