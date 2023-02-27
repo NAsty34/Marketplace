@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace", "Marketplace\Marketplace.csproj", "{A6675F12-04B9-485B-A4E8-C1E25F28A894}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Api", "Marketplace.Api\Marketplace.Api.csproj", "{A6675F12-04B9-485B-A4E8-C1E25F28A894}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logic", "logic\logic.csproj", "{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Logic", "Marketplace.Logic\Marketplace.Logic.csproj", "{42F5AE5C-661C-4F23-A9C0-80934A18E7BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "data", "data\data.csproj", "{94830CFA-F829-48B8-901B-BE8AEE8710AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Data", "Marketplace.Data\Marketplace.Data.csproj", "{94830CFA-F829-48B8-901B-BE8AEE8710AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
