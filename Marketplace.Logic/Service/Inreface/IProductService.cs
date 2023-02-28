@@ -6,7 +6,7 @@ namespace logic.Service.Inreface;
 
 public interface IProductService
 {
-    public Task<PageEntity<ProductEntity>> GetProducts(int? page, int? size);
+    public Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity filterProductEntity, int? page, int? size);
 
     public Task<ProductEntity> CreateProduct(ProductEntity productEntity);
 

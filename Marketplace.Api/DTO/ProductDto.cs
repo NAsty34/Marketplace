@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using data.model;
 using Microsoft.Extensions.Options;
 
@@ -17,19 +18,21 @@ public class ProductDto
         Name = productEntity.Name;
         Description = productEntity.Description;
         PartNumber = productEntity.PartNumber;
-        CategoryId = productEntity.CategoryId;
         Width = productEntity.Width;
         Weight = productEntity.Weight;
-        Country = productEntity.Country;
+        CountryString = productEntity.Country.ToString();
         Depth = productEntity.Depth;
         Height = productEntity.Height;
         Owner = new UserDto(productEntity.Creator);
-        isBlock = !productEntity.IsActive;
-
+        IsBlock = !productEntity.IsActive;
+        CategoryId = productEntity.CategoryId;
+        Category = new ShortCategoryDto(productEntity.Category);
     }
     public Guid Id { get; set; }
-    public bool isBlock { get; set; }
+    public bool IsBlock { get; set; }
     public string Name { get; set; } = null!;
+    public ShortCategoryDto Category { get; set; }
+    [JsonIgnore]
     public Guid CategoryId { get; set; }
     public int PartNumber { get; set; }
     public string? Description { get; set; }
@@ -37,6 +40,8 @@ public class ProductDto
     public double Width { get; set; }
     public double Height { get; set; }
     public double Depth { get; set; }
+    public string CountryString { get; set; }
+    [JsonIgnore]
     public CountryEntity Country { get; set; }
     public string? Photo { get; set; }
     public UserDto Owner { get; set; } = null!;

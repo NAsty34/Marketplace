@@ -1,4 +1,5 @@
 using data.model;
+using data.Repository;
 using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
@@ -8,19 +9,24 @@ namespace logic.Service;
 public class ProductService:IProductService
 {
     private IProductRepository _productRepository;
+    private IBaseRopository<CategoryEntity> _categoryRepository;
 
-    public ProductService(IProductRepository productRepository)
+    public ProductService(IProductRepository productRepository, IBaseRopository<CategoryEntity> categoryRepository)
     {
         _productRepository = productRepository;
+        _categoryRepository = categoryRepository;
     }
 
-    public async Task<PageEntity<ProductEntity>> GetProducts(int? page, int? size)
+    public async Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity filterProductEntity, int? page, int? size)
     {
-        return await _productRepository.GetProducts(page, size);
+        return await _productRepository.GetProducts(filterProductEntity, page, size);
     }
     
     public async Task<ProductEntity> CreateProduct(ProductEntity productEntity)
     {
+        var category = await _categoryRepository.GetById(productEntity.CategoryId);
+        if (category == null || !category.IsActive) throw new CategoryNotFoundException();
+        
         await _productRepository.Create(productEntity);
         await _productRepository.Save();
         return productEntity;
@@ -34,6 +40,9 @@ public class ProductService:IProductService
             throw new ProductNotFoundException();
         }
         
+        var category = await _categoryRepository.GetById(productEntity.CategoryId);
+        if (category == null || !category.IsActive) throw new CategoryNotFoundException();
+
         fromDb.Country = productEntity.Country;
         fromDb.Description = productEntity.Description;
         fromDb.Depth = productEntity.Depth;

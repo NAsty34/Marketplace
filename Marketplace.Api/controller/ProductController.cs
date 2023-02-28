@@ -1,4 +1,7 @@
 using data.model;
+using data.Repository;
+using data.Repository.Interface;
+using logic.Exceptions;
 using logic.Service.Inreface;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -13,18 +16,22 @@ public class ProductController:UserBaseController
     private IProductService _productService;
     private IUserServer _userServer;
     private IFileInfoService _fileInfoService;
+    private IBaseRopository<CategoryEntity> _categoryRepository;
+    private ILogger<CategoryEntity> _logger;
 
-    public ProductController(IProductService productService, IUserServer userServer, IFileInfoService fileInfoService)
+    public ProductController(IProductService productService, IUserServer userServer, IFileInfoService fileInfoService, IBaseRopository<CategoryEntity> categoryRepository, ILogger<CategoryEntity> logger)
     {
         _productService = productService;
         _userServer = userServer;
         _fileInfoService = fileInfoService;
+        _categoryRepository = categoryRepository;
+        _logger = logger;
     }
     [Route("/api/v1/products")]
     [HttpGet]
-    public async Task<ResponceDto<PageEntity<ProductDto>>> Products(int? page, int? size)
+    public async Task<ResponceDto<PageEntity<ProductDto>>> Products(FilterProductEntity filterProductEntity, int? page, int? size)
     {
-        var products = await _productService.GetProducts(page, size);
+        var products = await _productService.GetProducts(filterProductEntity, page, size);
         var result = PageEntity<ProductDto>.Create(products, products.Items.Select(a =>
         {
             var pageProduct = new ProductDto(a);
@@ -60,22 +67,24 @@ public class ProductController:UserBaseController
         };
         if (photo != null)
         {
-            FileInfoEntity? fileIn = await _fileInfoService.Addfile(photo, user.Id);
-            product.Photo = fileIn;
+            product.Photo = await _fileInfoService.Addfile(photo, user.Id);
         }
-        //_logger.Log(LogLevel.Information, "====================" + photoId);
-        await _productService.CreateProduct(product);
         
+        //_logger.Log(LogLevel.Information, "====================" + photoId);
+        
+        await _productService.CreateProduct(product);
         var newProduct = new ProductDto(product);
         if (product.Photo != null)
         {
             newProduct.Photo =  _fileInfoService.GetUrlProduct(product);
         }
+        
+        
         return new (newProduct);
     }
-    [Route("/api/v1/products/{id}")]
+    [Route("/api/v1/products/{productid}")]
     [HttpPut]
-    public async Task<ResponceDto<ProductDto>> EditProduct([FromForm] ProductDto productDto, IFormFile? photo, Guid id)
+    public async Task<ResponceDto<ProductDto>> EditProduct([FromForm] ProductDto productDto, IFormFile? photo, Guid productid)
     {
         FileInfoEntity? fi=null;
         if (photo != null)
@@ -83,22 +92,22 @@ public class ProductController:UserBaseController
             fi = await _fileInfoService.Addfile(photo, Userid.Value);
         }
 
-        Guid Id = id;
+        Guid id = productid;
         var user = await _userServer.GetUser(Userid.Value);
-        var product = new ProductEntity()
+        var product = new ProductEntity
         {
-            Id = Id,
-            CategoryId = productDto.CategoryId,
+            Id = id,
             Name = productDto.Name,
-            Country = productDto.Country,
-            Depth = productDto.Depth,
+            Description = productDto.Description,
+            PartNumber = productDto.PartNumber,
+            CategoryId = productDto.CategoryId,
             Width = productDto.Width,
             Weight = productDto.Weight,
+            Country = productDto.Country,
+            Depth = productDto.Depth,
             Height = productDto.Height,
-            PartNumber = productDto.PartNumber,
+            Creator = user,
             Photo = fi,
-            Description = productDto.Description,
-            Creator = user
         };
         
         var editProduct = await _productService.EditProduct(product);

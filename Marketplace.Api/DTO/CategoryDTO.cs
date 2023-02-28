@@ -8,7 +8,7 @@ public class CategoryDto:DictionaryDto<CategoryEntity>
     {
         
     }
-    public CategoryDto(CategoryEntity t)
+    public CategoryDto(CategoryEntity? t)
     {
         Id = t.Id;
         Name = t.Name;

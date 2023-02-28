@@ -6,6 +6,9 @@ public class ProductEntity:BaseEntity
 {
     public string Name { get; set; } = null!;
     public Guid CategoryId { get; set; }
+    [ForeignKey(nameof(CategoryId))]
+    public virtual CategoryEntity Category { get; set; } = null!;
+
     public int PartNumber { get; set; }
     public string? Description { get; set; }
     public double Weight { get; set; }
