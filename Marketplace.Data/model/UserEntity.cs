@@ -18,8 +18,6 @@ public class UserEntity:BaseEntity
     [Required]
     public string Password { get; set; } = null!;
 
-    public virtual List<ShopEntity> FavoriteShops { get; set; } = new();
-    
     public virtual List<ShopEntity> Shops { get; set; } = new();
     public bool EmailIsVerified { get; set; }
     public string? EmailCode { get; set; }

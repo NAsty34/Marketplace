@@ -5,7 +5,7 @@
 namespace data.Migrations
 {
     /// <inheritdoc />
-    public partial class newproduct : Migration
+    public partial class favShop2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

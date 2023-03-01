@@ -12,14 +12,14 @@ namespace logic.Service;
 
 public class AuthServer:IAuthService
 {
-    private readonly IRepositoryUser _userRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ISendEmailService _sendEmailService;
     private readonly IJwtService _jwtService;
     //private ILogger<User> _logger;
     private PasswordOprions _options;
-    public AuthServer(IRepositoryUser repositoryUser, IJwtService jwtService, ISendEmailService sendEmailService, IOptions<PasswordOprions> options)
+    public AuthServer(IUserRepository userRepository, IJwtService jwtService, ISendEmailService sendEmailService, IOptions<PasswordOprions> options)
     {
-        _userRepository = repositoryUser;
+        _userRepository = userRepository;
         _sendEmailService = sendEmailService;
         _options = options.Value;
         // _logger = logger;

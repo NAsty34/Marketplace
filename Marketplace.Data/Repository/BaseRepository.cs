@@ -67,11 +67,11 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
     {
         t.IsDeleted = true;
     }
-    /*public async Task Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         var entity = await GetById(id);
         entity.IsDeleted = true;
-    }*/
+    }
    
 
     public async Task SetActivite(T t, bool value)

@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using data.model;
-using Microsoft.Extensions.Options;
 
 namespace Marketplace.DTO;
 

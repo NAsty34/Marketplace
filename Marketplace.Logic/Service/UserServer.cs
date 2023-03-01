@@ -7,15 +7,13 @@ namespace logic.Service;
 
 public class UserServer:IUserServer
 {
-    private readonly IRepositoryUser _userrepository;
+    private readonly IUserRepository _userrepository;
     private readonly IHashService _hashService;
-    private readonly IShopService _shopService;
 
-    public UserServer(IRepositoryUser userrepository, IHashService hashService, IShopService shopService)
+    public UserServer(IUserRepository userrepository, IHashService hashService)
     {
         _userrepository = userrepository;
         _hashService = hashService;
-        _shopService = shopService;
     }
     public async Task<PageEntity<UserEntity>> GetUsers(int? page, int? size)
     {
@@ -73,28 +71,5 @@ public class UserServer:IUserServer
         await _userrepository.Save();
         return userid;
     }
-    public async Task<List<ShopEntity>> GetFavoriteShops(Guid userid)
-    {
-        var user = await _userrepository.GetById(userid);
-        return user.FavoriteShops;
-    }
-
-    public async Task<ShopEntity> CreateFavShop(Guid shopid, Guid userid)
-    {
-        var user = await _userrepository.GetById(userid);
-        var shop = await _shopService.GetShop(shopid);
-        if (shop == null || !shop.IsActive) throw new ShopNotFoundException();
-        user.FavoriteShops.Add(shop);
-        await _userrepository.Save();
-        return shop;
-    }
-    public async Task<ShopEntity> DelFavShop(Guid shopid, Guid userid)
-    {
-        var user = await _userrepository.GetById(userid);
-        var shop = await _shopService.GetShop(shopid);
-        if (shop == null || !shop.IsActive) throw new ShopNotFoundException();
-        user.FavoriteShops.Remove(shop);
-        await _userrepository.Save();
-        return shop;
-    }
+   
 }

@@ -5,7 +5,7 @@
 namespace data.Migrations
 {
     /// <inheritdoc />
-    public partial class createadmin : Migration
+    public partial class createAdmin : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace data.Migrations
                 columns: new[]
                 {
                     "Id", "CreateDate", "CreatorId", "DeletedDate", "DeletorId", "EditDate", "EditorId", "Email",
-                    "EmailCode", "EmailIsVerified", "IsActive", "IsDeleted", "Name", "Password", "Patronymic", "Role",
+                    "EmailCode", "EmailIsVerified", "IsActive", "IsDeleted", "Name", "Password", "Patronymic", "RoleEntity",
                     "Surname"
                 },
                 values: new object[]
@@ -39,4 +39,3 @@ namespace data.Migrations
         }
     }
 }
-

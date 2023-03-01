@@ -9,19 +9,19 @@ public class FeedbackService : IFeedbackService
 {
     private IFeedbackRepositiry _feedbackRepositiry;
     private IShopRepository _shopRepository;
-    private IRepositoryUser _repositoryUser;
+    private IUserRepository _userRepository;
 
     public FeedbackService(IFeedbackRepositiry feedbackRepositiry, IShopRepository shopRepository,
-        IRepositoryUser repositoryUser)
+        IUserRepository userRepository)
     {
         _feedbackRepositiry = feedbackRepositiry;
         _shopRepository = shopRepository;
-        _repositoryUser = repositoryUser;
+        _userRepository = userRepository;
     }
 
     public async Task<PageEntity<FeedbackEntity>> GetByUser(Guid id, bool isAdmin, int? page, int? size)
     {
-        var user = await _repositoryUser.GetById(id);
+        var user = await _userRepository.GetById(id);
         if (user == null || !user.IsActive) throw new UserNotFoundException();
         return await _feedbackRepositiry.GetFeedbackbyUser(id, isAdmin, page, size);
     }
@@ -35,7 +35,7 @@ public class FeedbackService : IFeedbackService
 
     public async Task<FeedbackEntity> AddFeedback(FeedbackEntity feedbackEntity)
     {
-        feedbackEntity.Creator = await _repositoryUser.GetById(feedbackEntity.CreatorId.Value);
+        feedbackEntity.Creator = await _userRepository.GetById(feedbackEntity.CreatorId.Value);
         feedbackEntity.Shop = await _shopRepository.GetById(feedbackEntity.ShopId);
         if (feedbackEntity.Shop == null || !feedbackEntity.Shop.IsActive) throw new ShopNotFoundException();
         await _feedbackRepositiry.Create(feedbackEntity);

@@ -3,7 +3,7 @@ using data.Repository.Interface;
 
 namespace data.Repository;
 
-public class UserRepository : BaseRepository<UserEntity>, IRepositoryUser
+public class UserRepository : BaseRepository<UserEntity>, IUserRepository
 
 {
     public UserEntity? GetUser(string email)

@@ -1,6 +1,6 @@
 using data.model;
 
-namespace logic.Service.Inreface;
+namespace logic.Service;
 
 public interface IFeedbackService
 {

@@ -14,6 +14,6 @@ public interface IBaseRopository<T>
     public Task Edit(T t);
     public Task Edit(IEnumerable<T> t);
     public Task Delete(T t);
-    //public Task Delete(Guid id);
+    public Task Delete(Guid id);
     public Task SetActivite(T t, bool value);
 }

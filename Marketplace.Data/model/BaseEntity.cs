@@ -10,7 +10,8 @@ public class BaseEntity
     public Guid Id { get; set; }
     public DateTime CreateDate { get; set; }
     public Guid? CreatorId { get; set; }
-    //public User Creator { get; set; }
+    //[ForeignKey(nameof(CreatorId))]
+    //public UserEntity Creator { get; set; }
     public DateTime? EditDate { get; set; }
     public Guid? EditorId { get; set; }
     //public User? Editor { get; set; }

@@ -6,7 +6,6 @@ using data.Repository.Interface;
 using logic.Service;
 using logic.Service.Inreface;
 using Marketplace.controller;
-using Marketplace.DTO;
 using Marketplace.Mappings;
 using Marketplace.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,13 +16,15 @@ using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 builder.Services.AddControllers();
 
 builder.Configuration.AddJsonFile("appsettings.Production.json");
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
 var appConfig = builder.Configuration;
-//ShopDto.Options = appConfig.GetSection(FileInfoOptions.File).Get<FileInfoOptions>();
+
 builder.Services.Configure<CategoryOptions>(builder.Configuration.GetSection(CategoryOptions.Category));
 builder.Services.Configure<AdminOptions>(builder.Configuration.GetSection(AdminOptions.Admin));
 builder.Services.Configure<FileInfoOptions>(builder.Configuration.GetSection(FileInfoOptions.File));
@@ -31,15 +32,13 @@ builder.Services.Configure<JwtTokenOptions>(builder.Configuration.GetSection(Jwt
 builder.Services.Configure<PasswordOprions>(builder.Configuration.GetSection(PasswordOprions.Password));
 
 
-
-builder.Services.AddDbContext<MarketplaceContext>(option =>
+builder.Services.AddDbContext<DbContext, MarketplaceContext>(option =>
 {
     option.UseLazyLoadingProxies();
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     option.UseNpgsql(appConfig["ConnectionString"]);
 });
 
-//builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -62,42 +61,41 @@ builder.Services.AddSwaggerGen(c =>
                 Scheme = "oauth2",
                 Name = "Bearer",
                 In = ParameterLocation.Header,
-
             },
             new List<string>()
         }
     });
 });
 
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IFeedbackRepositiry, FeedbackRepositoty>();
+builder.Services.AddTransient<IShopRepository, ShopRepository>();
+builder.Services.AddTransient<IFileInfoRepository, FileInfoRepository>();
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
 
-
-
-builder.Services.AddTransient <IRepositoryUser, UserRepository>();
-builder.Services.AddTransient <IFeedbackRepositiry, FeedbackRepositoty>();
-builder.Services.AddTransient <IShopRepository, ShopRepository>();
-builder.Services.AddTransient <IFileInfoRepository, FileInfoRepository>();
-builder.Services.AddTransient <IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IShopDictionaryRepository<>), typeof(ShopDictionaryRepository<>));
-
 builder.Services.AddScoped(typeof(IBaseRopository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped <IBaseRopository<CategoryEntity>, CategoryRepository>();
+builder.Services.AddScoped<IBaseRopository<CategoryEntity>, CategoryRepository>();
+
 
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
-builder.Services.AddScoped <IBaseService<CategoryEntity>, CategoryService>();
-builder.Services.AddScoped <IBaseService<TypeEntity>, TypeService>();
-builder.Services.AddScoped <IBaseService<PaymentMethodEntity>, PaymentMethodService>();
-builder.Services.AddScoped <IBaseService<DeliveryTypeEntity>, DeliveryTypeService>();
+builder.Services.AddScoped<IBaseService<CategoryEntity>, CategoryService>();
+builder.Services.AddScoped<IBaseService<TypeEntity>, TypeService>();
+builder.Services.AddScoped<IBaseService<PaymentMethodEntity>, PaymentMethodService>();
+builder.Services.AddScoped<IBaseService<DeliveryTypeEntity>, DeliveryTypeService>();
+builder.Services.AddTransient<IFavoriteShopRepository, FavoriteShopRepository>();
 
+builder.Services.AddTransient<IAuthService, AuthServer>();
+builder.Services.AddTransient<IJwtService, JwtService>();
+builder.Services.AddTransient<IHashService, HashService>();
+builder.Services.AddTransient<ISendEmailService, SendEmailService>();
+builder.Services.AddTransient<IUserServer, UserServer>();
+builder.Services.AddTransient<IShopService, ShopService>();
 
-builder.Services.AddTransient <IAuthService, AuthServer>();
-builder.Services.AddTransient <IJwtService, JwtService>();
-builder.Services.AddTransient <IHashService, HashService>();
-builder.Services.AddTransient <ISendEmailService, SendEmailService>();
-builder.Services.AddTransient <IUserServer, UserServer>();
-builder.Services.AddTransient <IShopService, ShopService>();
-builder.Services.AddTransient <IFeedbackService, FeedbackService>();
-builder.Services.AddTransient <IFileInfoService, FileInfoService>();
-builder.Services.AddTransient <IProductService, ProductService>();
+builder.Services.AddTransient<IFeedbackService, FeedbackService>();
+builder.Services.AddTransient<IFileInfoService, FileInfoService>();
+builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IFavoriteShopService, FavoriteShopService>();
 
 builder.Services.AddAuthorization();
 
@@ -130,6 +128,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
@@ -155,4 +154,3 @@ app.UseStaticFiles(new StaticFileOptions()
 app.MapControllerRoute(name: "default", pattern: "/");
 
 app.Run();
-

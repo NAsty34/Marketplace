@@ -39,26 +39,6 @@ public class ProfileController : UserBaseController
         userEntity = await _userServer.EditUser(userEntity);
         return new(new UserDto(userEntity));
     }
-    [Route("/api/v1/me/shops")]
-    [HttpGet]
-    public async Task<ResponceDto<IEnumerable<ShopDto>>> FavoriteShops()
-    {
-        var user = await _userServer.GetFavoriteShops(Userid.Value);
-        return new (user.Select(a=>new ShopDto(a)));
-    }
-
-    [Route("/api/v1/me/shops/{shopid}")]
-    [HttpGet]
-    public async Task<ResponceDto<ShopDto>> CreateFavoriteShops(Guid shopid)
-    {
-        return new (new ShopDto(await _userServer.CreateFavShop(shopid, Userid.Value)));
-    }
-
-    [Route("/api/v1/me/shops/{shopid}")]
-    [HttpDelete]
-    public async Task<ResponceDto<ShopDto>> DelFavoriteShops(Guid shopid)
-    {
-        return new (new ShopDto(await _userServer.DelFavShop(shopid, Userid.Value)));
-    }
+    
 }
 

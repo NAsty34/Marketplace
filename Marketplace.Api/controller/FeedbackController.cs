@@ -1,5 +1,6 @@
 using data.model;
 using logic.Exceptions;
+using logic.Service;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Mvc;
 using Marketplace.DTO;
@@ -23,7 +24,7 @@ public class FeedbackController : UserBaseController
     [HttpGet]
     public async Task<ResponceDto<PageEntity<FeedbackDto>>> UserFeedback(Guid id, int? page, int? size)
     {
-        var idfeedbyuser = await _feedbackService.GetByUser(id, Role.Equals(data.model.RoleEntity.Admin), page, size);
+        var idfeedbyuser = await _feedbackService.GetByUser(id, Role.Equals(RoleEntity.Admin), page, size);
         PageEntity<FeedbackDto> findfeed = PageEntity<FeedbackDto>.Create(idfeedbyuser, idfeedbyuser.Items.Select(a =>
         {
             var feedbackDto = new FeedbackDto(a);

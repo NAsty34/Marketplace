@@ -12,8 +12,8 @@ using data;
 namespace data.Migrations
 {
     [DbContext(typeof(MarketplaceContext))]
-    [Migration("20230221153708_createadmin")]
-    partial class createadmin
+    [Migration("20230301134021_favShop2")]
+    partial class favShop2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,22 +28,7 @@ namespace data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ShopUser", b =>
-                {
-                    b.Property<Guid>("FavoriteShopsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("FavoriteShopsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("FavoriteShops", (string)null);
-                });
-
-            modelBuilder.Entity("Marketplace.Data.model.Category", b =>
+            modelBuilder.Entity("data.model.CategoryEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,6 +59,7 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("ParentId")
@@ -86,7 +72,7 @@ namespace data.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.DeliveryType", b =>
+            modelBuilder.Entity("data.model.DeliveryTypeEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,6 +106,7 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -127,7 +114,22 @@ namespace data.Migrations
                     b.ToTable("DeliveryTypes");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.Feedback", b =>
+            modelBuilder.Entity("data.model.FavoriteShopsEntity", b =>
+                {
+                    b.Property<Guid>("ShopEntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ShopEntityId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FavoriteShop");
+                });
+
+            modelBuilder.Entity("data.model.FeedbackEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -175,7 +177,7 @@ namespace data.Migrations
                     b.ToTable("Feedback");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.FileInfoEntity", b =>
+            modelBuilder.Entity("data.model.FileInfoEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -219,7 +221,7 @@ namespace data.Migrations
                     b.ToTable("FileInfos");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.PaymentMethod", b =>
+            modelBuilder.Entity("data.model.PaymentMethodEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -253,6 +255,7 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -260,7 +263,7 @@ namespace data.Migrations
                     b.ToTable("PaymentMethods");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.ProductEntity", b =>
+            modelBuilder.Entity("data.model.ProductEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -313,7 +316,7 @@ namespace data.Migrations
                     b.Property<int>("PartNumber")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("PhotoIdId")
+                    b.Property<Guid?>("PhotoId")
                         .HasColumnType("uuid");
 
                     b.Property<double>("Weight")
@@ -324,14 +327,45 @@ namespace data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("PhotoIdId");
+                    b.HasIndex("PhotoId");
 
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.Shop", b =>
+            modelBuilder.Entity("data.model.ShopCategoryEntity", b =>
+                {
+                    b.Property<Guid>("ShopEntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ShopEntityId", "CategoryId");
+
+                    b.ToTable("ShopCategories");
+                });
+
+            modelBuilder.Entity("data.model.ShopDeliveryEntity", b =>
+                {
+                    b.Property<Guid>("ShopEntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DeliveryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("ShopEntityId", "DeliveryId");
+
+                    b.ToTable("ShopDeliveries");
+                });
+
+            modelBuilder.Entity("data.model.ShopEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -392,38 +426,9 @@ namespace data.Migrations
                     b.ToTable("Shop");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.ShopCategory", b =>
+            modelBuilder.Entity("data.model.ShopPaymentEntity", b =>
                 {
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ShopId", "CategoryId");
-
-                    b.ToTable("ShopCategories");
-                });
-
-            modelBuilder.Entity("Marketplace.Data.model.ShopDelivery", b =>
-                {
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DeliveryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("ShopId", "DeliveryId");
-
-                    b.ToTable("ShopDeliveries");
-                });
-
-            modelBuilder.Entity("Marketplace.Data.model.ShopPayment", b =>
-                {
-                    b.Property<Guid>("ShopId")
+                    b.Property<Guid>("ShopEntityId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("PaymentId")
@@ -432,25 +437,25 @@ namespace data.Migrations
                     b.Property<double>("Commission")
                         .HasColumnType("double precision");
 
-                    b.HasKey("ShopId", "PaymentId");
+                    b.HasKey("ShopEntityId", "PaymentId");
 
                     b.ToTable("ShopPayments");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.ShopTypes", b =>
+            modelBuilder.Entity("data.model.ShopTypesEntity", b =>
                 {
-                    b.Property<Guid>("ShopId")
+                    b.Property<Guid>("ShopEntityId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("ShopId", "TypeId");
+                    b.HasKey("ShopEntityId", "TypeId");
 
                     b.ToTable("ShopTypes");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.TypeEntity", b =>
+            modelBuilder.Entity("data.model.TypeEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -485,6 +490,7 @@ namespace data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -492,7 +498,7 @@ namespace data.Migrations
                     b.ToTable("Types");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.User", b =>
+            modelBuilder.Entity("data.model.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -544,9 +550,12 @@ namespace data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("RoleEntity")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("ShopEntityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -554,40 +563,38 @@ namespace data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ShopEntityId");
+
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ShopUser", b =>
+            modelBuilder.Entity("data.model.CategoryEntity", b =>
                 {
-                    b.HasOne("Marketplace.Data.model.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteShopsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Marketplace.Data.model.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Marketplace.Data.model.Category", b =>
-                {
-                    b.HasOne("Marketplace.Data.model.Category", "Parent")
+                    b.HasOne("data.model.CategoryEntity", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
 
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.Feedback", b =>
+            modelBuilder.Entity("data.model.FavoriteShopsEntity", b =>
                 {
-                    b.HasOne("Marketplace.Data.model.User", "Creator")
+                    b.HasOne("data.model.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("data.model.FeedbackEntity", b =>
+                {
+                    b.HasOne("data.model.UserEntity", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("Marketplace.Data.model.Shop", "Shop")
+                    b.HasOne("data.model.ShopEntity", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -598,30 +605,56 @@ namespace data.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.ProductEntity", b =>
+            modelBuilder.Entity("data.model.ProductEntity", b =>
                 {
-                    b.HasOne("Marketplace.Data.model.User", "Creator")
+                    b.HasOne("data.model.CategoryEntity", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("data.model.UserEntity", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("Marketplace.Data.model.FileInfoEntity", "PhotoId")
+                    b.HasOne("data.model.FileInfoEntity", "Photo")
                         .WithMany()
-                        .HasForeignKey("PhotoIdId");
+                        .HasForeignKey("PhotoId");
+
+                    b.Navigation("Category");
 
                     b.Navigation("Creator");
 
-                    b.Navigation("PhotoId");
+                    b.Navigation("Photo");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.Shop", b =>
+            modelBuilder.Entity("data.model.ShopCategoryEntity", b =>
                 {
-                    b.HasOne("Marketplace.Data.model.User", "Creator")
+                    b.HasOne("data.model.ShopEntity", null)
+                        .WithMany("ShopCategory")
+                        .HasForeignKey("ShopEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.ShopDeliveryEntity", b =>
+                {
+                    b.HasOne("data.model.ShopEntity", null)
+                        .WithMany("ShopDeliveries")
+                        .HasForeignKey("ShopEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("data.model.ShopEntity", b =>
+                {
+                    b.HasOne("data.model.UserEntity", "Creator")
                         .WithMany("Shops")
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Marketplace.Data.model.FileInfoEntity", "Logo")
+                    b.HasOne("data.model.FileInfoEntity", "Logo")
                         .WithMany()
                         .HasForeignKey("LogoId");
 
@@ -630,43 +663,32 @@ namespace data.Migrations
                     b.Navigation("Logo");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.ShopCategory", b =>
+            modelBuilder.Entity("data.model.ShopPaymentEntity", b =>
                 {
-                    b.HasOne("Marketplace.Data.model.Shop", null)
-                        .WithMany("ShopCategory")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Marketplace.Data.model.ShopDelivery", b =>
-                {
-                    b.HasOne("Marketplace.Data.model.Shop", null)
-                        .WithMany("ShopDeliveries")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Marketplace.Data.model.ShopPayment", b =>
-                {
-                    b.HasOne("Marketplace.Data.model.Shop", null)
+                    b.HasOne("data.model.ShopEntity", null)
                         .WithMany("ShopPayment")
-                        .HasForeignKey("ShopId")
+                        .HasForeignKey("ShopEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.ShopTypes", b =>
+            modelBuilder.Entity("data.model.ShopTypesEntity", b =>
                 {
-                    b.HasOne("Marketplace.Data.model.Shop", null)
+                    b.HasOne("data.model.ShopEntity", null)
                         .WithMany("ShopTypes")
-                        .HasForeignKey("ShopId")
+                        .HasForeignKey("ShopEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.Shop", b =>
+            modelBuilder.Entity("data.model.UserEntity", b =>
+                {
+                    b.HasOne("data.model.ShopEntity", null)
+                        .WithMany("Users")
+                        .HasForeignKey("ShopEntityId");
+                });
+
+            modelBuilder.Entity("data.model.ShopEntity", b =>
                 {
                     b.Navigation("ShopCategory");
 
@@ -675,9 +697,11 @@ namespace data.Migrations
                     b.Navigation("ShopPayment");
 
                     b.Navigation("ShopTypes");
+
+                    b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Marketplace.Data.model.User", b =>
+            modelBuilder.Entity("data.model.UserEntity", b =>
                 {
                     b.Navigation("Shops");
                 });

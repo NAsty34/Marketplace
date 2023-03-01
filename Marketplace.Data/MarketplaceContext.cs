@@ -19,9 +19,6 @@ public class MarketplaceContext : DbContext
         
         modelBuilder.Entity<UserEntity>(a =>
         {
-            a.HasMany(ufs => ufs.FavoriteShops)
-                .WithMany(shopuser => shopuser.Users)
-                .UsingEntity(userfavoriteshop => userfavoriteshop.ToTable(("FavoriteShops")));
             a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
             
         });
@@ -65,11 +62,12 @@ public class MarketplaceContext : DbContext
 
         modelBuilder.Entity<ShopDeliveryEntity>(a => { a.HasKey(u => new { shopid = u.ShopEntityId, u.DeliveryId }); });
 
-        modelBuilder.Entity<ShopPaymentEntity>(a => { a.HasKey(u => new { shopid = u.ShopEntityId, Paymentid = u.PaymentId }); });
+        modelBuilder.Entity<ShopPaymentEntity>(a => { a.HasKey(u => new { shopid = u.ShopEntityId, u.PaymentId }); });
 
         modelBuilder.Entity<UserEntity>().Property(d => d.RoleEntity).HasConversion(new EnumToStringConverter<RoleEntity>());
         modelBuilder.Entity<ProductEntity>().Property(a => a.Country)
             .HasConversion(new EnumToStringConverter<CountryEntity>());
+        modelBuilder.Entity<FavoriteShopsEntity>(a => { a.HasKey(u => new { shopid = u.ShopId, u.UserId }); });
         
         base.OnModelCreating(modelBuilder);
     }
@@ -88,4 +86,5 @@ public class MarketplaceContext : DbContext
     public DbSet<ShopPaymentEntity> ShopPayments { get; set; } = null!;
     public DbSet<ShopTypesEntity> ShopTypes { get; set; } = null!;
     public DbSet<ProductEntity> Product { get; set; } = null!;
+    public DbSet<FavoriteShopsEntity> FavoriteShops { get; set; } = null!;
 }

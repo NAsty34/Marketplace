@@ -22,7 +22,6 @@ public class AuthMiddleware
         {
             var id = context.User.Claims.First(a => a.Type == ClaimTypes.Actor).Value;
             
-            
             var user = await userServer.GetUser(Guid.Parse(id));
             if (user == null || !user.IsActive)
             {
