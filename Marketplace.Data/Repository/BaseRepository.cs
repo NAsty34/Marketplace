@@ -8,7 +8,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 {
     protected readonly MarketplaceContext MarketplaceContext;
     protected readonly DbSet<T> DbSet;
-
+    
     public BaseRepository(MarketplaceContext marketplaceContext)
     {
         MarketplaceContext = marketplaceContext;
@@ -22,9 +22,10 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 
     public async Task<IEnumerable<T>> GetByIds(IEnumerable<Guid> ids)
     {
-        return DbSet.Where(a => ids.Contains(a.Id));
+        return await DbSet.Where(a => ids.Contains(a.Id)).ToListAsync();
     }
 
+    
     public async Task<PageEntity<T>> GetPage(IQueryable<T> queryable, int? page, int? size)
     {
         return queryable.GetPage(page, size);
@@ -37,7 +38,8 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 
     public async Task Create(T t)
     {
-         await DbSet.AddAsync(t);
+        t.CreateDate = DateTime.Now;
+        await DbSet.AddAsync(t);
     }
 
     public async Task Create(IEnumerable<T> t)

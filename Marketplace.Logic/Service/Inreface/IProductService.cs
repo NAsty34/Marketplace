@@ -1,6 +1,7 @@
 
 
 using data.model;
+using Microsoft.AspNetCore.Http;
 
 namespace logic.Service.Inreface;
 
@@ -15,4 +16,5 @@ public interface IProductService
     public Task<ProductEntity> IsActiveProduct(Guid id, bool value);
 
     public Task DeletedProduct(Guid id);
+    public Task<List<ProductEntity>> Upload(IFormFile productFile);
 }

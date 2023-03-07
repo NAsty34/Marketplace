@@ -18,4 +18,9 @@ public class CategoryRepository:BaseRepository<CategoryEntity>
     {
         return await DbSet.FromSqlRaw($"with recursive cte(\"Id\", \"ParentId\") as (select \"Id\", \"ParentId\" from \"Categories\" where \"Id\" = '{parentId.ToString()}' union all select t.\"Id\", t.\"ParentId\" from \"Categories\" t inner join cte on t.\"ParentId\" = cte.\"Id\") select \"Id\" from cte").Skip(1).Select(a=>a.Id).ToListAsync();
     }
+
+    public async Task<CategoryEntity?> GetByName(string? name)
+    {
+        return await DbSet.FirstOrDefaultAsync(a => a.Name == name );
+    }
 }

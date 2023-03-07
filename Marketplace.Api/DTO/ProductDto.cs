@@ -6,8 +6,6 @@ namespace Marketplace.DTO;
 
 public class ProductDto
 {
-    private FileInfoOptions _options;
-    
     public ProductDto()
     {
         
@@ -27,6 +25,7 @@ public class ProductDto
         IsBlock = !productEntity.IsActive;
         CategoryId = productEntity.CategoryId;
         Category = new ShortCategoryDto(productEntity.Category);
+        Photo = productEntity.UrlPhotos;
     }
     public Guid Id { get; set; }
     public bool IsBlock { get; set; }
@@ -43,6 +42,6 @@ public class ProductDto
     public string CountryString { get; set; }
     [JsonIgnore]
     public CountryEntity Country { get; set; }
-    public string? Photo { get; set; }
-    public UserDto Owner { get; set; } = null!;
+    public List<string>? Photo { get; set; }
+    public UserDto Owner { get; set; }
 }

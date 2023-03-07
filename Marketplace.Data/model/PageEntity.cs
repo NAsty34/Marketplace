@@ -2,8 +2,7 @@ namespace data.model;
 
 public class PageEntity<T>
 {
-   
-    public static PageEntity<T> Create<T, U>(PageEntity<U> pageEntity, IEnumerable<T> items)
+   public static PageEntity<T> Create<T, U>(PageEntity<U> pageEntity, IEnumerable<T> items)
     {
         return new PageEntity<T>()
         {

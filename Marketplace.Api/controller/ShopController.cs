@@ -58,7 +58,6 @@ public class ShopController : UserBaseController
             return shopDto;
         }));
 
-
         return new(result);
     }
 

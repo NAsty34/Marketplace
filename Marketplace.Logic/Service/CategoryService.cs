@@ -23,7 +23,6 @@ public class CategoryService:BaseService<CategoryEntity>
     {
         //_logger.Log(LogLevel.Information,"=========CategoryService==========");
        
-        
         await CheckParent(t);
         await BaseRopository.Create(t);
         await BaseRopository.Save();

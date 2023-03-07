@@ -1,10 +1,11 @@
 using System.Security.Claims;
 using data.model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.controller;
 
-
+[Authorize]
 public class UserBaseController:Controller
 {
     

@@ -20,4 +20,5 @@ public class ProductEntity:BaseEntity
     public Guid? PhotoId { get; set; }
     [ForeignKey(nameof(PhotoId))]
     public virtual FileInfoEntity? Photo { get; set; }
+    public List<string>? UrlPhotos { get; set; }
 }

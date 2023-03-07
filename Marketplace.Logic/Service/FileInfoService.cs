@@ -42,7 +42,7 @@ public class FileInfoService : IFileInfoService
         var extension = Path.GetExtension(file.FileName);
 
         if (extension is not ".png" and not ".jpg") throw new LogoException();
-        FileInfoEntity? fi = new FileInfoEntity()
+        FileInfoEntity fi = new FileInfoEntity()
         {
             Name = file.FileName,
             Extension = extension
@@ -50,8 +50,7 @@ public class FileInfoService : IFileInfoService
         await _fileInfoRepository.Create(fi);
         await _fileInfoRepository.Save();
         string fullPath = $"{_options.BasePath}/{entityId}/{fi.Id}{extension}";
-        new DirectoryInfo($"{_options.BasePath}/{entityId}").Create();
-        //_logger.Log(LogLevel.Information, "======" + fullPath);
+       
         using (var fileStream = new FileStream(fullPath, FileMode.Append))
         {
             await file.CopyToAsync(fileStream);

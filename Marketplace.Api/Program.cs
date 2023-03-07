@@ -76,6 +76,7 @@ builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IShopDictionaryRepository<>), typeof(ShopDictionaryRepository<>));
 builder.Services.AddScoped(typeof(IBaseRopository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IBaseRopository<CategoryEntity>, CategoryRepository>();
+builder.Services.AddScoped<CategoryRepository>();
 
 
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
@@ -84,6 +85,7 @@ builder.Services.AddScoped<IBaseService<TypeEntity>, TypeService>();
 builder.Services.AddScoped<IBaseService<PaymentMethodEntity>, PaymentMethodService>();
 builder.Services.AddScoped<IBaseService<DeliveryTypeEntity>, DeliveryTypeService>();
 builder.Services.AddTransient<IFavoriteShopRepository, FavoriteShopRepository>();
+
 
 builder.Services.AddTransient<IAuthService, AuthServer>();
 builder.Services.AddTransient<IJwtService, JwtService>();
@@ -96,6 +98,7 @@ builder.Services.AddTransient<IFeedbackService, FeedbackService>();
 builder.Services.AddTransient<IFileInfoService, FileInfoService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IFavoriteShopService, FavoriteShopService>();
+builder.Services.AddTransient<CategoryService>();
 
 builder.Services.AddAuthorization();
 

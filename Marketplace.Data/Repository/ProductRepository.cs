@@ -10,7 +10,7 @@ public class ProductRepository:BaseRepository<ProductEntity>, IProductRepository
     {
     }
 
-    public async Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity filterProductEntity, int? page, int? size)
+    public async Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity? filterProductEntity, int? page, int? size)
     {
         
         var allprod =  (IQueryable<ProductEntity>)DbSet;
@@ -36,6 +36,21 @@ public class ProductRepository:BaseRepository<ProductEntity>, IProductRepository
         
         return await GetPage(allprod, page, size);
     }
-    
-    
+    public async Task<List<int>> GetByCodSet()
+    {
+        return await DbSet.Select(a => a.PartNumber).ToListAsync();
+    }
+
+    public async Task<PageEntity<ProductEntity>> GetProducts(int page, int size)
+    {
+        var all = DbSet.Where(a => a.IsActive);
+        return await GetPage(all, page, size);
+    }
+
+    public async Task<List<ProductEntity>> GetByCodEdit(int cod)
+    {
+        
+        return await DbSet.Where(a=>a.PartNumber == cod).ToListAsync();
+        
+    }
 }
