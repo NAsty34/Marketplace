@@ -128,6 +128,7 @@ public class ProductService : IProductService
                     }
 
                     List<string>? urls = null;
+                    
                     if (worksheet.Cells[row, col + 9].Value != null)
                     {
                         if (!worksheet.Cells[row, col + 9].Value.ToString()!.Contains(';'))
@@ -137,13 +138,14 @@ public class ProductService : IProductService
 
                         urls = worksheet.Cells[row, col + 9].Value.ToString()!.Replace(" ", "").Split(";").ToList();
                     }
-
+                    
+                    
                     var productEntity = new ProductEntity
                     {
                         Id = Guid.NewGuid(),
                         CategoryId =
                             (await _categoryRepository.GetByName(
-                                worksheet.Cells[row, index].Value.ToString().Trim().ToLower())).Id,
+                                worksheet.Cells[row, index].Value.ToString().Trim())).Id,
                         PartNumber = int.Parse(worksheet.Cells[row, col + 1].Value.ToString().Trim().ToLower()),
                         Name = worksheet.Cells[row, col + 2].Value.ToString().Trim().ToLower(),
                         Description = worksheet.Cells[row, col + 3].Value.ToString().Trim().ToLower(),
@@ -151,7 +153,7 @@ public class ProductService : IProductService
                         Width = double.Parse(worksheet.Cells[row, col + 5].Value.ToString().Trim().ToLower()),
                         Height = double.Parse(worksheet.Cells[row, col + 6].Value.ToString().Trim().ToLower()),
                         Depth = double.Parse(worksheet.Cells[row, col + 7].Value.ToString().Trim().ToLower()),
-                        Country = Enum.Parse<CountryEntity>(worksheet.Cells[row, col + 8].Value.ToString().Trim().ToLower()),
+                        Country = Enum.Parse<CountryEntity>(worksheet.Cells[row, col + 8].Value.ToString().Trim()),
                         UrlPhotos = urls
                     };
                     

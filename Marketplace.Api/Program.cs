@@ -146,12 +146,12 @@ app.UseSwaggerUI(options =>
 }*/
 
 
-app.UseStaticFiles(new StaticFileOptions()
+/*app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(Directory.GetCurrentDirectory(), @"files")),
     RequestPath = new PathString("/static")
-});
+});*/
 
 
 app.MapControllerRoute(name: "default", pattern: "/");

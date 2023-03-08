@@ -1,3 +1,4 @@
+using System.Net;
 using data.model;
 using data.Repository.Interface;
 using logic.Exceptions;
@@ -26,18 +27,18 @@ public class FileInfoService : IFileInfoService
     public string GetUrlShop(ShopEntity shopEntity)
     {
         var url =
-            $"{_options.BaseUrl}/{_options.RequestPath}/{shopEntity.Creator.Id}/{shopEntity.Logo.Id}{shopEntity.Logo.Extension}";
+            @$"C:\{_options.BasePath}\{shopEntity.Name}\{shopEntity.Creator.Name}\{shopEntity.Logo.Name}";
         return url;
     }
 
-    public string GetUrlProduct(ProductEntity productEntity)
+    public List<string> GetUrlProduct(ProductEntity productEntity)
     {
         var url =
-            $"{_options.BaseUrl}/{_options.RequestPath}/{productEntity.Creator.Id}/{productEntity.Photo.Id}{productEntity.Photo.Extension}";
-        return url;
+            @$"C:\{_options.BasePath}\{productEntity.Name}\{productEntity.Creator.Name}\{productEntity.Photo.Name}";
+        return new List<string> { url };
     }
 
-    public async Task<FileInfoEntity?> Addfile(IFormFile? file, Guid entityId)
+    public async Task<FileInfoEntity?> Addfile(IFormFile? file, Guid forPhoto, Guid userId)
     {
         var extension = Path.GetExtension(file.FileName);
 
@@ -45,12 +46,25 @@ public class FileInfoService : IFileInfoService
         FileInfoEntity fi = new FileInfoEntity()
         {
             Name = file.FileName,
-            Extension = extension
+            Extension = extension,
+            EntityId = forPhoto
         };
         await _fileInfoRepository.Create(fi);
         await _fileInfoRepository.Save();
-        string fullPath = $"{_options.BasePath}/{entityId}/{fi.Id}{extension}";
-       
+
+        string path = $@"C:\{_options.BasePath}";
+        string subpath = $@"{forPhoto}\{userId}";
+        DirectoryInfo dirInfo = new DirectoryInfo(path);
+
+        if (!dirInfo.Exists)
+        {
+            dirInfo.Create();
+        }
+
+        dirInfo.CreateSubdirectory(subpath);
+
+        string fullPath = $"C:\\{_options.BasePath}\\{forPhoto}\\{userId}\\{fi.Name}";
+
         using (var fileStream = new FileStream(fullPath, FileMode.Append))
         {
             await file.CopyToAsync(fileStream);

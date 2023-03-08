@@ -5,7 +5,7 @@ namespace logic.Service.Inreface;
 
 public interface IFileInfoService
 {
-    Task<FileInfoEntity?> Addfile(IFormFile? file, Guid entityId);
+    Task<FileInfoEntity?> Addfile(IFormFile? file, Guid forPhoto, Guid userId);
     string GetUrlShop(ShopEntity shopEntity);
-    string GetUrlProduct(ProductEntity productEntity);
+    List<string> GetUrlProduct(ProductEntity productEntity);
 }

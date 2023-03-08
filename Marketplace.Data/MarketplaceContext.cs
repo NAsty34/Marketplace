@@ -30,11 +30,9 @@ public class MarketplaceContext : DbContext
                 .HasForeignKey(idcreaatorshop => idcreaatorshop.CreatorId);
             a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
         });
-
-        modelBuilder.Entity<ProductEntity>(a =>
-        {
-          a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
-        });
+        
+        
+       
         modelBuilder.Entity<TypeEntity>(a =>
         {
             a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);

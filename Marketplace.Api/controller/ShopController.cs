@@ -115,7 +115,7 @@ public class ShopController : UserBaseController
 
         if (file != null)
         {
-            FileInfoEntity? fileIn = await _fileInfoService.Addfile(file, user.Id);
+            FileInfoEntity? fileIn = await _fileInfoService.Addfile(file,shops.Id ,user.Id);
             shops.Logo = fileIn;
         }
 
@@ -146,7 +146,7 @@ public class ShopController : UserBaseController
         FileInfoEntity? fi = null;
         if (file != null)
         {
-            fi = await _fileInfoService.Addfile(file, user.Id);
+            fi = await _fileInfoService.Addfile(file,shopid, user.Id);
         }
 
        

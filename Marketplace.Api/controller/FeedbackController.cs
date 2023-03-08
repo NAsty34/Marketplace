@@ -30,7 +30,7 @@ public class FeedbackController : UserBaseController
             var feedbackDto = new FeedbackDto(a);
             if (a.Shop.Logo != null)
             {
-                feedbackDto.Shop.Logo = _fileInfoService.GetUrlShop(a.Shop);
+                //feedbackDto.Shop.Logo = _fileInfoService.GetUrlShop(a.Shop);
             }
 
             return feedbackDto;
@@ -49,7 +49,7 @@ public class FeedbackController : UserBaseController
             var feedbackShopLogo = new FeedbackDto(a);
             if (a.Shop.Logo != null)
             {
-                feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(a.Shop);
+                //feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(a.Shop);
             }
 
             return feedbackShopLogo;
@@ -74,7 +74,7 @@ public class FeedbackController : UserBaseController
         var feedbackShopLogo = new FeedbackDto(feed);
         if (feed.Shop.Logo != null)
         {
-            feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(feed.Shop);
+            //feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(feed.Shop);
         }
 
         return new(feedbackShopLogo);
@@ -94,7 +94,7 @@ public class FeedbackController : UserBaseController
         var feedbackShopLogo = new FeedbackDto(upfeed);
         if (upfeed.Shop.Logo != null)
         {
-            feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(upfeed.Shop);
+            //feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(upfeed.Shop);
         }
 
         return new(feedbackShopLogo);
@@ -121,7 +121,7 @@ public class FeedbackController : UserBaseController
         var feedbackShopLogo = new FeedbackDto(blockfeed);
         if (blockfeed.Shop.Logo != null)
         {
-            feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(blockfeed.Shop);
+            //feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(blockfeed.Shop);
         }
 
         return new(feedbackShopLogo);
@@ -140,7 +140,7 @@ public class FeedbackController : UserBaseController
         var feedbackShopLogo = new FeedbackDto(unblockfeed);
         if (unblockfeed.Shop.Logo != null)
         {
-            feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(unblockfeed.Shop);
+            //feedbackShopLogo.Shop.Logo = _fileInfoService.GetUrlShop(unblockfeed.Shop);
         }
 
         return new(feedbackShopLogo);

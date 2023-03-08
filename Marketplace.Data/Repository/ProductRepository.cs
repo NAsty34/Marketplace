@@ -53,4 +53,5 @@ public class ProductRepository:BaseRepository<ProductEntity>, IProductRepository
         return await DbSet.Where(a=>a.PartNumber == cod).ToListAsync();
         
     }
+  
 }

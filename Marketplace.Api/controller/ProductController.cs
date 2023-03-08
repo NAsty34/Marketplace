@@ -31,28 +31,20 @@ public class ProductController : UserBaseController
         int? size)
     {
         var products = await _productService.GetProducts(filterProductEntity, page, size);
-        var result = PageEntity<ProductDto>.Create(products, products.Items.Select(a =>
-        {
-            var pageProduct = new ProductDto(a);
-            if (a.Photo != null)
-            {
-                //pageProduct.Photo = _fileInfoService.GetUrlProduct(a);
-            }
-
-            return pageProduct;
-        }));
+        var result = PageEntity<ProductDto>.Create(products, products.Items.Select(a =>new ProductDto(a)));
         return new(result);
     }
 
     [Route("/api/v1/products")]
     [HttpPost]
-    public async Task<ResponceDto<ProductDto>> CreateProduct([FromForm] ProductDto productDto, IFormFile? photo)
+    public async Task<ResponceDto<ProductDto>> CreateProduct([FromForm] ProductDto productDto, List<IFormFile?> photos)
     {
+        var set = new HashSet<int>(await _productRepository.GetByCodSet());
         var user = await _userServer.GetUser(Userid.Value);
-        var id = Guid.NewGuid();
+
         var product = new ProductEntity()
         {
-            Id = id,
+            Id = Guid.NewGuid(),
             Name = productDto.Name,
             Description = productDto.Description,
             PartNumber = productDto.PartNumber,
@@ -64,34 +56,37 @@ public class ProductController : UserBaseController
             Height = productDto.Height,
             Creator = user
         };
-        if (photo != null)
+        foreach (var photo in photos)
         {
-           // product.Photo = await _fileInfoService.Addfile(photo, user.Id);
+            if (photo != null)
+            {
+                product.Photo = await _fileInfoService.Addfile(photo,product.Id,user.Id);
+                product.UrlPhotos = _fileInfoService.GetUrlProduct(product);
+            }
         }
+      
+
+        if (set.Contains(productDto.PartNumber))
+        {
+            throw new SystemException("Продукт с таким кодом уже существует");
+        }
+
+        await _productService.CreateProduct(product);
+        set.Add(product.PartNumber);
 
         
-        await _productService.CreateProduct(product);
-        var newProduct = new ProductDto(product);
-        if (product.Photo != null)
-        {
-            //newProduct.Photo = _fileInfoService.GetUrlProduct(product);
-        }
 
-
-        return new(newProduct);
+        return new(new ProductDto(product));
     }
 
 
     [Route("/api/v1/products/{productid}")]
     [HttpPut]
-    public async Task<ResponceDto<ProductDto>> EditProduct([FromForm] ProductDto productDto, IFormFile? photo,
+    public async Task<ResponceDto<ProductDto>> EditProduct([FromForm] ProductDto productDto, List<IFormFile?> photos,
         Guid productid)
     {
-        FileInfoEntity? fi = null;
-        if (photo != null)
-        {
-            fi = await _fileInfoService.Addfile(photo, Userid.Value);
-        }
+        
+        
 
         Guid id = productid;
         var user = await _userServer.GetUser(Userid.Value);
@@ -108,9 +103,15 @@ public class ProductController : UserBaseController
             Depth = productDto.Depth,
             Height = productDto.Height,
             Creator = user,
-            Photo = fi,
         };
-
+        FileInfoEntity? fi = null;
+        foreach (var photo in photos)
+        {
+            if (photo != null)
+            {
+                product.Photo = await _fileInfoService.Addfile(photo,productid,Userid.Value);
+            }
+        }
         var editProduct = await _productService.EditProduct(product);
 
         var newProduct = new ProductDto(editProduct);
@@ -167,21 +168,23 @@ public class ProductController : UserBaseController
 
         if (!Path.GetExtension(productFile.FileName).Equals(".xls", StringComparison.OrdinalIgnoreCase))
             throw new SystemException("Другое расширение");
+        
         var listProduct = await _productService.Upload(productFile);
+        
         var set = new HashSet<int>(await _productRepository.GetByCodSet());
         foreach (var product in listProduct)
         {
             product.Creator = await _userServer.GetUser(Userid.Value);
-            
-            
+
+
             if (!set.Contains(product.PartNumber))
             {
                 await _productRepository.Create(product);
                 set.Add(product.PartNumber);
             }
-            
+
             var fromDb = await _productRepository.GetByCodEdit(product.PartNumber);
-                
+
             foreach (var prod in fromDb)
             {
                 prod.CategoryId = product.CategoryId;
@@ -195,13 +198,12 @@ public class ProductController : UserBaseController
                 prod.UrlPhotos = product.UrlPhotos;
                 await _productRepository.Edit(prod);
             }
-            
+
             await _productRepository.Save();
         }
 
         var pageProduct = await _productRepository.GetProducts(0, 0);
         var result = PageEntity<ProductDto>.Create(pageProduct, pageProduct.Items.Select(a => new ProductDto(a)));
         return new(result);
-        
     }
 }
