@@ -53,7 +53,7 @@ public class ShopController : UserBaseController
             var shopDto = new ShopDto(a);
             if (a.Logo != null)
             {
-                shopDto.Logo = _fileInfoService.GetUrlShop(a);
+                shopDto.Logo = _fileInfoService.GetUrl(a.Logo, a.Logo.Name);
             }
             return shopDto;
         }));
@@ -78,7 +78,7 @@ public class ShopController : UserBaseController
 
        
         var shop = new ShopDto(selshop);
-        shop.Logo = _fileInfoService.GetUrlShop(selshop);
+        shop.Logo = _fileInfoService.GetUrl(selshop.Logo, selshop.Logo.Name);
         return new(shop);
     }
 
@@ -125,7 +125,7 @@ public class ShopController : UserBaseController
         var shop = new ShopDto(shops);
         if (shops.Logo != null)
         {
-            shop.Logo =  _fileInfoService.GetUrlShop(shops);
+            shop.Logo =  _fileInfoService.GetUrl(shops.Logo, shops.Logo.Name);
         }
         
         //shopDto.Logo = $"{_options.BaseUrl}/{_options.RequestPath}/{shops.Creator.Id}/{shops.Logo.Id}{shops.Logo.Extension}";
@@ -173,7 +173,7 @@ public class ShopController : UserBaseController
         var shop = new ShopDto(shope);
         if (shope.Logo != null)
         {
-            shop.Logo = _fileInfoService.GetUrlShop(shope);
+            shop.Logo = _fileInfoService.GetUrl(shope.Logo, shope.Logo.Name);
         }
         return new (shop);
     }
@@ -191,7 +191,7 @@ public class ShopController : UserBaseController
         var shop = new ShopDto(blockshop);
         if (blockshop.Logo != null)
         {
-            shop.Logo = _fileInfoService.GetUrlShop(blockshop);
+            shop.Logo = _fileInfoService.GetUrl(blockshop.Logo, blockshop.Logo.Name);
         }
         return new (shop);
     }
@@ -209,7 +209,7 @@ public class ShopController : UserBaseController
         var shop = new ShopDto(unblockshop);
         if (unblockshop.Logo != null)
         {
-            shop.Logo = _fileInfoService.GetUrlShop(unblockshop);
+            shop.Logo = _fileInfoService.GetUrl(unblockshop.Logo, unblockshop.Logo.Name);
         }
         return new (shop);
     }

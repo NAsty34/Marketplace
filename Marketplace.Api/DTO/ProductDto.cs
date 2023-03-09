@@ -26,6 +26,7 @@ public class ProductDto
         CategoryId = productEntity.CategoryId;
         Category = new ShortCategoryDto(productEntity.Category);
         Photo = productEntity.UrlPhotos;
+        //Photo.AddRange(productEntity.Photo);
     }
     public Guid Id { get; set; }
     public bool IsBlock { get; set; }

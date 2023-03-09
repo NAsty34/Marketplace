@@ -23,8 +23,15 @@ public class FileInfoService : IFileInfoService
         _fileInfoRepository = fileInfoRepository;
         _options = options.Value;
     }
+    
+    public string GetUrl(FileInfoEntity? fi, string? name)
+    {
+        var url =
+            @$"C:\{_options.BasePath}\{name}\{fi.EntityId}\{fi.Name}";
+        return url;
+    }
 
-    public string GetUrlShop(ShopEntity shopEntity)
+    /*public string GetUrlShop(ShopEntity shopEntity)
     {
         var url =
             @$"C:\{_options.BasePath}\{shopEntity.Name}\{shopEntity.Creator.Name}\{shopEntity.Logo.Name}";
@@ -36,7 +43,7 @@ public class FileInfoService : IFileInfoService
         var url =
             @$"C:\{_options.BasePath}\{productEntity.Name}\{productEntity.Creator.Name}\{productEntity.Photo.Name}";
         return new List<string> { url };
-    }
+    }*/
 
     public async Task<FileInfoEntity?> Addfile(IFormFile? file, Guid forPhoto, Guid userId)
     {

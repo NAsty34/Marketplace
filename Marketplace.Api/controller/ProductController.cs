@@ -15,14 +15,16 @@ public class ProductController : UserBaseController
     private IUserServer _userServer;
     private IFileInfoService _fileInfoService;
     private IProductRepository _productRepository;
+    private ILogger<ProductEntity> _logger;
 
     public ProductController(IProductService productService, IUserServer userServer, IFileInfoService fileInfoService,
-        IProductRepository productRepository)
+        IProductRepository productRepository, ILogger<ProductEntity> logger)
     {
         _productService = productService;
         _userServer = userServer;
         _fileInfoService = fileInfoService;
         _productRepository = productRepository;
+        _logger = logger;
     }
 
     [Route("/api/v1/products")]
@@ -37,9 +39,8 @@ public class ProductController : UserBaseController
 
     [Route("/api/v1/products")]
     [HttpPost]
-    public async Task<ResponceDto<ProductDto>> CreateProduct([FromForm] ProductDto productDto, List<IFormFile?> photos)
+    public async Task<ResponceDto<ProductDto>> CreateProduct([FromForm] ProductDto productDto, [FromForm] List<IFormFile>? photos)
     {
-        var set = new HashSet<int>(await _productRepository.GetByCodSet());
         var user = await _userServer.GetUser(Userid.Value);
 
         var product = new ProductEntity()
@@ -54,25 +55,16 @@ public class ProductController : UserBaseController
             Country = productDto.Country,
             Depth = productDto.Depth,
             Height = productDto.Height,
-            Creator = user
+            Creator = user,
+            UrlPhotos = new List<string>()
         };
         foreach (var photo in photos)
         {
-            if (photo != null)
-            {
-                product.Photo = await _fileInfoService.Addfile(photo,product.Id,user.Id);
-                product.UrlPhotos = _fileInfoService.GetUrlProduct(product);
-            }
+            product.Photo = await _fileInfoService.Addfile(photo,product.Id, user.Id);
+            product.UrlPhotos.Add(_fileInfoService.GetUrl(product.Photo, product.Creator.Name));
         }
-      
-
-        if (set.Contains(productDto.PartNumber))
-        {
-            throw new SystemException("Продукт с таким кодом уже существует");
-        }
-
+        
         await _productService.CreateProduct(product);
-        set.Add(product.PartNumber);
 
         
 
@@ -162,48 +154,15 @@ public class ProductController : UserBaseController
 
     [Route("/api/v1/products/upload")]
     [HttpPost]
-    public async Task<ResponceDto<PageEntity<ProductDto>>> Upload(IFormFile? productFile)
+    public async Task<ResponceDto<IEnumerable<ProductDto>>> Upload(IFormFile? productFile)
     {
         if (productFile == null || productFile.Length <= 0) throw new SystemException("Загрузите файл");
 
         if (!Path.GetExtension(productFile.FileName).Equals(".xls", StringComparison.OrdinalIgnoreCase))
             throw new SystemException("Другое расширение");
         
-        var listProduct = await _productService.Upload(productFile);
-        
-        var set = new HashSet<int>(await _productRepository.GetByCodSet());
-        foreach (var product in listProduct)
-        {
-            product.Creator = await _userServer.GetUser(Userid.Value);
-
-
-            if (!set.Contains(product.PartNumber))
-            {
-                await _productRepository.Create(product);
-                set.Add(product.PartNumber);
-            }
-
-            var fromDb = await _productRepository.GetByCodEdit(product.PartNumber);
-
-            foreach (var prod in fromDb)
-            {
-                prod.CategoryId = product.CategoryId;
-                prod.Name = product.Name;
-                prod.Description = product.Description;
-                prod.Weight = product.Weight;
-                prod.Width = product.Width;
-                prod.Height = product.Height;
-                prod.Depth = product.Depth;
-                prod.Country = product.Country;
-                prod.UrlPhotos = product.UrlPhotos;
-                await _productRepository.Edit(prod);
-            }
-
-            await _productRepository.Save();
-        }
-
-        var pageProduct = await _productRepository.GetProducts(0, 0);
-        var result = PageEntity<ProductDto>.Create(pageProduct, pageProduct.Items.Select(a => new ProductDto(a)));
+        var listProduct = await _productService.Upload(productFile, Userid.Value);
+        var result = listProduct.Select(a => new ProductDto(a));
         return new(result);
     }
 }

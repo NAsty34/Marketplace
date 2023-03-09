@@ -5,6 +5,7 @@ using logic.Exceptions;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml;
 
 namespace logic.Service;
@@ -15,14 +16,16 @@ public class ProductService : IProductService
     private CategoryRepository _categoryRepository;
     private CategoryService _categoryService;
     private ILogger<ProductEntity> _logger;
+    private IUserRepository _userRepository;
 
     public ProductService(IProductRepository productRepository, CategoryRepository categoryRepository,
-        ILogger<ProductEntity> logger, CategoryService categoryService)
+        ILogger<ProductEntity> logger, CategoryService categoryService, IUserRepository userRepository)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _logger = logger;
         _categoryService = categoryService;
+        _userRepository = userRepository;
     }
 
     public async Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity filterProductEntity, int? page,
@@ -33,9 +36,12 @@ public class ProductService : IProductService
 
     public async Task<ProductEntity> CreateProduct(ProductEntity productEntity)
     {
+        var fromDb = await _productRepository.GetByCodEdit(productEntity.PartNumber);
+        if (fromDb != null) return await EditProduct(productEntity, fromDb);
+        
         var category = await _categoryRepository.GetById(productEntity.CategoryId);
         if (category == null || !category.IsActive) throw new CategoryNotFoundException();
-
+        
         await _productRepository.Create(productEntity);
         await _productRepository.Save();
         return productEntity;
@@ -49,6 +55,11 @@ public class ProductService : IProductService
             throw new ProductNotFoundException();
         }
 
+        return await EditProduct(productEntity, fromDb);
+    }
+
+    private async Task<ProductEntity> EditProduct(ProductEntity productEntity, ProductEntity fromDb)
+    {
         var category = await _categoryRepository.GetById(productEntity.CategoryId);
         if (category == null || !category.IsActive) throw new CategoryNotFoundException();
 
@@ -88,9 +99,10 @@ public class ProductService : IProductService
         await _productRepository.Save();
     }
 
-    public async Task<List<ProductEntity>> Upload(IFormFile productFile)
+    public async Task<IEnumerable<ProductEntity>> Upload(IFormFile productFile, Guid userId)
     {
-        var list = new List<ProductEntity>();
+        var dictionary = new Dictionary<int, ProductEntity>();
+        var user = await _userRepository.GetById(userId);
 
         using (var stream = new MemoryStream())
         {
@@ -99,9 +111,6 @@ public class ProductService : IProductService
             using (var package = new ExcelPackage(stream))
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                
-
-
                 for (int row = 2; row <= worksheet.Dimension.Rows; row++)
                 {
                     var col = 4;
@@ -123,7 +132,6 @@ public class ProductService : IProductService
                                 Name = worksheet.Cells[row, i].Value.ToString()
                             });
                         }
-
                         index = i;
                     }
 
@@ -138,8 +146,7 @@ public class ProductService : IProductService
 
                         urls = worksheet.Cells[row, col + 9].Value.ToString()!.Replace(" ", "").Split(";").ToList();
                     }
-                    
-                    
+
                     var productEntity = new ProductEntity
                     {
                         Id = Guid.NewGuid(),
@@ -154,15 +161,47 @@ public class ProductService : IProductService
                         Height = double.Parse(worksheet.Cells[row, col + 6].Value.ToString().Trim().ToLower()),
                         Depth = double.Parse(worksheet.Cells[row, col + 7].Value.ToString().Trim().ToLower()),
                         Country = Enum.Parse<CountryEntity>(worksheet.Cells[row, col + 8].Value.ToString().Trim()),
-                        UrlPhotos = urls
+                        UrlPhotos = urls,
+                        Creator = user
                     };
-                    
-                    list.Add(productEntity);
-                   
+                    dictionary.Add(productEntity.PartNumber, productEntity);
+                    if (dictionary.Count >= 20)
+                    {
+                        await SaveDictionary(dictionary, user);
+                        dictionary.Clear();
+                    }
                 }
             }
+            if (!dictionary.IsNullOrEmpty())
+            {
+                await SaveDictionary(dictionary, user);
+            }
+        }
+        return dictionary.Values;
+    }
+
+    private async Task SaveDictionary(Dictionary<int, ProductEntity> dictionary, UserEntity? user)
+    {
+        var productsFromDb = await _productRepository.GetByPartNumber(dictionary.Keys);
+        foreach (var prod in productsFromDb)
+        {
+            var product = dictionary.GetValueOrDefault(prod.PartNumber, null);
+            if (product == null) continue;
+            dictionary.Remove(product.PartNumber);
+            prod.CategoryId = product.CategoryId;
+            prod.Name = product.Name;
+            prod.Description = product.Description;
+            prod.Weight = product.Weight;
+            prod.Width = product.Width;
+            prod.Height = product.Height;
+            prod.Depth = product.Depth;
+            prod.Country = product.Country;
+            prod.UrlPhotos = product.UrlPhotos;
+            prod.EditorId = user.Id;
         }
 
-        return list;
+        await _productRepository.Edit(productsFromDb);
+        await _productRepository.Create(dictionary.Values);
+        await _productRepository.Save();
     }
 }

@@ -16,5 +16,5 @@ public interface IProductService
     public Task<ProductEntity> IsActiveProduct(Guid id, bool value);
 
     public Task DeletedProduct(Guid id);
-    public Task<List<ProductEntity>> Upload(IFormFile productFile);
+    public Task<IEnumerable<ProductEntity>> Upload(IFormFile productFile, Guid userId);
 }
