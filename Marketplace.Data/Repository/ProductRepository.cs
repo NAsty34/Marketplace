@@ -41,17 +41,9 @@ public class ProductRepository:BaseRepository<ProductEntity>, IProductRepository
         return await DbSet.Where(a => set.Contains(a.PartNumber)).ToListAsync();
     }
 
-    public async Task<PageEntity<ProductEntity>> GetProducts(int page, int size)
+   public async Task<ProductEntity?> GetByCodEdit(int cod)
     {
-        var all = DbSet.Where(a => a.IsActive);
-        return await GetPage(all, page, size);
-    }
-
-    public async Task<ProductEntity?> GetByCodEdit(int cod)
-    {
-        
-        return await DbSet.Where(a=>a.PartNumber == cod).FirstOrDefaultAsync(null);
-        
+        return await DbSet.Where(a=>a.PartNumber == cod).FirstOrDefaultAsync();
     }
   
 }

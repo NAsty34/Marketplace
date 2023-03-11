@@ -1,6 +1,7 @@
 using data.model;
 using data.Repository;
 using data.Repository.Interface;
+using logic.Exceptions;
 using logic.Service.Inreface;
 using Marketplace.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -16,15 +17,17 @@ public class ProductController : UserBaseController
     private IFileInfoService _fileInfoService;
     private IProductRepository _productRepository;
     private ILogger<ProductEntity> _logger;
+    private CategoryRepository _categoryRepository;
 
     public ProductController(IProductService productService, IUserServer userServer, IFileInfoService fileInfoService,
-        IProductRepository productRepository, ILogger<ProductEntity> logger)
+        IProductRepository productRepository, ILogger<ProductEntity> logger, CategoryRepository categoryRepository)
     {
         _productService = productService;
         _userServer = userServer;
         _fileInfoService = fileInfoService;
         _productRepository = productRepository;
         _logger = logger;
+        _categoryRepository = categoryRepository;
     }
 
     [Route("/api/v1/products")]
@@ -33,42 +36,42 @@ public class ProductController : UserBaseController
         int? size)
     {
         var products = await _productService.GetProducts(filterProductEntity, page, size);
-        var result = PageEntity<ProductDto>.Create(products, products.Items.Select(a =>new ProductDto(a)));
+        var result = PageEntity<ProductDto>.Create(products, products.Items.Select(a => new ProductDto(a)));
         return new(result);
     }
 
     [Route("/api/v1/products")]
     [HttpPost]
-    public async Task<ResponceDto<ProductDto>> CreateProduct([FromForm] ProductDto productDto, [FromForm] List<IFormFile>? photos)
+    public async Task<ResponceDto<ProductDto>> CreateProduct([FromForm] ProductDto productDto,
+        [FromForm] List<IFormFile>? photos)
     {
         var user = await _userServer.GetUser(Userid.Value);
-
+        var category = await _categoryRepository.GetById(productDto.CategoryId);
+        if (category == null || !category.IsActive) throw new CategoryNotFoundException();
+        var id = Guid.NewGuid();
         var product = new ProductEntity()
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             Name = productDto.Name,
             Description = productDto.Description,
             PartNumber = productDto.PartNumber,
             CategoryId = productDto.CategoryId,
+            Category = category,
             Width = productDto.Width,
             Weight = productDto.Weight,
             Country = productDto.Country,
             Depth = productDto.Depth,
             Height = productDto.Height,
             Creator = user,
-            UrlPhotos = new List<string>()
+            UrlPhotos = productDto.UrlPhotos
         };
-        foreach (var photo in photos)
-        {
-            product.Photo = await _fileInfoService.Addfile(photo,product.Id, user.Id);
-            product.UrlPhotos.Add(_fileInfoService.GetUrl(product.Photo, product.Creator.Name));
-        }
         
-        await _productService.CreateProduct(product);
-
-        
-
-        return new(new ProductDto(product));
+        product.Photo = await _fileInfoService.Addfiles(photos, product.Id, user.Id);
+        var dtoprod = await _productService.CreateProduct(product);
+        var result = new ProductDto(dtoprod);
+        result.UrlPhotos ??= new List<string>();
+        result.UrlPhotos.AddRange(_fileInfoService.GetUrlProduct(dtoprod));
+        return new(result);
     }
 
 
@@ -77,9 +80,6 @@ public class ProductController : UserBaseController
     public async Task<ResponceDto<ProductDto>> EditProduct([FromForm] ProductDto productDto, List<IFormFile?> photos,
         Guid productid)
     {
-        
-        
-
         Guid id = productid;
         var user = await _userServer.GetUser(Userid.Value);
         var product = new ProductEntity
@@ -101,9 +101,10 @@ public class ProductController : UserBaseController
         {
             if (photo != null)
             {
-                product.Photo = await _fileInfoService.Addfile(photo,productid,Userid.Value);
+                //product.Photo = await _fileInfoService.Addfile(photo,productid,Userid.Value);
             }
         }
+
         var editProduct = await _productService.EditProduct(product);
 
         var newProduct = new ProductDto(editProduct);
@@ -160,7 +161,7 @@ public class ProductController : UserBaseController
 
         if (!Path.GetExtension(productFile.FileName).Equals(".xls", StringComparison.OrdinalIgnoreCase))
             throw new SystemException("Другое расширение");
-        
+
         var listProduct = await _productService.Upload(productFile, Userid.Value);
         var result = listProduct.Select(a => new ProductDto(a));
         return new(result);

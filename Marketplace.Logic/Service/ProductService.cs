@@ -38,10 +38,7 @@ public class ProductService : IProductService
     {
         var fromDb = await _productRepository.GetByCodEdit(productEntity.PartNumber);
         if (fromDb != null) return await EditProduct(productEntity, fromDb);
-        
-        var category = await _categoryRepository.GetById(productEntity.CategoryId);
-        if (category == null || !category.IsActive) throw new CategoryNotFoundException();
-        
+
         await _productRepository.Create(productEntity);
         await _productRepository.Save();
         return productEntity;
@@ -73,7 +70,7 @@ public class ProductService : IProductService
         fromDb.CategoryId = productEntity.CategoryId;
         fromDb.PartNumber = productEntity.PartNumber;
         fromDb.Photo = productEntity.Photo;
-
+        await _productRepository.Edit(fromDb);
         await _productRepository.Save();
         return fromDb;
     }
@@ -204,4 +201,6 @@ public class ProductService : IProductService
         await _productRepository.Create(dictionary.Values);
         await _productRepository.Save();
     }
+
+    
 }

@@ -53,6 +53,10 @@ public class MarketplaceContext : DbContext
         {
             a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
         });
+        modelBuilder.Entity<ProductEntity>(a =>
+        {
+            a.HasQueryFilter(statusdeleted => !statusdeleted.IsDeleted);
+        });
         
         modelBuilder.Entity<ShopCategoryEntity>(a => { a.HasKey(u => new { shopid = u.ShopEntityId, u.CategoryId }); });
 
@@ -61,7 +65,7 @@ public class MarketplaceContext : DbContext
         modelBuilder.Entity<ShopDeliveryEntity>(a => { a.HasKey(u => new { shopid = u.ShopEntityId, u.DeliveryId }); });
 
         modelBuilder.Entity<ShopPaymentEntity>(a => { a.HasKey(u => new { shopid = u.ShopEntityId, u.PaymentId }); });
-        //modelBuilder.Entity<ProductPhotoEntity>(a => { a.HasKey(u => new { productid = u.productId, u.urlPhoto }); });
+        
 
         modelBuilder.Entity<UserEntity>().Property(d => d.RoleEntity).HasConversion(new EnumToStringConverter<RoleEntity>());
         modelBuilder.Entity<ProductEntity>().Property(a => a.Country)
