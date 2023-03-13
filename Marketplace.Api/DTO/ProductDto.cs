@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using data.model;
-using Microsoft.Extensions.Options;
 
 namespace Marketplace.DTO;
 
@@ -26,7 +25,7 @@ public class ProductDto
         CategoryId = productEntity.CategoryId;
         Category = new ShortCategoryDto(productEntity.Category);
         UrlPhotos = productEntity.UrlPhotos;
-        //Photo.AddRange(productEntity.Photo);
+        
     }
     public Guid Id { get; set; }
     public bool IsBlock { get; set; }

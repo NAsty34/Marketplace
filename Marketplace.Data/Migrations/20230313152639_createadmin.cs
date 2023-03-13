@@ -1,13 +1,12 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace data.Migrations
 {
     /// <inheritdoc />
-    public partial class createAdmin : Migration
+    public partial class createadmin : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(

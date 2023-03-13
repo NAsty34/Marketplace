@@ -142,7 +142,7 @@ public class ShopController : UserBaseController
             throw new AccessDeniedException();
         }
         var user = await _userServer.GetUser(Userid.Value);
-        //if (role.Equals(Role.Admin)) Userid = Userid;
+        
         FileInfoEntity? fi = null;
         if (file != null)
         {

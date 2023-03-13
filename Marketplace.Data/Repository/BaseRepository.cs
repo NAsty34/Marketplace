@@ -38,6 +38,7 @@ public class BaseRepository<T> : IBaseRopository<T> where T:BaseEntity
 
     public async Task Create(T t)
     {
+        t.Id = Guid.NewGuid();
         t.CreateDate = DateTime.Now;
         await DbSet.AddAsync(t);
     }

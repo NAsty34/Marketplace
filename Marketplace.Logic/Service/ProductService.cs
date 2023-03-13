@@ -4,7 +4,6 @@ using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml;
 
@@ -12,20 +11,21 @@ namespace logic.Service;
 
 public class ProductService : IProductService
 {
-    private IProductRepository _productRepository;
-    private CategoryRepository _categoryRepository;
-    private CategoryService _categoryService;
-    private ILogger<ProductEntity> _logger;
-    private IUserRepository _userRepository;
+    private readonly IProductRepository _productRepository;
+    private readonly CategoryRepository _categoryRepository;
+    private readonly CategoryService _categoryService;
+    private readonly IFileInfoRepository _fileInfoRepository;
+    private readonly IUserRepository _userRepository;
 
     public ProductService(IProductRepository productRepository, CategoryRepository categoryRepository,
-        ILogger<ProductEntity> logger, CategoryService categoryService, IUserRepository userRepository)
+        CategoryService categoryService, IUserRepository userRepository,
+        IFileInfoRepository fileInfoRepository)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
-        _logger = logger;
         _categoryService = categoryService;
         _userRepository = userRepository;
+        _fileInfoRepository = fileInfoRepository;
     }
 
     public async Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity filterProductEntity, int? page,
@@ -38,9 +38,9 @@ public class ProductService : IProductService
     {
         var fromDb = await _productRepository.GetByCodEdit(productEntity.PartNumber);
         if (fromDb != null) return await EditProduct(productEntity, fromDb);
+        
 
         await _productRepository.Create(productEntity);
-        await _productRepository.Save();
         return productEntity;
     }
 
@@ -51,8 +51,8 @@ public class ProductService : IProductService
         {
             throw new ProductNotFoundException();
         }
-
-        return await EditProduct(productEntity, fromDb);
+        var edit = await EditProduct(productEntity, fromDb);
+        return edit;
     }
 
     private async Task<ProductEntity> EditProduct(ProductEntity productEntity, ProductEntity fromDb)
@@ -69,9 +69,11 @@ public class ProductService : IProductService
         fromDb.Weight = productEntity.Weight;
         fromDb.CategoryId = productEntity.CategoryId;
         fromDb.PartNumber = productEntity.PartNumber;
+        await _fileInfoRepository.DeleteRange(fromDb);
         fromDb.Photo = productEntity.Photo;
+        fromDb.PhotoId = productEntity.PhotoId;
         await _productRepository.Edit(fromDb);
-        await _productRepository.Save();
+        
         return fromDb;
     }
 
@@ -91,7 +93,11 @@ public class ProductService : IProductService
     public async Task DeletedProduct(Guid id)
     {
         var product = await _productRepository.GetById(id);
-        if (product == null || !product.IsActive) throw new ProductNotFoundException();
+        foreach (var fileId in product.PhotoId)
+        {
+            await _fileInfoRepository.Delete(fileId);
+        }
+        
         await _productRepository.Delete(product);
         await _productRepository.Save();
     }
@@ -129,11 +135,12 @@ public class ProductService : IProductService
                                 Name = worksheet.Cells[row, i].Value.ToString()
                             });
                         }
+
                         index = i;
                     }
 
                     List<string>? urls = null;
-                    
+
                     if (worksheet.Cells[row, col + 9].Value != null)
                     {
                         if (!worksheet.Cells[row, col + 9].Value.ToString()!.Contains(';'))
@@ -169,11 +176,13 @@ public class ProductService : IProductService
                     }
                 }
             }
+
             if (!dictionary.IsNullOrEmpty())
             {
                 await SaveDictionary(dictionary, user);
             }
         }
+
         return dictionary.Values;
     }
 
@@ -201,6 +210,4 @@ public class ProductService : IProductService
         await _productRepository.Create(dictionary.Values);
         await _productRepository.Save();
     }
-
-    
 }

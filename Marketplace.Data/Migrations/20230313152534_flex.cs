@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace data.Migrations
 {
     /// <inheritdoc />
-    public partial class newprod : Migration
+    public partial class flex : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -143,7 +143,7 @@ namespace data.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Extension = table.Column<string>(type: "text", nullable: true),
                     EntityId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PhotoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    
                     CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     EditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -172,7 +172,7 @@ namespace data.Migrations
                     Height = table.Column<double>(type: "double precision", nullable: false),
                     Depth = table.Column<double>(type: "double precision", nullable: false),
                     Country = table.Column<string>(type: "text", nullable: false),
-                    PhotoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PhotoId = table.Column<List<Guid>>(type: "uuid[]", nullable: true),
                     UrlPhotos = table.Column<List<string>>(type: "text[]", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -351,10 +351,7 @@ namespace data.Migrations
                 table: "Feedback",
                 column: "ShopId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileInfos_PhotoId",
-                table: "FileInfos",
-                column: "PhotoId");
+           
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_CategoryId",
@@ -412,12 +409,7 @@ namespace data.Migrations
                 principalTable: "Users",
                 principalColumn: "Id");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_FileInfos_Product_PhotoId",
-                table: "FileInfos",
-                column: "PhotoId",
-                principalTable: "Product",
-                principalColumn: "Id");
+           
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Product_Users_CreatorId",

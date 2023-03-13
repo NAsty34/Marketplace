@@ -9,7 +9,7 @@ public class ShopRepository:BaseRepository<ShopEntity>, IShopRepository
 {
     public async Task<ShopEntity?> GetByInn(string inn)
     {
-        return DbSet.Include(a=>a.Creator).FirstOrDefault(a => a.Inn == inn );
+        return DbSet.Include(a=>a.Creator).FirstOrDefault(a => a.Inn == inn && a.IsActive);
         
     }
 

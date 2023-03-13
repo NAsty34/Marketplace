@@ -1,11 +1,8 @@
-using System.Net;
 using data.model;
 using data.Repository.Interface;
 using logic.Exceptions;
 using logic.Service.Inreface;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace logic.Service;
@@ -20,21 +17,23 @@ public class FileInfoService : IFileInfoService
     private FileInfoOptions _options;
 
     private readonly IFileInfoRepository _fileInfoRepository;
-    //private ILogger<FileInfo> _logger;
 
-    public FileInfoService(IFileInfoRepository fileInfoRepository, IConfiguration appConfig, ILogger<FileInfo> logger,
-        IOptions<FileInfoOptions> options)
+    public FileInfoService(IFileInfoRepository fileInfoRepository, IOptions<FileInfoOptions> options)
     {
         _fileInfoRepository = fileInfoRepository;
         _options = options.Value;
     }
 
-    /*public string GetUrl(FileInfoEntity? fi, Guid? forId)
+    public List<Guid> GetFilesId(IEnumerable<FileInfoEntity> files)
     {
-        var url =
-            @$"C:\{_options.BasePath}\{forId}\{fi.EntityId}\{fi.Name}";
-        return url;
-    }*/
+        var ids = new List<Guid>();
+        foreach (var file in files)
+        {
+            ids.Add(file.Id);
+        }
+        return ids;
+        
+    }
     
 
     public string GetUrlShop(ShopEntity shopEntity)
@@ -46,13 +45,14 @@ public class FileInfoService : IFileInfoService
 
     public List<string> GetUrlProduct(ProductEntity productEntity)
     {
-        string url = null;
+        List<string> url = new List<string>();
+        
         foreach (var foto in productEntity.Photo)
         { 
-            url = $"{_options.BaseUrl}/{_options.RequestPath}/{productEntity.Creator.Id}/{foto.Id}{foto.Extension}";
+            url.Add($"{_options.BaseUrl}/{_options.RequestPath}/{productEntity.Creator.Id}/{foto.Id}{foto.Extension}");
         }
 
-        return new List<string> { url };
+        return url;
     }
 
     public async Task<FileInfoEntity?> Addfile(IFormFile? file, Guid forPhoto, Guid userId)
@@ -115,10 +115,12 @@ public class FileInfoService : IFileInfoService
         {
             dirInfo.Create();
         }
-
-        dirInfo.CreateSubdirectory(subpath);
-
-        for (int i = 0; i < files.Count(); i++)
+        var folder = dirInfo.CreateSubdirectory(subpath);
+        foreach (FileInfo file in folder.GetFiles())
+        {
+            file.Delete();
+        }
+        for (int i = 0; i < files.Count; i++)
         {
             var file = files[i];
             string fullPath = $"C:\\{_options.BasePath}\\{forPhoto}\\{userId}\\{entities[i].Id}{entities[i].Extension}";
@@ -128,11 +130,7 @@ public class FileInfoService : IFileInfoService
                 await file.CopyToAsync(fileStream);
             }
         }
-
-        foreach (var file in files)
-        {
-            
-        }
+        
 
         return entities;
     }

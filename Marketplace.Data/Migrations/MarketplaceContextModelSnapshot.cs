@@ -214,14 +214,7 @@ namespace data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PhotoId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PhotoId");
-
-                    b.ToTable("FileInfos");
+                    
                 });
 
             modelBuilder.Entity("data.model.PaymentMethodEntity", b =>
@@ -319,8 +312,8 @@ namespace data.Migrations
                     b.Property<int>("PartNumber")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("PhotoId")
-                        .HasColumnType("uuid");
+                    b.Property<List<Guid>>("PhotoId")
+                        .HasColumnType("uuid[]");
 
                     b.Property<List<string>>("UrlPhotos")
                         .HasColumnType("text[]");
@@ -617,12 +610,7 @@ namespace data.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("data.model.FileInfoEntity", b =>
-                {
-                    b.HasOne("data.model.ProductEntity", null)
-                        .WithMany("Photo")
-                        .HasForeignKey("PhotoId");
-                });
+            
 
             modelBuilder.Entity("data.model.ProductEntity", b =>
                 {

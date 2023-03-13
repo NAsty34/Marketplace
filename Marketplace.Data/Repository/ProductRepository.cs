@@ -13,7 +13,7 @@ public class ProductRepository:BaseRepository<ProductEntity>, IProductRepository
     public async Task<PageEntity<ProductEntity>> GetProducts(FilterProductEntity? filterProductEntity, int? page, int? size)
     {
         
-        var allprod =  (IQueryable<ProductEntity>)DbSet;
+        var allprod = DbSet.Where(a=>a.IsActive);
         
         if (filterProductEntity.Name != null )allprod = allprod.Where(a => a.Name.Contains(filterProductEntity.Name) && a.IsActive);
         if (filterProductEntity.Description != null )allprod = allprod.Where(a => a.Description.Contains(filterProductEntity.Description) && a.IsActive);
